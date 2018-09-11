@@ -22,10 +22,12 @@ optimizer = optim.Adam(model.parameters(), lr=1e-4)
 scheduler = ReduceLROnPlateau(optimizer, 'min')
 
 def run(epoch):
+    global model
     
     decoding_losses = []
     classifier_losses = []
     iterator = tqdm(yield_images(mode="train"))
+    model = model.train()
     for image in iterator:
         _, height, width = image.size()
         image = autograd.Variable(image.cuda().expand(BATCH_SIZE, 3, height, width))
@@ -44,10 +46,16 @@ def run(epoch):
             sum(decoding_losses) / len(decoding_losses),
             sum(classifier_losses) / len(classifier_losses),
         ))
+        if random() < 0.001:
+            image = image[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
+            misc.imsave("weights/train.epoch-%s.raw.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
+            image = stegno[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
+            misc.imsave("weights/train.epoch-%s.stegno.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
 
     decoding_losses = []
     classifier_losses = []
     iterator = tqdm(yield_images(mode="test"))
+    model = model.eval()
     for image in iterator:
         _, height, width = image.size()
         image = autograd.Variable(image.cuda().expand(BATCH_SIZE, 3, height, width))
@@ -63,9 +71,9 @@ def run(epoch):
         ))
         if random() < 0.001:
             image = image[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-            misc.imsave("train.raw.png", np.maximum(0.0, np.minimum(255.0, image)))
+            misc.imsave("weights/test.epoch-%s.raw.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
             image = stegno[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-            misc.imsave("train.stegno.png", np.maximum(0.0, np.minimum(255.0, image)))
+            misc.imsave("weights/test.epoch-%s.stegno.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
 
     print("Epoch %s, Decoder %.02f, Classifier %.02f" % (
         epoch,

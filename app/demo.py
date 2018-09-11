@@ -1,9 +1,19 @@
 import torch
+import argparse
 import numpy as np
-from torch.autograd import Variable
 
 from scipy import misc
 from model import Steganographer
+from torch.autograd import Variable
+
+parser = argparse.ArgumentParser(description='Encode or decode steganographic images.')
+parser.add_argument('mode', type=str)
+parser.add_argument('--input', type=str)
+parser.add_argument('--data', type=str)
+parser.add_argument('--output', type=str)
+args = parser.parse_args()
+
+PREFIX = 16
 
 def to_bits(s):
     # Convert string to a list of bits
@@ -32,15 +42,19 @@ class Wrapper(object):
         image = torch.FloatTensor(image).permute(2,1,0).unsqueeze(0)
         _, _, height, width = image.size()
 
-        data = to_bits(message)
-        while len(data) < width*height - len(to_bits(message)):
+        data = [0]*PREFIX + to_bits(message)
+        while len(data) < width*height - len(to_bits(message)) - 16:
             data += to_bits(message)
         data += [0] * (width*height - len(data))
         data = torch.FloatTensor(data).view(1, 1, height, width)
 
         stega, decoder, classifier = self._model(Variable(image), Variable(data))
         output = stega[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-        misc.imsave(path_to_output, np.maximum(0.0, np.minimum(255.0, output)))
+        misc.imsave(path_to_output, output)
+
+        if message in self.decode(path_to_output):
+            return True
+        return False
 
     def decode(self, path_to_output):
         image = misc.imread(path_to_output)/125.0-1.0
@@ -48,8 +62,13 @@ class Wrapper(object):
         _, _, height, width = image.size()
 
         data = (self._model.decoder(Variable(image)) > 0.0).view(-1).data.cpu().numpy().tolist()
-        print(from_bits(data)[:50])
+        return from_bits(data[PREFIX:])
 
 wrapper = Wrapper()
-wrapper.encode("Hello World!\n", "demo/kalyan.jpg", "demo/output.jpg")
-print(wrapper.decode("demo/output.jpg"))
+if args.mode == "encode":
+    if wrapper.encode(args.data + "\n", args.input, args.output):
+        print("Success")
+    else:
+        print("Embedding failed.")
+if args.mode == "decode":
+    print(wrapper.decode(args.output))

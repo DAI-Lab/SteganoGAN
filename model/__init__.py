@@ -45,7 +45,16 @@ class Steganographer(nn.Module):
 
         # encode the cover image into a stego image, decode into predictions
         encoded = F.tanh(image + F.tanh(self.encoder(x)) / 10.0)
-        decoded = self.decoder(encoded)
+
+        # move up or down by up to 1 bit (helps deal with quantization)
+        noise = autograd.Variable(2.0 * torch.zeros(encoded.size()).uniform_(0, 1).cuda() / 255.0 - 1.0)
+
+        if not self.training:
+            # in eval mode, make sure to quantize it
+            encoded = (encoded * 125.0 + 125.0).long() 
+            encoded = encoded.float() / 125.0 - 1.0
+
+        decoded = self.decoder(encoded + noise)
 
         # try to discriminate between the real image and the stego image
         y_pred_pos = torch.mean(torch.mean(self.classifier(image), dim=2), dim=2)
