@@ -44,7 +44,7 @@ class Steganographer(nn.Module):
         x = torch.cat((image, data), dim=1)
 
         # encode the cover image into a stego image, decode into predictions
-        encoded = F.tanh(image + F.tanh(self.encoder(x)) / 10.0)
+        encoded = F.tanh(torch.tan(image) + F.tanh(self.encoder(x)) / 10.0)
         decoded = self.decoder(encoded)
 
         # try to discriminate between the real image and the stego image

@@ -13,7 +13,7 @@ conda install pytorch torchvision -c pytorch
 ## Usage
 To embed a message into a natural image, run the following:
 
-> python demo.py encode --data "Hello World" --input demo/kalyan.jpg --output demo/output.png
+> python demo.py encode --data "Hello World!" --input demo/kevin.jpg --output demo/output.png
 
 To retrieve the message, run this:
 

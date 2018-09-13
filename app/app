@@ -1,19 +1,28 @@
+#!/usr/bin/env python3
 import torch
 import argparse
 import numpy as np
 
 from scipy import misc
+from collections import Counter
 from model import Steganographer
 from torch.autograd import Variable
 
 parser = argparse.ArgumentParser(description='Encode or decode steganographic images.')
 parser.add_argument('mode', type=str)
-parser.add_argument('--input', type=str)
-parser.add_argument('--data', type=str)
-parser.add_argument('--output', type=str)
+parser.add_argument('--src', type=str)
+parser.add_argument('--text', type=str)
+parser.add_argument('--dest', type=str)
 args = parser.parse_args()
 
-PREFIX = 16
+if args.mode == "encode":
+    if not args.src:  args.src = "demo/kevin.jpg"
+    if not args.dest: args.dest = args.src.replace(".jpg", ".out.png")
+    if not args.text: args.text = "Hello World!"
+else:
+    if not args.src:  args.src = "demo/output.png"
+
+NULL_BYTE = [0] * 16
 
 def to_bits(s):
     # Convert string to a list of bits
@@ -22,7 +31,7 @@ def to_bits(s):
         bits = bin(ord(c))[2:]
         bits = '00000000'[len(bits):] + bits
         result.extend([int(b) for b in bits])
-    return result
+    return NULL_BYTE + result
 
 def from_bits(bits):
     # Convert a list of bits to a string
@@ -36,16 +45,17 @@ class Wrapper(object):
 
     def __init__(self, path_to_weights="model/weights.pt"):
         self._model = torch.load(path_to_weights, map_location=lambda storage, loc: storage)
+        torch.save(self._model, path_to_weights)
 
     def encode(self, message, path_to_input, path_to_output):
-        image = misc.imread(path_to_input)/125.0-1.0
+        image = misc.imread(path_to_input, mode="RGB")/125.0-1.0
         image = torch.FloatTensor(image).permute(2,1,0).unsqueeze(0)
         _, _, height, width = image.size()
 
-        data = [0]*PREFIX + to_bits(message)
-        while len(data) < width*height - len(to_bits(message)) - 16:
+        data = to_bits(message)
+        while len(data) < width*height:
             data += to_bits(message)
-        data += [0] * (width*height - len(data))
+        data = data[:width*height]
         data = torch.FloatTensor(data).view(1, 1, height, width)
 
         stega, decoder, classifier = self._model(Variable(image), Variable(data))
@@ -57,18 +67,19 @@ class Wrapper(object):
         return False
 
     def decode(self, path_to_output):
-        image = misc.imread(path_to_output)/125.0-1.0
+        image = misc.imread(path_to_output, mode="RGB")/125.0-1.0
         image = torch.FloatTensor(image).permute(2,1,0).unsqueeze(0)
         _, _, height, width = image.size()
 
         data = (self._model.decoder(Variable(image)) > 0.0).view(-1).data.cpu().numpy().tolist()
-        return from_bits(data[PREFIX:])
+        candidates = list(filter(lambda x: x, from_bits(data).split("\x00")))
+        return Counter(candidates).most_common(1)[0][0]
 
 wrapper = Wrapper()
 if args.mode == "encode":
-    if wrapper.encode(args.data + "\n", args.input, args.output):
+    if wrapper.encode(args.text, args.src, args.dest):
         print("Success")
     else:
         print("Embedding failed.")
 if args.mode == "decode":
-    print(wrapper.decode(args.output))
+    print(wrapper.decode(args.src))
