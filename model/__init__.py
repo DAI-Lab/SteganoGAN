@@ -45,10 +45,10 @@ class Steganographer(nn.Module):
 
         # encode the cover image into a stego image, decode into predictions
         # WARNING: image must be in range (-1.0, 1.0)
-        encoded = F.tanh(torch.tan(image) + F.tanh(self.encoder(x)) / 10.0)
+        encoded = torch.tanh(torch.tan(image) + torch.tanh(self.encoder(x)) / 10.0)
 
         # move up or down by up to 1 bit (helps deal with quantization)
-        noise = autograd.Variable(torch.zeros(encoded.size()).uniform_(-0.5/255.0, 0.5/255.0).cuda())
+        noise = torch.zeros(encoded.size()).uniform_(-0.5/255.0, 0.5/255.0).to(image.device)
 
         if not self.training:
             # in eval mode, make sure to quantize it
@@ -65,7 +65,7 @@ class Steganographer(nn.Module):
         decoding_loss = F.binary_cross_entropy_with_logits(decoded, data)
         classifier_loss = F.cross_entropy(
             torch.cat([y_pred_pos, y_pred_neg], dim=0),
-            autograd.Variable(torch.LongTensor([0] * batch_size + [1] * batch_size).cuda())
+            torch.LongTensor([0] * batch_size + [1] * batch_size).to(image.device)
         )
         
         return encoded, decoding_loss, classifier_loss

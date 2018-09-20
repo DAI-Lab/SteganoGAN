@@ -17,7 +17,11 @@ EPOCHS = 32
 DATA_DEPTH = 1
 BATCH_SIZE = 8
 
-model = Steganographer(DATA_DEPTH).cuda()
+device = torch.device('cpu')
+if torch.cuda.is_available():
+    device = torch.device('cuda')
+
+model = Steganographer(DATA_DEPTH).to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 scheduler = ReduceLROnPlateau(optimizer, 'min')
 
@@ -30,16 +34,16 @@ def run(epoch):
     model = model.train()
     for image in iterator:
         _, height, width = image.size()
-        image = autograd.Variable(image.cuda().expand(BATCH_SIZE, 3, height, width))
-        data = autograd.Variable(torch.zeros((BATCH_SIZE, DATA_DEPTH, height, width)).random_(0, 2).cuda())
+        image = autograd.Variable(image.to(device).expand(BATCH_SIZE, 3, height, width))
+        data = autograd.Variable(torch.zeros((BATCH_SIZE, DATA_DEPTH, height, width)).random_(0, 2).to(device))
 
         optimizer.zero_grad()
         stegno, decoding_loss, classifier_loss = model(image, data)
         (decoding_loss + classifier_loss).backward()
         optimizer.step()
 
-        decoding_losses.append(decoding_loss.cpu().data[0])
-        classifier_losses.append(classifier_loss.cpu().data[0])
+        decoding_losses.append(decoding_loss.item())
+        classifier_losses.append(classifier_loss.item())
 
         iterator.set_description("TRAIN %.02f, %.02f, %.02f" % (
             decoding_losses[-1],
@@ -58,8 +62,8 @@ def run(epoch):
     model = model.eval()
     for image in iterator:
         _, height, width = image.size()
-        image = autograd.Variable(image.cuda().expand(BATCH_SIZE, 3, height, width))
-        data = autograd.Variable(torch.zeros((BATCH_SIZE, DATA_DEPTH, height, width)).random_(0, 2).cuda())
+        image = autograd.Variable(image.to(device).expand(BATCH_SIZE, 3, height, width))
+        data = autograd.Variable(torch.zeros((BATCH_SIZE, DATA_DEPTH, height, width)).random_(0, 2).to(device))
 
         stegno, decoding_loss, classifier_loss = model(image, data)
         decoding_losses.append(decoding_loss.cpu().data[0])

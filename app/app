@@ -6,7 +6,7 @@ import numpy as np
 from scipy import misc
 from collections import Counter
 from model import Steganographer
-from torch.autograd import Variable
+from kirito import *
 
 parser = argparse.ArgumentParser(description='Encode or decode steganographic images.')
 parser.add_argument('mode', type=str)
@@ -18,28 +18,9 @@ args = parser.parse_args()
 if args.mode == "encode":
     if not args.src:  args.src = "demo/kevin.jpg"
     if not args.dest: args.dest = args.src.replace(".jpg", ".out.png")
-    if not args.text: args.text = "Hello World!"
+    if not args.text: args.text = "Hello World! This is a medium length demo message which requires ~100 bytes to store."
 else:
-    if not args.src:  args.src = "demo/output.png"
-
-NULL_BYTE = [0] * 16
-
-def to_bits(s):
-    # Convert string to a list of bits
-    result = []
-    for c in s:
-        bits = bin(ord(c))[2:]
-        bits = '00000000'[len(bits):] + bits
-        result.extend([int(b) for b in bits])
-    return NULL_BYTE + result
-
-def from_bits(bits):
-    # Convert a list of bits to a string
-    chars = []
-    for b in range(len(bits) // 8):
-        byte = bits[b*8:(b+1)*8]
-        chars.append(chr(int(''.join([str(bit) for bit in byte]), 2)))
-    return ''.join(chars)
+    if not args.src:  args.src = "demo/kevin.out.png"
 
 class Wrapper(object):
 
@@ -52,13 +33,15 @@ class Wrapper(object):
         image = torch.FloatTensor(image).permute(2,1,0).unsqueeze(0)
         _, _, height, width = image.size()
 
-        data = to_bits(message)
+        encoded = bytearray_to_bits(to_bytearray(message) + bytearray(b"\x0000"))
+        data = encoded
         while len(data) < width*height:
-            data += to_bits(message)
+            print("Embedding...")
+            data += encoded
         data = data[:width*height]
         data = torch.FloatTensor(data).view(1, 1, height, width)
 
-        stega, decoder, classifier = self._model(Variable(image), Variable(data))
+        stega, decoder, classifier = self._model(image, data)
         output = stega[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
         misc.imsave(path_to_output, output)
 
@@ -71,8 +54,8 @@ class Wrapper(object):
         image = torch.FloatTensor(image).permute(2,1,0).unsqueeze(0)
         _, _, height, width = image.size()
 
-        data = (self._model.decoder(Variable(image)) > 0.0).view(-1).data.cpu().numpy().tolist()
-        candidates = list(filter(lambda x: x, from_bits(data).split("\x00")))
+        data = (self._model.decoder(image) > 0.0).view(-1).data.cpu().numpy().tolist()
+        candidates = list(filter(lambda x: x, [from_bytearray(bytearray(x)) for x in bits_to_bytearray(data).split(b"\x0000")]))
         return Counter(candidates).most_common(1)[0][0]
 
 wrapper = Wrapper()
