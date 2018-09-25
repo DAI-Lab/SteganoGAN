@@ -3,12 +3,12 @@ This repository contains the research code for the neural steganography project.
 client code (compression, error correction, etc.) has been removed and will appear 
 in a separate repo.
 
-## Setup
+## Dev Setup
 Before you can start training the models, you need to download the datasets. We 
 provide a Bash script to automate this process:
 
 ```
-cd data
+cd deepsteganography/data
 bash download.sh
 ```
 
@@ -19,4 +19,11 @@ the other dependencies by running:
 
 > pip install -r requirements.txt
 
-Once everything is done installing, you can run `train.py` to reproduce our results.
+Once everything is done installing, run the unit tests to make sure things are set 
+up properly.
+
+> python -m pytest
+
+Finally, you're ready to make modifications to the model architecture and run:
+
+> python train.py
