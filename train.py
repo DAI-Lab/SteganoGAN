@@ -1,91 +1,68 @@
-"""
-This script trains a steganography model on some dummy data.
-"""
-import numpy as np
 import torch
 import torch.optim as optim
 import torch.autograd as autograd
-from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from tqdm import tqdm
-from scipy import misc
-from random import random
-from data import yield_images
+from data import train, test
 from model import Steganographer
 
-EPOCHS = 32
-DATA_DEPTH = 1
-BATCH_SIZE = 8
+class ModelTrainer(object):
 
-device = torch.device('cpu')
-if torch.cuda.is_available():
-    device = torch.device('cuda')
+    def __init__(self, data_depth=1, batch_size=4, lr=1e-4):
+        self.data_depth = data_depth
+        self.batch_size = batch_size
+        self.device = torch.device('cpu')
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda')
 
-model = Steganographer(DATA_DEPTH).to(device)
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
-scheduler = ReduceLROnPlateau(optimizer, 'min')
-
-def run(epoch):
-    global model
+        self.epoch = 0
+        self.model = Steganographer(data_depth).to(self.device)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
     
-    decoding_losses = []
-    classifier_losses = []
-    iterator = tqdm(yield_images(mode="train"))
-    model = model.train()
-    for image in iterator:
-        _, height, width = image.size()
-        image = autograd.Variable(image.to(device).expand(BATCH_SIZE, 3, height, width))
-        data = autograd.Variable(torch.zeros((BATCH_SIZE, DATA_DEPTH, height, width)).random_(0, 2).to(device))
+    def step(self, train_set, test_set):
+        self.epoch += 1
+        d_train_loss, c_train_loss = self._train(train_set)
+        d_test_loss, c_test_loss = self._test(test_set)
+        torch.save(self.model, "weights/epoch-%s.loss-%.02f.pt" % (self.epoch, d_test_loss))
 
-        optimizer.zero_grad()
-        stegno, decoding_loss, classifier_loss = model(image, data)
-        (decoding_loss + classifier_loss).backward()
-        optimizer.step()
+    def _train(self, train_set):
+        iterator = tqdm(train_set)
+        d_loss, c_loss, N = 0.0, 0.0, 0
+        for image, _ in iterator:
+            self.optimizer.zero_grad()
+            image, data = self._make_pair(image)
+            y, decoding_loss, classifier_loss = self.model(image, data)
+            (decoding_loss + classifier_loss).backward()
+            self.optimizer.step()
 
-        decoding_losses.append(decoding_loss.item())
-        classifier_losses.append(classifier_loss.item())
+            d_loss += decoding_loss.item()
+            c_loss += classifier_loss.item()
+            N += 1
 
-        iterator.set_description("TRAIN %.02f, %.02f, %.02f" % (
-            decoding_losses[-1],
-            sum(decoding_losses) / len(decoding_losses),
-            sum(classifier_losses) / len(classifier_losses),
-        ))
-        if random() < 0.001:
-            image = image[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-            misc.imsave("weights/train.epoch-%s.raw.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
-            image = stegno[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-            misc.imsave("weights/train.epoch-%s.stegno.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
+            iterator.set_description("Epoch %s, Decoder %s, Classifier %s" % (self.epoch, d_loss / N, c_loss / N))
+        return d_loss / N, c_loss / N
 
-    decoding_losses = []
-    classifier_losses = []
-    iterator = tqdm(yield_images(mode="test"))
-    model = model.eval()
-    for image in iterator:
-        _, height, width = image.size()
-        image = autograd.Variable(image.to(device).expand(BATCH_SIZE, 3, height, width))
-        data = autograd.Variable(torch.zeros((BATCH_SIZE, DATA_DEPTH, height, width)).random_(0, 2).to(device))
+    def _test(self, test_set):
+        iterator = tqdm(test_set)
+        d_loss, c_loss, N = 0.0, 0.0, 0
+        for image, _ in iterator:
+            image, data = self._make_pair(image)
+            y, decoding_loss, classifier_loss = self.model(image, data)
 
-        stegno, decoding_loss, classifier_loss = model(image, data)
-        decoding_losses.append(decoding_loss.cpu().data[0])
-        classifier_losses.append(classifier_loss.cpu().data[0])
+            d_loss += decoding_loss.item()
+            c_loss += classifier_loss.item()
+            N += 1
 
-        iterator.set_description("TEST: %.02f, %.02f" % (
-            sum(decoding_losses) / len(decoding_losses),
-            sum(classifier_losses) / len(classifier_losses),
-        ))
-        if random() < 0.001:
-            image = image[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-            misc.imsave("weights/test.epoch-%s.raw.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
-            image = stegno[0].permute(2,1,0).data.cpu().numpy()*125.0+125.0
-            misc.imsave("weights/test.epoch-%s.stegno.png" % epoch, np.maximum(0.0, np.minimum(255.0, image)))
+            iterator.set_description("Epoch %s, Decoder %s, Classifier %s" % (self.epoch, d_loss / N, c_loss / N))
+        return d_loss / N, c_loss / N
 
-    print("Epoch %s, Decoder %.02f, Classifier %.02f" % (
-        epoch,
-        sum(decoding_losses) / len(decoding_losses),
-        sum(classifier_losses) / len(classifier_losses),
-    ))
-    scheduler.step(sum(decoding_losses) / len(decoding_losses))
-    torch.save(model, "weights/model.epoch-%s.loss-%.02f.pt" % (epoch, sum(decoding_losses) / len(decoding_losses)))
+    def _make_pair(self, image):
+        _, _, height, width = image.size()
+        image = autograd.Variable(image.to(self.device).expand(self.batch_size, 3, height, width))
+        data = autograd.Variable(torch.zeros((self.batch_size, self.data_depth, height, width)).random_(0, 2).to(self.device))
+        return image, data
 
-for epoch in range(EPOCHS):
-    run(epoch)
+if __name__ == "__main__":
+    trainer = ModelTrainer()
+    for _ in range(32):
+        trainer.step(train, test)

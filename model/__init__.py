@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.autograd as autograd
-from .grad_reverse import grad_reverse
+
+from .utils import grad_reverse
 
 class Steganographer(nn.Module):
     r"""
@@ -43,8 +44,10 @@ class Steganographer(nn.Module):
         batch_size = image.size()[0]
         x = torch.cat((image, data), dim=1)
 
+        # normalize image from (0.0, 1.0) to (-1.0, 1.0)
+        image = image * 2.0 - 1.0
+        
         # encode the cover image into a stego image, decode into predictions
-        # WARNING: image must be in range (-1.0, 1.0)
         encoded = torch.tanh(torch.tan(image) + torch.tanh(self.encoder(x)) / 10.0)
 
         # move up or down by up to 1 bit (helps deal with quantization)

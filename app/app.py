@@ -6,7 +6,7 @@ import numpy as np
 from scipy import misc
 from collections import Counter
 from model import Steganographer
-from kirito import *
+from utils import *
 
 parser = argparse.ArgumentParser(description='Encode or decode steganographic images.')
 parser.add_argument('mode', type=str)
@@ -33,7 +33,7 @@ class Wrapper(object):
         image = torch.FloatTensor(image).permute(2,1,0).unsqueeze(0)
         _, _, height, width = image.size()
 
-        encoded = bytearray_to_bits(to_bytearray(message) + bytearray(b"\x0000"))
+        encoded = bytearray_to_bits(text_to_bytearray(message) + bytearray(b"\x0000"))
         data = encoded
         while len(data) < width*height:
             print("Embedding...")
@@ -55,7 +55,7 @@ class Wrapper(object):
         _, _, height, width = image.size()
 
         data = (self._model.decoder(image) > 0.0).view(-1).data.cpu().numpy().tolist()
-        candidates = list(filter(lambda x: x, [from_bytearray(bytearray(x)) for x in bits_to_bytearray(data).split(b"\x0000")]))
+        candidates = list(filter(lambda x: x, [bytearray_to_text(bytearray(x)) for x in bits_to_bytearray(data).split(b"\x0000")]))
         return Counter(candidates).most_common(1)[0][0]
 
 wrapper = Wrapper()

@@ -1,12 +1,16 @@
 import torch
-from sklearn.model_selection import train_test_split
+import torchvision
+from torchvision import transforms
 
-cached = torch.load("data/caltech256.pt")
-train, test = train_test_split(cached)
-del cached
-
-def yield_images(mode="train"):
-    if mode == "train":
-        yield from train
-    else:
-        yield from test
+transform = transforms.Compose([
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomCrop(480, pad_if_needed=True),
+    transforms.ToTensor()
+])
+train = torch.utils.data.ConcatDataset([
+    torchvision.datasets.ImageFolder('data/caltech256', transform=transform),
+    torchvision.datasets.ImageFolder('data/', transform=transform),
+])
+train, test = torch.utils.data.random_split(train, [len(train)-10000, 10000])
+train = torch.utils.data.DataLoader(train, shuffle=True, num_workers=8)
+test = torch.utils.data.DataLoader(test, shuffle=True, num_workers=8)
