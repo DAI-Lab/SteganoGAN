@@ -1,20 +1,22 @@
 # Deep Steganography
-This repository contains experimental code for the steganography project. At a 
-high level, the idea is to use adversarial training to embed arbitrary data 
-into images without producing visible artifacts.
+This repository contains the research code for the neural steganography project. The 
+client code (compression, error correction, etc.) has been removed and will appear 
+in a separate repo.
 
 ## Setup
+Before you can start training the models, you need to download the datasets. We 
+provide a Bash script to automate this process:
+
 ```
-conda create -n pytorch python=3.6 numpy scipy
-source activate pytorch
-conda install pytorch torchvision -c pytorch
+cd data
+bash download.sh
 ```
 
-## Usage
-To embed a message into a natural image, run the following:
+This process can take up to 24 hours, depending on your internet speed. Next, you
+should make sure you meet all the requirements. If you want GPU support, you should
+follow the PyTorch installation instructions at https://pytorch.org before installing
+the other dependencies by running:
 
-> python demo.py encode --data "Hello World!" --input demo/kevin.jpg --output demo/output.png
+> pip install -r requirements.txt
 
-To retrieve the message, run this:
-
-> python demo.py decode --output demo/output.png
+Once everything is done installing, you can run `train.py` to reproduce our results.
