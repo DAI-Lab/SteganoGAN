@@ -71,4 +71,4 @@ class Steganographer(nn.Module):
             torch.LongTensor([0] * batch_size + [1] * batch_size).to(image.device)
         )
         
-        return encoded, decoding_loss, classifier_loss
+        return (encoded + 1.0) / 2.0, decoding_loss, classifier_loss

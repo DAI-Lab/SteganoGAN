@@ -3,6 +3,19 @@ This repository contains the research code for the neural steganography project.
 client code (compression, error correction, etc.) has been removed and will appear 
 in a separate repo.
 
+## Usage
+To use this repository to encode and decode images, install the requirements and run
+the following:
+
+```
+from deepsteganography import Steganographer
+
+model = Steganographer()
+model.encode("images/flag.jpg", "Hello!", "images/flag.out.png")
+
+print(s.decode("images/flag.out.png"))
+```
+
 ## Dev Setup
 Before you can start training the models, you need to download the datasets. We 
 provide a Bash script to automate this process:
