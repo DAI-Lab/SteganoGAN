@@ -5,13 +5,16 @@
 
 import unittest
 from random import random
-from deepsteganography.utils import *
+
+from deepsteganography.utils import (
+    bits_to_text, bytearray_to_text, text_to_bits, text_to_bytearray)
 
 CORPUS = [
     "Hello world!",
     "This is a random string.",
     "\00 is going to mess things up"
 ]
+
 
 class TestUtils(unittest.TestCase):
     """Tests for `deepsteganography.utils` package."""
@@ -29,10 +32,11 @@ class TestUtils(unittest.TestCase):
             self.assertEqual(text, bits_to_text(data))
 
     def test_text_bits_corrupted(self):
-        """Test conversions between text and bit lists when the bits are corrupted."""
+        """Test conversions between text and corrupted bit."""
         for text in CORPUS:
             data = text_to_bits(text)
             for i in range(len(data)):
-                if random() < 0.1: # corrupt 10% of bits
+                # corrupt 10% of bits
+                if random() < 0.1:
                     data[i] = 0
             self.assertEqual(text, bits_to_text(data))

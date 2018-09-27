@@ -1,7 +1,5 @@
 # Deep Steganography
-This repository contains the research code for the neural steganography project. The 
-client code (compression, error correction, etc.) has been removed and will appear 
-in a separate repo.
+This repository contains the research code for the neural steganography project.
 
 ## Usage
 To use this repository to encode and decode images, install the requirements and run
@@ -10,10 +8,13 @@ the following:
 ```
 from deepsteganography import Steganographer
 
-model = Steganographer()
-model.encode("images/flag.jpg", "Hello!", "images/flag.out.png")
+in_path = "tests/resources/flag.jpg"
+out_path = "tmp.png"
 
-print(s.decode("images/flag.out.png"))
+model = Steganographer()
+model.encode(in_path, "Hello!", out_path)
+
+print(model.decode(out_path))
 ```
 
 ## Dev Setup
