@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .utils import grad_reverse
+from .utils import accuracy, grad_reverse
 
 
-class Steganographer(nn.Module):
+class SteganographerV1(nn.Module):
     r"""
     This module takes in a batch of cover images and data vectors. It returns
     the corresponding steganographic images and two loss values corresponding
@@ -18,10 +18,8 @@ class Steganographer(nn.Module):
     Output: (N, 3, height, width), (1), (1)
     """
 
-    def __init__(self, data_depth):
-        super(Steganographer, self).__init__()
-        hidden_dim = (3 + data_depth) * 4
-
+    def __init__(self, data_depth, hidden_dim):
+        super(SteganographerV1, self).__init__()
         self.encoder = nn.Sequential(
             nn.Conv2d(
                 in_channels=3 +
@@ -116,4 +114,4 @@ class Steganographer(nn.Module):
                 image.device)
         )
 
-        return (encoded + 1.0) / 2.0, decoding_loss, classifier_loss
+        return (encoded + 1.0) / 2.0, accuracy(decoded, data), decoding_loss, classifier_loss

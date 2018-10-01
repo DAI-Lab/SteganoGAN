@@ -17,3 +17,11 @@ class GradReverse(autograd.Function):
 
 def grad_reverse(x):
     return GradReverse.apply(x)
+
+
+def accuracy(output, target):
+    """Computes the accuracy for multiple binary predictions"""
+    pred = output >= 0.0
+    truth = target >= 0.5
+    acc = pred.eq(truth).sum().item() / target.numel()
+    return acc

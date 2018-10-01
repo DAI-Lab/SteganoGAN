@@ -7,17 +7,17 @@ from glob import glob
 import torch
 from imageio import imread, imwrite
 
-from . import model
-from .utils import bits_to_bytearray, bytearray_to_text, text_to_bits
+from . import architectures
+from .coding import bits_to_bytearray, bytearray_to_text, text_to_bits
 
-sys.modules['model'] = model
+sys.modules['architectures'] = architectures
 
 
 class Steganographer(object):
 
     def __init__(self):
         weights_dir = os.path.dirname(__file__)
-        for path in glob(os.path.join(weights_dir, "weights", "*.pt")):
+        for path in glob(os.path.join(weights_dir, "weights/**/*.pt")):
             self.model = torch.load(
                 path, map_location=lambda storage, loc: storage)
 

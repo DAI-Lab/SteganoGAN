@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `deepsteganography.utils` package."""
+"""Tests for `deepsteganography.coding` package."""
 
 import unittest
 from random import random
 
-from deepsteganography.utils import (
+from deepsteganography.coding import (
     bits_to_text, bytearray_to_text, text_to_bits, text_to_bytearray)
 
 CORPUS = [
@@ -16,8 +16,8 @@ CORPUS = [
 ]
 
 
-class TestUtils(unittest.TestCase):
-    """Tests for `deepsteganography.utils` package."""
+class TestCoding(unittest.TestCase):
+    """Tests for `deepsteganography.coding` package."""
 
     def test_text_bytearray(self):
         """Test conversions between text and bytearrays."""
