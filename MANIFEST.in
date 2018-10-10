@@ -4,6 +4,8 @@ include LICENSE
 include README.md
 
 recursive-include tests *
+recursive-include deepsteganography/pretrained *.pt
+
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 

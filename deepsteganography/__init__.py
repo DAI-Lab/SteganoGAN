@@ -17,7 +17,7 @@ class Steganographer(object):
 
     def __init__(self):
         weights_dir = os.path.dirname(__file__)
-        for path in glob(os.path.join(weights_dir, "weights/**/*.pt")):
+        for path in glob(os.path.join(weights_dir, "pretrained/**/*.pt")):
             self.model = torch.load(
                 path, map_location=lambda storage, loc: storage)
 
@@ -30,9 +30,10 @@ class Steganographer(object):
         image = torch.FloatTensor(image).permute(2, 1, 0).unsqueeze(0)
         _, _, height, width = image.size()
 
-        data = self._make_payload(width, height, text)
+        data_depth = self.model.encoder[0].in_channels - 3 # TODO: refactor
+        data = self._make_payload(width, height, data_depth, text)
 
-        result, _, _ = self.model(image, data)
+        result, _, _, _ = self.model(image, data)
         output = result[0].permute(2, 1, 0).data.cpu().numpy() * 255.0
         imwrite(stega, output.astype("uint8"))
 
@@ -51,13 +52,16 @@ class Steganographer(object):
         bits = stega.data.cpu().numpy().tolist()
         for candidate in bits_to_bytearray(bits).split(b"\x00\x00\x00\x00"):
             candidate = bytearray_to_text(bytearray(candidate))
-            candidates[candidate] += 1
+            if candidate:
+                candidates[candidate] += 1
 
         # choose most common message
+        if len(candidates) == 0:
+            raise ValueError("Failed to find message.")
         candidate, count = candidates.most_common(1)[0]
         return candidate
 
-    def _make_payload(self, width, height, text):
+    def _make_payload(self, width, height, depth, text):
         """
         This takes a piece of text and encodes it into a bit vector. It then
         fills a matrix of size (width, height) with copies of the bit vector.
@@ -65,8 +69,8 @@ class Steganographer(object):
         message = text_to_bits(text) + [0] * 32
 
         data = message
-        while len(data) < width * height:
+        while len(data) < width * height * depth:
             data += message
-        data = data[:width * height]
+        data = data[:width * height * depth]
 
-        return torch.FloatTensor(data).view(1, 1, height, width)
+        return torch.FloatTensor(data).view(1, depth, height, width)

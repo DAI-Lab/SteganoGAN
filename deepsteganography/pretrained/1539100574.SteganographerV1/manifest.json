@@ -1,0 +1,1 @@
+{"dataset": "data/caltech256", "test_dataset": null, "data_depth": 16, "hidden_dim": 32, "batch_size": 4, "lr": 0.0001}

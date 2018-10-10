@@ -2,8 +2,8 @@
 This repository contains the research code for the neural steganography project.
 
 ## Usage
-To use this repository to encode and decode images, install the requirements and run
-the following:
+To use this repository to encode and decode images, install the package by 
+running `pip install .` and try running the following:
 
 ```
 from deepsteganography import Steganographer
@@ -31,13 +31,13 @@ should make sure you meet all the requirements. If you want GPU support, you sho
 follow the PyTorch installation instructions at https://pytorch.org before installing
 the other dependencies by running:
 
-> pip install -r requirements.txt
+> make install-develop
 
 Once everything is done installing, run the unit tests to make sure things are set 
 up properly.
 
-> python -m pytest
+> make test
 
 Finally, you're ready to make modifications to the model architecture and run:
 
-> python train.py
+> python train.py --dataset data/mscoco --data_depth 16 --hidden_dim 64
