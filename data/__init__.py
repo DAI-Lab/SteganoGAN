@@ -7,7 +7,7 @@ __dirname__ = os.path.dirname(__file__)
 
 transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
-    transforms.RandomCrop(256, pad_if_needed=True),
+    transforms.RandomCrop(200, pad_if_needed=True),
     transforms.ToTensor()
 ])
 

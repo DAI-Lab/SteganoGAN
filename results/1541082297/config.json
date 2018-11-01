@@ -1,0 +1,1 @@
+{"epochs": 64, "dataset": "div2k", "data_depth": 1, "batch_size": 16, "hidden_size": 32, "mse_weight": 10.0, "critic_weight": 100.0}

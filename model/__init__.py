@@ -10,7 +10,8 @@ class Encoder(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=hidden_size, out_channels=hidden_size, kernel_size=3, padding=1)
+            nn.Conv2d(in_channels=hidden_size, out_channels=hidden_size, kernel_size=3, padding=1),
+            nn.LeakyReLU()
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels=data_depth+hidden_size, out_channels=hidden_size, kernel_size=3, padding=1),

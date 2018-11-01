@@ -11,13 +11,14 @@ from data import load_dataset
 from model import Encoder, Decoder, Critic
 
 # config
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--epochs', default=32, type=int)
+parser = argparse.ArgumentParser()
+parser.add_argument('--epochs', default=64, type=int)
 parser.add_argument('--data_depth', default=1, type=int)
 parser.add_argument('--batch_size', default=16, type=int)
 parser.add_argument('--hidden_size', default=32, type=int)
 parser.add_argument('--mse_weight', default=1.0, type=float)
 parser.add_argument('--critic_weight', default=1.0, type=float)
+parser.add_argument('--clip_grad_norm', default=0.25, type=float)
 parser.add_argument('--dataset', default="div2k", type=str)
 args = parser.parse_args()
 args.device = torch.device('cpu')
@@ -28,7 +29,6 @@ if torch.cuda.is_available():
 test = load_dataset("%s/test" % args.dataset, batch_size=args.batch_size)
 train = load_dataset("%s/train" % args.dataset, batch_size=args.batch_size)
 exemplar = next(iter(test))[0]
-
 
 # models
 encoder = Encoder(args.data_depth, args.hidden_size).to(args.device)
@@ -54,7 +54,7 @@ def inference(cover_image, quantize=False):
 
 def score(cover_image, y_true, stega_image, y_pred):
     acc = (y_pred >= 0.0).eq(y_true >= 0.5).sum().float() / y_true.numel()
-    mse_loss = F.mse_loss(cover_image, stega_image)
+    mse_loss = F.mse_loss(stega_image, cover_image)
     decoder_loss = F.binary_cross_entropy_with_logits(y_pred, y_true)
     cover_score = torch.mean(critic(cover_image))
     stega_score = torch.mean(critic(stega_image))
@@ -94,6 +94,7 @@ def run_epoch():
         # train the critic
         c_optimizer.zero_grad()
         (cover_score - stega_score).backward(retain_graph=True)
+        torch.nn.utils.clip_grad_norm_(critic.parameters(), args.clip_grad_norm)
         c_optimizer.step()
         for p in critic.parameters():
             p.data.clamp_(-0.01, 0.01)
@@ -101,6 +102,8 @@ def run_epoch():
         # train the encoder + decoder
         g_optimizer.zero_grad()
         (args.critic_weight*stega_score + args.mse_weight*mse_loss + decoder_loss).backward()
+        torch.nn.utils.clip_grad_norm_(encoder.parameters(), args.clip_grad_norm)
+        torch.nn.utils.clip_grad_norm_(decoder.parameters(), args.clip_grad_norm)
         g_optimizer.step()
 
         metrics["train.acc"].append(acc.item())
@@ -130,7 +133,7 @@ if __name__ == "__main__":
     os.mkdir(results_dir + "samples")
 
     with open(results_dir + "config.json", "wt") as fout:
-        json.dump({
+        config = {
             "epochs": args.epochs,
             "dataset": args.dataset,
             "data_depth": args.data_depth,
@@ -138,7 +141,9 @@ if __name__ == "__main__":
             "hidden_size": args.hidden_size,
             "mse_weight": args.mse_weight,
             "critic_weight": args.critic_weight,
-        }, fout)
+        }
+        json.dump(config, fout)
+        print(config)
 
     fout = open(results_dir + "train.log", "wt")
     for epoch in range(args.epochs):
@@ -148,8 +153,10 @@ if __name__ == "__main__":
         fout.flush()
 
         for i in range(stega_image.size(0)):
-            image = (255 * (cover_image[i,:,:,:].cpu().permute(1, 2, 0).detach().numpy()/2.0+0.5)).astype("uint8")
+            image = (255 * cover_image[i,:,:,:].cpu().permute(1, 2, 0).detach().numpy()).astype("uint8")
             imageio.imwrite(results_dir + "samples/%s.%s-cover.png" % (epoch, i), image)
 
-            image = (255 * (stega_image[i,:,:,:].cpu().permute(1, 2, 0).detach().numpy()/2.0+0.5)).astype("uint8")
+            image = (255 * stega_image[i,:,:,:].cpu().permute(1, 2, 0).detach().numpy()).astype("uint8")
             imageio.imwrite(results_dir + "samples/%s.%s-stega.png" % (epoch, i), image)
+
+        torch.cuda.empty_cache()
