@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-class BaseCritic(nn.Module):
+class BasicCritic(nn.Module):
     """
-    The BaseCritic module takes an image and predicts whether it is a cover 
+    The BasicCritic module takes an image and predicts whether it is a cover 
     image or a steganographic image (N, 1).
 
     Input: (N, 3, H, W)
@@ -11,7 +11,7 @@ class BaseCritic(nn.Module):
     """
 
     def __init__(self, hidden_size):
-        super(BaseCritic, self).__init__()
+        super(BasicCritic, self).__init__()
         self.layers = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3),
             nn.LeakyReLU(inplace=True),

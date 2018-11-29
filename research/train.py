@@ -10,16 +10,18 @@ import torch
 import torch.optim as optim
 import torch.nn.functional as F
 
+from utils import ssim
 from data import load_dataset
-from deepsteganography.architectures import BaseCritic, BaseDecoder, BaseEncoder
+from deepsteganography.architectures import *
 
 # Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--cuda', default=1, type=int)
-parser.add_argument('--epochs', default=64, type=int)
+parser.add_argument('--epochs', default=32, type=int)
 parser.add_argument('--dataset', default="div2k", type=str)
-parser.add_argument('--data_depth', default=4, type=int)
-parser.add_argument('--hidden_size', default=64, type=int)
+parser.add_argument('--data_depth', default=1, type=int)
+parser.add_argument('--hidden_size', default=32, type=int)
+parser.add_argument('--architecture', default="basic", type=str)
 args = parser.parse_args()
 args.device = torch.device('cpu')
 if args.cuda and torch.cuda.is_available():
@@ -29,10 +31,17 @@ if args.cuda and torch.cuda.is_available():
 train, val = load_dataset(args.dataset)
 exemplar = next(iter(val))[0]
 
+# Load the architecture
+encoder = {
+    "basic": BasicEncoder,
+    "residual": ResidualEncoder,
+    "dense": DenseEncoder,
+}[args.architecture]
+
 # Load models
-critic = BaseCritic(args.hidden_size)
-decoder = BaseDecoder(args.data_depth, args.hidden_size)
-encoder = BaseEncoder(args.data_depth, args.hidden_size)
+critic = BasicCritic(args.hidden_size).to(args.device)
+decoder = BasicDecoder(args.data_depth, args.hidden_size).to(args.device)
+encoder = BasicEncoder(args.data_depth, args.hidden_size).to(args.device)
 
 critic_optimizer = optim.Adam(critic.parameters(), lr=1e-4)
 decoder_optimizer = optim.Adam(list(decoder.parameters()) + list(encoder.parameters()), lr=1e-4)
@@ -63,7 +72,10 @@ def evaluate(cover, y_true, stega, y_pred):
 # Logging
 working_dir = "results/%s/" % int(time.time())
 os.mkdir(working_dir)
+os.mkdir(working_dir + "weights")
 os.mkdir(working_dir + "samples")
+with open(working_dir + "/config.json", "wt") as fout:
+    fout.write(json.dumps(args.__dict__, indent=2, default=lambda o: str(o)))
 
 # Start training
 history = []
@@ -74,6 +86,8 @@ for epoch in range(1, args.epochs+1):
         "val.decoder_acc": [],
         "val.cover_score": [],
         "val.stega_score": [],
+        "val.ssim": [],
+        "val.psnr": [],
         "train.encoder_mse": [],
         "train.decoder_loss": [],
         "train.decoder_acc": [],
@@ -103,7 +117,7 @@ for epoch in range(1, args.epochs+1):
         encoder_mse, decoder_loss, decoder_acc, _, stega_score = evaluate(cover, y_true, stega, y_pred)
 
         decoder_optimizer.zero_grad()
-        (encoder_mse + decoder_loss + stega_score).backward()
+        (100.0 * encoder_mse + decoder_loss + stega_score).backward()
         decoder_optimizer.step()
 
         metrics["train.encoder_mse"].append(encoder_mse.item())
@@ -121,6 +135,9 @@ for epoch in range(1, args.epochs+1):
         metrics["val.decoder_acc"].append(decoder_acc.item())
         metrics["val.cover_score"].append(cover_score.item())
         metrics["val.stega_score"].append(stega_score.item())
+        metrics["val.ssim"].append(ssim(cover, stega).item())
+        metrics["val.psnr"].append(10 * torch.log10(4 / encoder_mse).item())
+        
 
     # Exemplar
     cover, y_true, stega, y_pred = inference(exemplar)
@@ -128,7 +145,7 @@ for epoch in range(1, args.epochs+1):
         image = (cover[i].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
         imageio.imwrite(working_dir + "samples/%s.cover.png" % i, (255.0 * image).astype("uint8"))
 
-        image = (stega[i].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
+        image = (stega[i].clamp(-1.0, 1.0).permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
         imageio.imwrite(working_dir + "samples/%s.stega-%02d.png" % (i, epoch), (255.0 * image).astype("uint8"))
     
     # Logging
@@ -137,3 +154,4 @@ for epoch in range(1, args.epochs+1):
     history.append(metrics)
     with open(working_dir + "/train.log", "wt") as fout:
         fout.write(json.dumps(history, indent=2))
+    torch.save((encoder, decoder, critic), working_dir + "weights/%s.acc-%.03f.pt" % (epoch, metrics["val.decoder_acc"]))
