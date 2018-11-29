@@ -12,6 +12,7 @@ class BasicEncoder(nn.Module):
 
     def __init__(self, data_depth, hidden_size):
         super(BasicEncoder, self).__init__()
+        self.data_depth = data_depth
         self.features = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3, padding=1),
             nn.LeakyReLU(inplace=True),
@@ -46,6 +47,7 @@ class ResidualEncoder(nn.Module):
 
     def __init__(self, data_depth, hidden_size):
         super(ResidualEncoder, self).__init__()
+        self.data_depth = data_depth
         self.features = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3, padding=1),
             nn.LeakyReLU(inplace=True),
@@ -79,6 +81,7 @@ class DenseEncoder(nn.Module):
 
     def __init__(self, data_depth, hidden_size):
         super(DenseEncoder, self).__init__()
+        self.data_depth = data_depth
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3, padding=1),
             nn.LeakyReLU(inplace=True),

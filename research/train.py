@@ -88,6 +88,7 @@ for epoch in range(1, args.epochs+1):
         "val.stega_score": [],
         "val.ssim": [],
         "val.psnr": [],
+        "val.bpp": [],
         "train.encoder_mse": [],
         "train.decoder_loss": [],
         "train.decoder_acc": [],
@@ -137,6 +138,7 @@ for epoch in range(1, args.epochs+1):
         metrics["val.stega_score"].append(stega_score.item())
         metrics["val.ssim"].append(ssim(cover, stega).item())
         metrics["val.psnr"].append(10 * torch.log10(4 / encoder_mse).item())
+        metrics["val.bpp"].append(args.data_depth * (2 * decoder_acc.item() - 1))
         
 
     # Exemplar
