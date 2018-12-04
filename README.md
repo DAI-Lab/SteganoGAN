@@ -14,7 +14,7 @@ To use this repository to encode and decode images, install the package by
 running `pip install .` and try running the following:
 
 ```
-from steganon import Steganographer
+from steganogan import Steganographer
 
 in_path = "tests/resources/flag.jpg"
 out_path = "tmp.png"
