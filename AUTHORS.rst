@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Kevin Zhang <kevz@mit.edu>
+* MIT Data To AI Lab <dailabmit@gmail.com>
 
 Contributors
 ------------

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `deepsteganography` package."""
+"""Tests for `steganogan` package."""
 
 import unittest
 
-from deepsteganography import deepsteganography
+from steganogan import steganogan
 
 
 class TestDeepsteganography(unittest.TestCase):

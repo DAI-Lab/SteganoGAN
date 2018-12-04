@@ -43,8 +43,8 @@ test: ## run tests quickly with the default Python
 
 .PHONY: lint
 lint: ## check style with flake8 and isort
-	flake8 deepsteganography tests
-	isort -c --recursive deepsteganography tests
+	flake8 steganogan tests
+	isort -c --recursive steganogan tests
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
@@ -56,9 +56,9 @@ test-all: ## run tests on every Python version with tox
 
 .PHONY: fix-lint
 fix-lint: ## fix lint issues using autoflake, autopep8, and isort
-	find deepsteganography -name '*.py' | xargs autoflake --in-place --remove-all-unused-imports --remove-unused-variables
-	autopep8 --in-place --recursive --aggressive deepsteganography
-	isort --apply --atomic --recursive deepsteganography
+	find steganogan -name '*.py' | xargs autoflake --in-place --remove-all-unused-imports --remove-unused-variables
+	autopep8 --in-place --recursive --aggressive steganogan
+	isort --apply --atomic --recursive steganogan
 
 	find tests -name '*.py' | xargs autoflake --in-place --remove-all-unused-imports --remove-unused-variables
 	autopep8 --in-place --recursive --aggressive tests
@@ -66,14 +66,14 @@ fix-lint: ## fix lint issues using autoflake, autopep8, and isort
 
 .PHONY: coverage
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source deepsteganography -m pytest
+	coverage run --source steganogan -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 .PHONY: docs
 docs: clean-docs ## generate Sphinx HTML documentation, including API docs
-	sphinx-apidoc --module-first --separate -o docs/api/ deepsteganography
+	sphinx-apidoc --module-first --separate -o docs/api/ steganogan
 	$(MAKE) -C docs html
 
 .PHONY: view-docs

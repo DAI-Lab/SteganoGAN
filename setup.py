@@ -55,8 +55,8 @@ development_requirements = [
 ]
 
 setup(
-    author="Kevin Zhang",
-    author_email='kevz@mit.edu',
+    author="MIT Data To AI Lab",
+    author_email='dailabmit@gmail.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
@@ -68,7 +68,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    description="Effective end-to-end neural image steganography.",
+    description="Steganography tool based on DeepLearning GANs",
     extras_require={
         'test': test_requirements,
         'dev': development_requirements + test_requirements,
@@ -79,14 +79,14 @@ setup(
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/markdown',
     include_package_data=True,
-    keywords='deepsteganography',
-    name='deepsteganography',
-    packages=find_packages(include=['deepsteganography', 'deepsteganography.*']),
+    keywords='steganogan',
+    name='steganogan',
+    packages=find_packages(include=['steganogan', 'steganogan.*']),
     python_requires='>=3.4',
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/DAI-Lab/deepsteganography',
-    version='0.1.0',
+    url='https://github.com/DAI-Lab/steganogan',
+    version='0.1.0-dev',
     zip_safe=False,
 )
