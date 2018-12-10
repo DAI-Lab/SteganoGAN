@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 import torch
 import torch.optim as optim
+import numpy as np
 import torch.nn.functional as F
 
 from utils import ssim
@@ -19,7 +20,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--cuda', default=1, type=int)
 parser.add_argument('--epochs', default=32, type=int)
 parser.add_argument('--dataset', default="div2k", type=str)
+parser.add_argument('--max_images', default=np.inf, type=int)
 parser.add_argument('--data_depth', default=1, type=int)
+parser.add_argument('--batch_size', default=8, type=int)
 parser.add_argument('--hidden_size', default=32, type=int)
 parser.add_argument('--architecture', default="basic", type=str)
 args = parser.parse_args()
@@ -28,11 +31,11 @@ if args.cuda and torch.cuda.is_available():
     args.device = torch.device('cuda')
 
 # Load datasets
-train, val = load_dataset(args.dataset)
+train, val = load_dataset(args.dataset, args.batch_size, args.max_images)
 exemplar = next(iter(val))[0]
 
 # Load the architecture
-encoder = {
+encoder_class = {
     "basic": BasicEncoder,
     "residual": ResidualEncoder,
     "dense": DenseEncoder,
@@ -41,7 +44,7 @@ encoder = {
 # Load models
 critic = BasicCritic(args.hidden_size).to(args.device)
 decoder = BasicDecoder(args.data_depth, args.hidden_size).to(args.device)
-encoder = BasicEncoder(args.data_depth, args.hidden_size).to(args.device)
+encoder = encoder_class(args.data_depth, args.hidden_size).to(args.device)
 
 critic_optimizer = optim.Adam(critic.parameters(), lr=1e-4)
 decoder_optimizer = optim.Adam(list(decoder.parameters()) + list(encoder.parameters()), lr=1e-4)
@@ -71,15 +74,16 @@ def evaluate(cover, y_true, stega, y_pred):
 
 # Logging
 working_dir = "results/%s/" % int(time.time())
-os.mkdir(working_dir)
-os.mkdir(working_dir + "weights")
-os.mkdir(working_dir + "samples")
+os.makedirs(working_dir)
+os.makedirs(working_dir + "weights")
+os.makedirs(working_dir + "samples")
 with open(working_dir + "/config.json", "wt") as fout:
     fout.write(json.dumps(args.__dict__, indent=2, default=lambda o: str(o)))
 
 # Start training
 history = []
 for epoch in range(1, args.epochs+1):
+    print('Epoch {}'.format(epoch))
     metrics = {
         "val.encoder_mse": [],
         "val.decoder_loss": [],

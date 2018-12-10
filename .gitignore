@@ -106,3 +106,7 @@ ENV/
 *.png
 *.jpg
 .DS_Store
+
+research/data/div2k
+research/data/mscoco
+research/results
