@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import zlib
+
 from reedsolo import RSCodec
 
 rs = RSCodec(250)

@@ -5,7 +5,7 @@
 
 import unittest
 
-from steganogan import steganogan
+from steganogan import steganogan  # noqa: F401
 
 
 class TestDeepsteganography(unittest.TestCase):
