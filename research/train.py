@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 from utils import ssim
 from data import load_dataset
-from deepsteganography.architectures import *
+from steganogan.architectures import *
 
 # Parse arguments
 parser = argparse.ArgumentParser()

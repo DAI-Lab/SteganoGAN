@@ -12,7 +12,7 @@
    :caption: Advanced Usage
    :hidden:
 
-   API Reference <api/deepsteganography>
+   API Reference <api/steganogan>
 
 .. toctree::
    :caption: Development Notes

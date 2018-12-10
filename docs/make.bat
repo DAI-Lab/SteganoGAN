@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=deepsteganography
+set SPHINXPROJ=steganogan
 
 if "%1" == "" goto help
 

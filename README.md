@@ -1,19 +1,20 @@
-[![PyPI Shield](https://img.shields.io/pypi/v/deepsteganography.svg)](https://pypi.python.org/pypi/deepsteganography)
-[![Travis CI Shield](https://travis-ci.org/DAI-Lab/deepsteganography.svg?branch=master)](https://travis-ci.org/DAI-Lab/deepsteganography)
+[![PyPI Shield](https://img.shields.io/pypi/v/steganogan.svg)](https://pypi.python.org/pypi/steganogan)
+[![Travis CI Shield](https://travis-ci.org/DAI-Lab/steganogan.svg?branch=master)](https://travis-ci.org/DAI-Lab/steganogan)
 
-# Deep Steganography
-Effective end-to-end neural image steganography.
+# SteganoGAN
+
+Steganography tool based on DeepLearning GANs
 
 - Free software: MIT license
-- Documentation: https://DAI-Lab.github.io/deepsteganography
-- Homepage: https://github.com/DAI-Lab/deepsteganography
+- Documentation: https://DAI-Lab.github.io/steganogan
+- Homepage: https://github.com/DAI-Lab/steganogan
 
 ## Usage
 To use this repository to encode and decode images, install the package by 
 running `pip install .` and try running the following:
 
 ```
-from deepsteganography import Steganographer
+from steganogan import Steganographer
 
 in_path = "tests/resources/flag.jpg"
 out_path = "tmp.png"

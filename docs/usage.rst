@@ -2,8 +2,8 @@
 Usage
 =====
 
-To use Deep Steganography in a project:
+To use SteganoGAN in a project:
 
 .. code-block:: python
 
-    import deepsteganography
+    import steganogan
