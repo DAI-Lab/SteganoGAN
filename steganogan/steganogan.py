@@ -21,8 +21,7 @@ class Steganographer(object):
     def __init__(self, m):
         path_to_model = pretrained_models[m]  # TODO: design better way to select models
         self.encoder, self.decoder, _ = torch.load(path_to_model,
-                                                   map_location=lambda storage,
-                                                   loc: storage)
+                                                   map_location=lambda storage, loc: storage)
 
     def encode(self, image, text, stega):
         assert isinstance(image, str), "path to input image"
