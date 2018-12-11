@@ -1,7 +1,8 @@
 import argparse
 import os
 
-from deepsteganography import Steganographer, pretrained_models
+from steganogan import Steganographer
+from steganogan.steganogan import pretrained_models
 
 
 if __name__ == '__main__':
