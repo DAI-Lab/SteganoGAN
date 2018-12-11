@@ -126,10 +126,9 @@ for epoch in range(1, args.epochs + 1):
         gc.collect()
         cover, y_true, stega, y_pred = inference(cover)
 
-        encoder_mse, decoder_loss, decoder_acc, _, stega_score = evaluate(cover,
-                                                                          y_true,
-                                                                          stega,
-                                                                          y_pred)
+        evaluate_result = evaluate(cover, y_true, stega, y_pred)
+
+        encoder_mse, decoder_loss, decoder_acc, _, stega_score = evaluate_result
 
         decoder_optimizer.zero_grad()
         (100.0 * encoder_mse + decoder_loss + stega_score).backward()
@@ -145,10 +144,9 @@ for epoch in range(1, args.epochs + 1):
         gc.collect()
         cover, y_true, stega, y_pred = inference(cover_image, quantize=True)
 
-        encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score = evaluate(cover,
-                                                                                    y_true,
-                                                                                    stega,
-                                                                                    y_pred)
+        evaluate_result = evaluate(cover, y_true, stega, y_pred)
+
+        encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score = evaluate_result
 
         metrics["val.encoder_mse"].append(encoder_mse.item())
         metrics["val.decoder_loss"].append(decoder_loss.item())
