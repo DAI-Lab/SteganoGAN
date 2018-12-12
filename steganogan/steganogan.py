@@ -1,22 +1,22 @@
-import os
-import gc
-import json
-import time
-import imageio
-import inspect
-import pickle
-import torch
-from torch.nn.functional import binary_cross_entropy_with_logits, mse_loss
+# -*- coding: utf-8 -*-
 
+import gc
+import inspect
+import json
+import os
+import pickle
+import time
+from collections import Counter
+
+import imageio
+import torch
+from imageio import imread, imwrite
+from torch.nn.functional import binary_cross_entropy_with_logits, mse_loss
 from torch.optim import Adam
 from tqdm import tqdm
-from collections import Counter
-from glob import glob
 
-from imageio import imread, imwrite
-
-from steganogan.utils import (bits_to_bytearray, bytearray_to_text, text_to_bits, first_element,
-                              ssim)
+from steganogan.utils import (
+    bits_to_bytearray, bytearray_to_text, ssim, text_to_bits)
 
 DEFAULT_MODEL = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -239,8 +239,8 @@ class SteganoGAN(object):
             with open(working_dir + '/train.log', 'wt') as fout:
                 fout.write(json.dumps(history, indent=2))
 
-            sv_dir = 'weights/{}.acc-{:03f}.pt'.format(epoch, metrics['val.decoder_acc'])
-            save_dir = working_dir + sv_dir
+            # sv_dir = 'weights/{}.acc-{:03f}.pt'.format(epoch, metrics['val.decoder_acc'])
+            # save_dir = working_dir + sv_dir
 
             # torch.save((self.encoder, self.decoder, self.critic), save_dir)
 

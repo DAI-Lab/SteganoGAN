@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import zlib
-from reedsolo import RSCodec
-import torch
-from torch.nn.functional import conv2d
-import torch.nn.functional as F
-import numpy as np
 from math import exp
+
+import torch
+from reedsolo import RSCodec
+from torch.nn.functional import conv2d
 
 rs = RSCodec(250)
 
@@ -67,7 +66,7 @@ def first_element(storage, loc):
 def gaussian(window_size, sigma):
     _exp = [exp(-(x - window_size // 2) ** 2 / float(2 * sigma ** 2)) for x in range(window_size)]
     gauss = torch.Tensor(_exp)
-    return gauss/gauss.sum()
+    return gauss / gauss.sum()
 
 
 def create_window(window_size, channel):
@@ -77,15 +76,17 @@ def create_window(window_size, channel):
     return window
 
 
-def _ssim(img1, img2, window, window_size, channel, size_average = True):
-    mu1 = conv2d(img1, window, padding = window_size // 2, groups = channel)
-    mu2 = conv2d(img2, window, padding = window_size // 2, groups = channel)
+def _ssim(img1, img2, window, window_size, channel, size_average=True):
+
+    padding_size = window_size // 2
+
+    mu1 = conv2d(img1, window, padding=padding_size, groups=channel)
+    mu2 = conv2d(img2, window, padding=padding_size, groups=channel)
 
     mu1_sq = mu1.pow(2)
     mu2_sq = mu2.pow(2)
     mu1_mu2 = mu1 * mu2
 
-    padding_size = window_size // 2
     sigma1_sq = conv2d(img1 * img1, window, padding=padding_size, groups=channel) - mu1_sq
     sigma2_sq = conv2d(img2 * img2, window, padding=padding_size, groups=channel) - mu2_sq
     sigma12 = conv2d(img1 * img2, window, padding=padding_size, groups=channel) - mu1_mu2
@@ -104,7 +105,7 @@ def _ssim(img1, img2, window, window_size, channel, size_average = True):
         return ssim_map.mean(1).mean(1).mean(1)
 
 
-def ssim(img1, img2, window_size = 11, size_average = True):
+def ssim(img1, img2, window_size=11, size_average=True):
     (_, channel, _, _) = img1.size()
     window = create_window(window_size, channel)
 

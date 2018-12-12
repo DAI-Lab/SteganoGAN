@@ -5,7 +5,7 @@
 
 import unittest
 
-from steganogan import steganogan
+# from steganogan import steganogan
 
 
 class TestDeepsteganography(unittest.TestCase):

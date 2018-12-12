@@ -1,16 +1,17 @@
+# -*- coding: utf-8 -*-
+
 import os
 
+import numpy as np
 import torch
 import torchvision
-import numpy as np
 from torchvision import transforms
-
 
 DEFAULT_TRANSFORM = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.RandomCrop(360, pad_if_needed=True),
     transforms.ToTensor(),
-    transforms.Normalize([0.5]*3, [0.5]*3),
+    transforms.Normalize([0.5] * 3, [0.5] * 3),
 ])
 
 
@@ -28,6 +29,10 @@ class DataLoader(torch.utils.data.DataLoader):
 
     def __init__(self, path, transform=DEFAULT_TRANSFORM, limit=np.inf,
                  shuffle=True, num_workers=4, batch_size=4, *args, **kwargs):
+
+        path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            path)
 
         super().__init__(
             ImageFolder(path, transform, limit),
