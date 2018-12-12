@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 
+
 class BasicCritic(nn.Module):
     """
-    The BasicCritic module takes an image and predicts whether it is a cover 
+    The BasicCritic module takes an image and predicts whether it is a cover
     image or a steganographic image (N, 1).
 
     Input: (N, 3, H, W)
@@ -11,7 +12,9 @@ class BasicCritic(nn.Module):
     """
 
     def __init__(self, hidden_size):
+
         super(BasicCritic, self).__init__()
+
         self.layers = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3),
             nn.LeakyReLU(inplace=True),
@@ -29,6 +32,8 @@ class BasicCritic(nn.Module):
         )
 
     def forward(self, x):
+
         x = self.layers(x)
         x = torch.mean(x.view(x.size(0), -1), dim=1)
+
         return x

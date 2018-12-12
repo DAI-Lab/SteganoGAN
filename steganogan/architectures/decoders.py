@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class BasicDecoder(nn.Module):
     """
     The BasicDecoder module takes an steganographic image and attempts to decode
@@ -10,8 +11,11 @@ class BasicDecoder(nn.Module):
     """
 
     def __init__(self, data_depth, hidden_size):
+
         super(BasicDecoder, self).__init__()
+
         self.data_depth = data_depth
+
         self.layers = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3, padding=1),
             nn.LeakyReLU(inplace=True),
