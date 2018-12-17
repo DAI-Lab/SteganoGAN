@@ -15,8 +15,7 @@ from torch.nn.functional import binary_cross_entropy_with_logits, mse_loss
 from torch.optim import Adam
 from tqdm import tqdm
 
-from steganogan.utils import (
-    bits_to_bytearray, bytearray_to_text, ssim, text_to_bits)
+from steganogan.utils import bits_to_bytearray, bytearray_to_text, ssim, text_to_bits
 
 DEFAULT_MODEL = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),

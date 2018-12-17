@@ -13,11 +13,9 @@ class TestDeepsteganography(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures, if any."""
-        pass
 
     def tearDown(self):
         """Tear down test fixtures, if any."""
-        pass
 
     def test_000_something(self):
         """Test something."""

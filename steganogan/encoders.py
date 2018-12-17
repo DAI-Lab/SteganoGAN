@@ -14,6 +14,7 @@ class BasicEncoder(nn.Module):
     """
 
     add_image = False
+    add_features = True
 
     def _conv2d(self, in_channels, out_channels):
         return nn.Conv2d(
@@ -42,11 +43,23 @@ class BasicEncoder(nn.Module):
             )
         )
 
+    def _get_features(self):
+        return nn.Sequential(
+            nn.Conv2d(in_channels=3,
+                      out_channels=self.hidden_size,
+                      kernel_size=3,
+                      padding=1),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+        )
+
     def __init__(self, data_depth, hidden_size):
         super().__init__()
         self.data_depth = data_depth
         self.hidden_size = hidden_size
         self.layers = self._build_layers()
+        if self.add_features:
+            self.features = self._get_features()
 
     def forward(self, image, data):
         x = self.layers[0](image)
@@ -72,6 +85,7 @@ class ResidualEncoder(BasicEncoder):
     """
 
     add_image = True
+    add_features = True
 
     def _build_layers(self):
         return (
@@ -102,6 +116,7 @@ class DenseEncoder(BasicEncoder):
     """
 
     add_image = True
+    add_features = False
 
     def _build_layers(self):
         return (
