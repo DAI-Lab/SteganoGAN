@@ -2,8 +2,7 @@
 [![Travis CI Shield](https://travis-ci.org/DAI-Lab/steganogan.svg?branch=master)](https://travis-ci.org/DAI-Lab/steganogan)
 
 # SteganoGAN
-
-Steganography tool based on DeepLearning GANs
+Image steganography using generative adversarial networks.
 
 - Free software: MIT license
 - Documentation: https://DAI-Lab.github.io/steganogan
