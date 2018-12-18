@@ -5,7 +5,7 @@ import inspect
 import json
 import os
 import pickle
-import time
+# import time
 from collections import Counter
 
 import imageio
@@ -17,9 +17,9 @@ from tqdm import tqdm
 
 from steganogan.utils import bits_to_bytearray, bytearray_to_text, ssim, text_to_bits
 
-DEFAULT_MODEL = os.path.join(
+DEFAULT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    'pretrained')
+    'train')
 
 
 class SteganoGAN(object):
@@ -43,8 +43,8 @@ class SteganoGAN(object):
 
         return torch.device('cpu')
 
-    def __init__(self, data_depth, encoder, decoder, critic, cuda=False,
-                 models_path=DEFAULT_MODEL, **kwargs):
+    def __init__(self, data_depth, encoder, decoder, critic, cuda=False, train_path=DEFAULT_PATH,
+                 verbose=False, torch_save=False, save_epoch=False, **kwargs):
 
         self.data_depth = data_depth
         kwargs['data_depth'] = data_depth
@@ -53,26 +53,44 @@ class SteganoGAN(object):
         self.critic = self._get_instance(critic, kwargs)
         self.device = self._get_device(cuda)
 
-    def encode(self, image, text, output):
+        self.critic_optimizer = None
+        self.decoder_optimizer = None
 
-        assert isinstance(image, str), 'path to input image'
-        assert isinstance(text, str), 'text message'
-        assert isinstance(output, str), 'path to output image'
+        # Misc
+        self.train_path = train_path
+        self.verbose = verbose
+        self.metrics = None
+        self.torch_save = torch_save
+        self.save_epoch = save_epoch
+
+    def encode(self, image, output, text):
+        """Encode an image.
+        Args:
+            image(str): Path to the image to be encoded.
+            output(str): Path to where we want to save the encoded image.
+            text(str): String of what we want to encode inside the image.
+        """
+        # Force to use cpu when encode / decode
+        if self.cuda:
+            self.encoder.to(torch.device('cpu'))
 
         image = imread(image, pilmode='RGB') / 127.5 - 1.0
         image = torch.FloatTensor(image).permute(2, 1, 0).unsqueeze(0)
 
         _, _, height, width = image.size()
-        data_depth = self.decoder(image).size(1)  # TODO: use data_depth prop
-        data = self._make_payload(width, height, data_depth, text)
+        data = self._make_payload(width, height, self.data_depth, text)
 
         encoded_image = self.encoder(image, data)[0].clamp(-1.0, 1.0)
-        print(encoded_image.min(), encoded_image.max())
+        #  print(encoded_image.min(), encoded_image.max())
         encoded_image = (encoded_image.permute(2, 1, 0).detach().cpu().numpy() + 1.0) * 127.5
         imwrite(output, encoded_image.astype('uint8'))
+        print('Encoding completed.')
 
     def decode(self, image):
-        assert isinstance(image, str)
+
+        if self.cuda:
+            self.decoder.to(torch.device('cpu'))
+
         if not os.path.exists(image):
             raise ValueError('Unable to read %s.' % image)
 
@@ -133,115 +151,168 @@ class SteganoGAN(object):
 
         return encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score
 
-    def fit(self, train, validate, epochs=5):
-        """Train a new model with the given ImageLoader class."""
-
+    def _get_optimizers(self):
         _dec_list = list(self.decoder.parameters()) + list(self.encoder.parameters())
         critic_optimizer = Adam(self.critic.parameters(), lr=1e-4)
         decoder_optimizer = Adam(_dec_list, lr=1e-4)
 
+        return critic_optimizer, decoder_optimizer
+
+    def _create_folders(self):
         # Logging
-        working_dir = 'results/%s/' % int(time.time())
-        os.makedirs(working_dir)
-        os.makedirs(working_dir + 'weights')
-        os.makedirs(working_dir + 'samples')
+        os.makedirs(self.train_path)
+        os.makedirs(self.train_path + 'weights')
+        os.makedirs(self.train_path + 'samples')
+
+    def _create_metrics(self):
+        return {
+            'val.encoder_mse': list(),
+            'val.decoder_loss': list(),
+            'val.decoder_acc': list(),
+            'val.cover_score': list(),
+            'val.stega_score': list(),
+            'val.ssim': list(),
+            'val.psnr': list(),
+            'val.bpp': list(),
+            'train.encoder_mse': list(),
+            'train.decoder_loss': list(),
+            'train.decoder_acc': list(),
+            'train.cover_score': list(),
+            'train.stega_score': list(),
+        }
+
+    def _train_critic(self, train):
+        """Train the critic"""
+        for cover, _ in tqdm(train, disable=self.verbose):
+            gc.collect()
+            cover, y_true, stega, y_pred = self._inference(cover)
+            _, _, _, cover_score, stega_score = self._evaluate(cover, y_true, stega, y_pred)
+
+            self.critic_optimizer.zero_grad()
+            (cover_score - stega_score).backward(retain_graph=True)
+            self.critic_optimizer.step()
+
+            for p in self.critic.parameters():
+                p.data.clamp_(-0.1, 0.1)
+
+            if self.verbose:
+                self.metrics['train.cover_score'].append(cover_score.item())
+                self.metrics['train.stega_score'].append(stega_score.item())
+
+    def _train_encoder_decoder(self, train):
+        """Train the encoder, decoder"""
+        for cover, _ in tqdm(train, disable=self.verbose):
+            gc.collect()
+            cover, y_true, stega, y_pred = self._inference(cover)
+
+            evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
+            encoder_mse, decoder_loss, decoder_acc, _, stega_score = evaluate_result
+
+            self.decoder_optimizer.zero_grad()
+            (100.0 * encoder_mse + decoder_loss + stega_score).backward()
+            self.decoder_optimizer.step()
+
+            if self.verbose:
+                self.metrics['train.encoder_mse'].append(encoder_mse.item())
+                self.metrics['train.decoder_loss'].append(decoder_loss.item())
+                self.metrics['train.decoder_acc'].append(decoder_acc.item())
+
+    def _train_validation(self, validate):
+        """Train the validation"""
+        for cover_image, _ in tqdm(validate, disable=self.verbose):
+            gc.collect()
+            cover, y_true, stega, y_pred = self._inference(cover_image, quantize=True)
+
+            evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
+            encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score = evaluate_result
+
+            if self.verbose:
+                self.metrics['val.encoder_mse'].append(encoder_mse.item())
+                self.metrics['val.decoder_loss'].append(decoder_loss.item())
+                self.metrics['val.decoder_acc'].append(decoder_acc.item())
+                self.metrics['val.cover_score'].append(cover_score.item())
+                self.metrics['val.stega_score'].append(stega_score.item())
+                self.metrics['val.ssim'].append(ssim(cover, stega).item())
+                self.metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
+                self.metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
+
+    def _train_exemplar(self, exemplar, epoch):
+        cover, y_true, stega, y_pred = self._inference(exemplar)
+        for i in range(stega.size(0)):
+            imwi_dir = self.train_path + 'samples/{}.cover.png'.format(i)
+            image = (cover[i].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
+            imageio.imwrite(imwi_dir, (255.0 * image).astype('uint8'))
+            image_output = self.train_path + 'samples/{}.stega-{:2d}.png'.format(i, epoch)
+            _img = (stega[i].clamp(-1.0, 1.0).permute(1, 2, 0).detach().cpu().numpy() + 1.0)
+            image = _img / 2.0
+            imageio.imwrite(image_output, (255.0 * image).astype('uint8'))
+
+    def fit(self, train, validate, epochs=5):
+        """Train a new model with the given ImageLoader class."""
+
+        # In case we changed the device
+        self.encoder.to(self.device)
+        self.decoder.to(self.device)
+        self.critics.to(self.device)
+
+        if self.critic_optimizer is None:
+            self.critic_optimizer, self.decoder_optimizer = self._get_optimizers()
+            self.epochs = 0
 
         exemplar = next(iter(validate))[0]
+        self._create_folders()  # Needed for exemplar
+
+        if self.verbose:
+            history = list()
+            if self.metrics is None:
+                self.metrics = self._create_metrics()
 
         # Start training
-        history = list()
+        total = self.epochs + epochs
         for epoch in range(1, epochs + 1):
+            # Count how many epochs we have trained for this steganogan
+            self.epochs + 1
 
-            metrics = {
-                'val.encoder_mse': list(),
-                'val.decoder_loss': list(),
-                'val.decoder_acc': list(),
-                'val.cover_score': list(),
-                'val.stega_score': list(),
-                'val.ssim': list(),
-                'val.psnr': list(),
-                'val.bpp': list(),
-                'train.encoder_mse': list(),
-                'train.decoder_loss': list(),
-                'train.decoder_acc': list(),
-                'train.cover_score': list(),
-                'train.stega_score': list(),
-            }
+            if self.verbose:
+                print('Epoch {}/{}'.format(self.epochs, total))
 
             # Train the critic
-            for cover, _ in tqdm(train):
-                gc.collect()
-                cover, y_true, stega, y_pred = self._inference(cover)
-                _, _, _, cover_score, stega_score = self._evaluate(cover, y_true, stega, y_pred)
-
-                critic_optimizer.zero_grad()
-                (cover_score - stega_score).backward(retain_graph=True)
-                critic_optimizer.step()
-
-                for p in self.critic.parameters():
-                    p.data.clamp_(-0.1, 0.1)
-
-                metrics['train.cover_score'].append(cover_score.item())
-                metrics['train.stega_score'].append(stega_score.item())
+            self._train_critic(train)
 
             # Train the encoder/decoder
-            for cover, _ in tqdm(train):
-
-                gc.collect()
-                cover, y_true, stega, y_pred = self._inference(cover)
-
-                evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
-                encoder_mse, decoder_loss, decoder_acc, _, stega_score = evaluate_result
-
-                decoder_optimizer.zero_grad()
-                (100.0 * encoder_mse + decoder_loss + stega_score).backward()
-                decoder_optimizer.step()
-
-                metrics['train.encoder_mse'].append(encoder_mse.item())
-                metrics['train.decoder_loss'].append(decoder_loss.item())
-                metrics['train.decoder_acc'].append(decoder_acc.item())
+            self._train_encoder_decoder(train)
 
             # Validation
-            for cover_image, _ in tqdm(validate):
-                gc.collect()
-                cover, y_true, stega, y_pred = self._inference(cover_image, quantize=True)
-
-                evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
-                encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score = evaluate_result
-
-                metrics['val.encoder_mse'].append(encoder_mse.item())
-                metrics['val.decoder_loss'].append(decoder_loss.item())
-                metrics['val.decoder_acc'].append(decoder_acc.item())
-                metrics['val.cover_score'].append(cover_score.item())
-                metrics['val.stega_score'].append(stega_score.item())
-                metrics['val.ssim'].append(ssim(cover, stega).item())
-                metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
-                metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
+            self._train_validate(validate)
 
             # Exemplar
-            cover, y_true, stega, y_pred = self._inference(exemplar)
-            for i in range(stega.size(0)):
-
-                imwi_dir = working_dir + 'samples/{}.cover.png'.format(i)
-                image = (cover[i].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
-                imageio.imwrite(imwi_dir, (255.0 * image).astype('uint8'))
-                image_output = working_dir + 'samples/{}.stega-{:2d}.png'.format(i, epoch)
-                _img = (stega[i].clamp(-1.0, 1.0).permute(1, 2, 0).detach().cpu().numpy() + 1.0)
-                image = _img / 2.0
-                imageio.imwrite(image_output, (255.0 * image).astype('uint8'))
+            self._train_exemplar(exemplar, epoch)
 
             # Logging
-            metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
-            metrics['epoch'] = epoch
-            history.append(metrics)
+            if self.verbose:
+                self.metrics = {k: sum(v) / len(v) for k, v in self.metrics.items()}
+                self.metrics['epoch'] = epoch
+                history.append(self.metrics)
 
-            with open(working_dir + '/train.log', 'wt') as fout:
-                fout.write(json.dumps(history, indent=2))
+                with open(self.train_path + '/train.log', 'wt') as fout:
+                    fout.write(json.dumps(history, indent=4))
 
-            # sv_dir = 'weights/{}.acc-{:03f}.pt'.format(epoch, metrics['val.decoder_acc'])
-            # save_dir = working_dir + sv_dir
+            save_name = '{}.acc-{:03f}.pt'.format(epoch, self.metrics['val.decoder_acc'])
 
-            # torch.save((self.encoder, self.decoder, self.critic), save_dir)
+            if self.save_epoch:
+                self.save(os.path.join(self.train_path, save_name))
+
+            if self.torch_save:
+                if self.save_epoch:
+                    self.save(os.path.join(self.train_path, save_name))
+
+                sv_dir = 'weights/{}.acc-{:03f}.pt'.format(epoch, self.metrics['val.decoder_acc'])
+                save_dir = os.path.join(self.train_path, sv_dir)
+                torch.save((self.encoder, self.decoder, self.critic), save_dir)
+
+            # Empty cuda cache (this may help for memory leaks)
+            if self.cuda:
+                torch.cuda.empty_cache()
 
     def save(self, path):
         """Save the fitted model in the given path. Raises an exception if there is no model."""
