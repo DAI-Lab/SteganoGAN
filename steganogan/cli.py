@@ -41,7 +41,7 @@ def _get_steganogan(model_type):
 def _encode(args):
     """Given loads a pretrained pickel, encodes the image with it."""
     steganogan = _get_steganogan(args.encoder)
-    steganogan.encode(args.input, args.message, args.output)  # TODO: Change the order after changing SteganoGAN
+    steganogan.encode(args.input, args.output, args.message)
 
 
 def _decode(args):
@@ -74,7 +74,8 @@ def _get_parser():
     subparser = subparsers.add_parser('decode', help='Decode message from a given image.')
 
     subparser.set_defaults(action=_decode)
-    subparser.add_argument('-i', '--input', help='Path to the image that has to be decoded')
+    subparser.add_argument('-i', '--input', required=True,
+                           help='Path to the image that has to be decoded')
     subparser.add_argument('-d', '--decoder', default='basic',
                            help='Decoder to be used to decode the message.')
 
