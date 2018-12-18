@@ -43,8 +43,8 @@ class SteganoGAN(object):
 
         return torch.device('cpu')
 
-    def __init__(self, data_depth, encoder, decoder, critic, cuda=False, train_path=DEFAULT_PATH,
-                 verbose=False, torch_save=False, save_epoch=False, **kwargs):
+    def __init__(self, data_depth, encoder, decoder, critic,
+                 cuda=False, train_path=DEFAULT_PATH, fit_log=False, **kwargs):
 
         self.data_depth = data_depth
         kwargs['data_depth'] = data_depth
@@ -59,10 +59,8 @@ class SteganoGAN(object):
 
         # Misc
         self.train_path = train_path
-        self.verbose = verbose
+        self.fit_log = fit_log
         self.train_metrics = None
-        self.torch_save = torch_save
-        self.save_epoch = save_epoch
 
     def encode(self, image, output, text):
         """Encode an image.
@@ -182,9 +180,9 @@ class SteganoGAN(object):
             'train.stega_score': list(),
         }
 
-    def _train_critic(self, train, metrics):
+    def _fit_critic(self, train, metrics):
         """Train the critic"""
-        for cover, _ in tqdm(train, disable=not self.verbose):
+        for cover, _ in tqdm(train, disable=not self.fit_log):
             gc.collect()
             cover, y_true, stega, y_pred = self._inference(cover)
             _, _, _, cover_score, stega_score = self._evaluate(cover, y_true, stega, y_pred)
@@ -196,13 +194,12 @@ class SteganoGAN(object):
             for p in self.critic.parameters():
                 p.data.clamp_(-0.1, 0.1)
 
-            if self.verbose:
-                metrics['train.cover_score'].append(cover_score.item())
-                metrics['train.stega_score'].append(stega_score.item())
+            metrics['train.cover_score'].append(cover_score.item())
+            metrics['train.stega_score'].append(stega_score.item())
 
-    def _train_encoder_decoder(self, train, metrics):
+    def _fit_encoder_decoder(self, train, metrics):
         """Train the encoder, decoder"""
-        for cover, _ in tqdm(train, disable=not self.verbose):
+        for cover, _ in tqdm(train, disable=not self.fit_log):
             gc.collect()
             cover, y_true, stega, y_pred = self._inference(cover)
 
@@ -213,31 +210,29 @@ class SteganoGAN(object):
             (100.0 * encoder_mse + decoder_loss + stega_score).backward()
             self.decoder_optimizer.step()
 
-            if self.verbose:
-                metrics['train.encoder_mse'].append(encoder_mse.item())
-                metrics['train.decoder_loss'].append(decoder_loss.item())
-                metrics['train.decoder_acc'].append(decoder_acc.item())
+            metrics['train.encoder_mse'].append(encoder_mse.item())
+            metrics['train.decoder_loss'].append(decoder_loss.item())
+            metrics['train.decoder_acc'].append(decoder_acc.item())
 
-    def _train_validate(self, validate, metrics):
+    def _fit_validate(self, validate, metrics):
         """Train the validation"""
-        for cover_image, _ in tqdm(validate, disable=not self.verbose):
+        for cover_image, _ in tqdm(validate, disable=not self.fit_log):
             gc.collect()
             cover, y_true, stega, y_pred = self._inference(cover_image, quantize=True)
 
             evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
             encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score = evaluate_result
 
-            if self.verbose:
-                metrics['val.encoder_mse'].append(encoder_mse.item())
-                metrics['val.decoder_loss'].append(decoder_loss.item())
-                metrics['val.decoder_acc'].append(decoder_acc.item())
-                metrics['val.cover_score'].append(cover_score.item())
-                metrics['val.stega_score'].append(stega_score.item())
-                metrics['val.ssim'].append(ssim(cover, stega).item())
-                metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
-                metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
+            metrics['val.encoder_mse'].append(encoder_mse.item())
+            metrics['val.decoder_loss'].append(decoder_loss.item())
+            metrics['val.decoder_acc'].append(decoder_acc.item())
+            metrics['val.cover_score'].append(cover_score.item())
+            metrics['val.stega_score'].append(stega_score.item())
+            metrics['val.ssim'].append(ssim(cover, stega).item())
+            metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
+            metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
 
-    def _train_exemplar(self, exemplar, epoch):
+    def _fit_exemplar(self, exemplar, epoch):
         cover, y_true, stega, y_pred = self._inference(exemplar)
         for i in range(stega.size(0)):
             imwi_dir = self.train_path + 'samples/{}.cover.png'.format(i)
@@ -263,7 +258,7 @@ class SteganoGAN(object):
         exemplar = next(iter(validate))[0]
         self._create_folders()  # Needed for exemplar
 
-        if self.verbose:
+        if self.fit_log:
             history = list()
 
         # Start training
@@ -273,38 +268,34 @@ class SteganoGAN(object):
             self.epochs += 1
 
             metrics = self._create_metrics()
-            if self.verbose:
+            if self.fit_log:
                 print('Epoch {}/{}'.format(self.epochs, total))
 
-            # Train the critic
-            self._train_critic(train, metrics)
+            # Fit the critic
+            self._fit_critic(train, metrics)
 
-            # Train the encoder/decoder
-            self._train_encoder_decoder(train, metrics)
+            # Fit the encoder/decoder
+            self._fit_encoder_decoder(train, metrics)
 
-            # Validation
-            self._train_validate(validate, metrics)
+            # Fit the validation
+            self._fit_validate(validate, metrics)
 
             # Exemplar
-            self._train_exemplar(exemplar, epoch)
+            self._fit_exemplar(exemplar, epoch)
 
             # Logging
-            if self.verbose:
-                self.train_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
-                self.train_metrics['epoch'] = epoch
-                history.append(self.train_metrics)
+            self.train_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
+            self.train_metrics['epoch'] = epoch
 
-                with open(self.train_path + '/train.log', 'wt') as fout:
+            if self.fit_log:
+                history.append(metrics)
+                train_name = '/train_{}.log'.format(epoch)
+                with open(self.train_path + train_name, 'wt') as fout:
                     fout.write(json.dumps(history, indent=4))
 
                 save_name = '{}.acc-{:03f}.pt'.format(epoch, self.train_metrics['val.decoder_acc'])
 
-            if self.save_epoch and self.verbose:
                 self.save(os.path.join(self.train_path, save_name))
-
-            if self.torch_save and self.verbose:
-                if self.save_epoch:
-                    self.save(os.path.join(self.train_path, save_name))
 
                 sv_dir = 'weights/{}.acc-{:03f}.pt'.format(epoch,
                                                            self.train_metrics['val.decoder_acc'])
