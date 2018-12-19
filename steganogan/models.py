@@ -160,8 +160,8 @@ class SteganoGAN(object):
     def _create_folders(self):
         # Logging
         os.makedirs(self.train_path, exist_ok=True)
-        os.makedirs(os.path.join(self.train_path, 'weights'), exist_ok=True)
-        os.makedirs(os.path.join(self.train_path, 'samples'), exist_ok=True)
+        os.makedirs(self.train_path + '/weights', exist_ok=True)
+        os.makedirs(self.train_path + '/samples', exist_ok=True)
 
     def _create_metrics(self):
         return {
@@ -180,8 +180,8 @@ class SteganoGAN(object):
             'train.stega_score': list(),
         }
 
-    def _fit_critic(self, train, metrics):
-        """Train the critic"""
+    def _critic_inference(self, train, metrics):
+        """Critic process"""
         for cover, _ in tqdm(train, disable=not self.fit_log):
             gc.collect()
             cover, y_true, stega, y_pred = self._inference(cover)
@@ -197,8 +197,8 @@ class SteganoGAN(object):
             metrics['train.cover_score'].append(cover_score.item())
             metrics['train.stega_score'].append(stega_score.item())
 
-    def _fit_encoder_decoder(self, train, metrics):
-        """Train the encoder, decoder"""
+    def _encoder_decoder(self, train, metrics):
+        """Encoder, Decoder process"""
         for cover, _ in tqdm(train, disable=not self.fit_log):
             gc.collect()
             cover, y_true, stega, y_pred = self._inference(cover)
@@ -214,8 +214,8 @@ class SteganoGAN(object):
             metrics['train.decoder_loss'].append(decoder_loss.item())
             metrics['train.decoder_acc'].append(decoder_acc.item())
 
-    def _fit_validate(self, validate, metrics):
-        """Train the validation"""
+    def _validate(self, validate, metrics):
+        """Validation process"""
         for cover_image, _ in tqdm(validate, disable=not self.fit_log):
             gc.collect()
             cover, y_true, stega, y_pred = self._inference(cover_image, quantize=True)
@@ -232,13 +232,13 @@ class SteganoGAN(object):
             metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
             metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
 
-    def _fit_exemplar(self, exemplar, epoch):
+    def _exemplar(self, exemplar, epoch):
         cover, y_true, stega, y_pred = self._inference(exemplar)
         for i in range(stega.size(0)):
-            imwi_dir = self.train_path + 'samples/{}.cover.png'.format(i)
+            imwi_dir = self.train_path + '/samples/{}.cover.png'.format(i)
             image = (cover[i].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
             imageio.imwrite(imwi_dir, (255.0 * image).astype('uint8'))
-            image_output = self.train_path + 'samples/{}.stega-{:2d}.png'.format(i, epoch)
+            image_output = self.train_path + '/samples/{}.stega-{:2d}.png'.format(i, epoch)
             _img = (stega[i].clamp(-1.0, 1.0).permute(1, 2, 0).detach().cpu().numpy() + 1.0)
             image = _img / 2.0
             imageio.imwrite(image_output, (255.0 * image).astype('uint8'))
@@ -272,33 +272,34 @@ class SteganoGAN(object):
                 print('Epoch {}/{}'.format(self.epochs, total))
 
             # Fit the critic
-            self._fit_critic(train, metrics)
+            self._critic_inference(train, metrics)
 
             # Fit the encoder/decoder
-            self._fit_encoder_decoder(train, metrics)
+            self._encoder_decoder(train, metrics)
 
             # Fit the validation
-            self._fit_validate(validate, metrics)
+            self._validate(validate, metrics)
 
             # Exemplar
-            self._fit_exemplar(exemplar, epoch)
+            self._exemplar(exemplar, epoch)
 
             # Logging
             self.train_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
             self.train_metrics['epoch'] = epoch
 
             if self.fit_log:
+                print(self.train_metrics)
                 history.append(metrics)
                 train_name = '/train_{}.log'.format(epoch)
                 with open(self.train_path + train_name, 'wt') as fout:
                     fout.write(json.dumps(history, indent=4))
 
-                save_name = '{}.acc-{:03f}.pt'.format(epoch, self.train_metrics['val.decoder_acc'])
+                save_name = '{}.acc-{:03f}.p'.format(self.epochs,
+                                                      self.train_metrics['val.decoder_acc'])
 
                 self.save(os.path.join(self.train_path, save_name))
 
-                sv_dir = 'weights/{}.acc-{:03f}.pt'.format(epoch,
-                                                           self.train_metrics['val.decoder_acc'])
+                sv_dir = 'weights/{}t'.format(save_name)
 
                 save_dir = os.path.join(self.train_path, sv_dir)
                 torch.save((self.encoder, self.decoder, self.critic), save_dir)
