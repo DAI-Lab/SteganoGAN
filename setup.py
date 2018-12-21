@@ -11,7 +11,7 @@ with open('README.md') as readme_file:
 with open('HISTORY.md') as history_file:
     history = history_file.read()
 
-requirements = [
+install_requires = [
     'imageio>=2.4.1',
     'reedsolo>=0.3',
     'scipy>=1.1.0',
@@ -20,17 +20,21 @@ requirements = [
     'torchvision==0.2.1'
 ]
 
-setup_requirements = [
+setup_requires = [
     'pytest-runner>=2.11.1',
 ]
 
-test_requirements = [
+tests_require = [
     'coverage>=4.5.1',
     'pytest>=3.4.2',
     'tox>=2.9.1',
 ]
 
-development_requirements = [
+research_requires = [
+    'jupyter==1.0.0',
+]
+
+development_requires = [
     # general
     'bumpversion>=0.5.3',
     'pip>=9.0.1',
@@ -70,11 +74,12 @@ setup(
     ],
     description="Steganography tool based on DeepLearning GANs",
     extras_require={
-        'test': test_requirements,
-        'dev': development_requirements + test_requirements,
+        'test': tests_require,
+        'dev': development_requires + tests_require,
+        'research': research_requires + development_requires + tests_require,
     },
     install_package_data=True,
-    install_requires=requirements,
+    install_requires=install_requires,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/markdown',
@@ -83,9 +88,9 @@ setup(
     name='steganogan',
     packages=find_packages(include=['steganogan', 'steganogan.*']),
     python_requires='>=3.4',
-    setup_requires=setup_requirements,
+    setup_requires=setup_requires,
     test_suite='tests',
-    tests_require=test_requirements,
+    tests_require=tests_require,
     url='https://github.com/DAI-Lab/steganogan',
     version='0.1.0-dev',
     zip_safe=False,
