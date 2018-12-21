@@ -64,6 +64,10 @@ def first_element(storage, loc):
 
 
 def gaussian(window_size, sigma):
+    """Gaussian window.
+
+    https://en.wikipedia.org/wiki/Window_function#Gaussian_window
+    """
     _exp = [exp(-(x - window_size // 2) ** 2 / float(2 * sigma ** 2)) for x in range(window_size)]
     gauss = torch.Tensor(_exp)
     return gauss / gauss.sum()

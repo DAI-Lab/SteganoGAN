@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class BasicEncoder(nn.Module):
@@ -14,7 +14,6 @@ class BasicEncoder(nn.Module):
     """
 
     add_image = False
-    add_features = True
 
     def _conv2d(self, in_channels, out_channels):
         return nn.Conv2d(
@@ -24,48 +23,35 @@ class BasicEncoder(nn.Module):
             padding=1
         )
 
-    def _build_layers(self):
-        return (
-            nn.Sequential(
-                self._conv2d(3, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-            ),
-            nn.Sequential(
-                self._conv2d(self.hidden_size + self.data_depth, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-                self._conv2d(self.hidden_size, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-                self._conv2d(self.hidden_size, 3),
-                nn.Tanh(),
-            )
-        )
-
-    def _get_features(self):
-        return nn.Sequential(
-            nn.Conv2d(in_channels=3,
-                      out_channels=self.hidden_size,
-                      kernel_size=3,
-                      padding=1),
+    def _build_models(self):
+        self.features = nn.Sequential(
+            self._conv2d(3, self.hidden_size),
             nn.LeakyReLU(inplace=True),
             nn.BatchNorm2d(self.hidden_size),
         )
+        self.layers = nn.Sequential(
+            self._conv2d(self.hidden_size + self.data_depth, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+            self._conv2d(self.hidden_size, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+            self._conv2d(self.hidden_size, 3),
+            nn.Tanh(),
+        )
+        return self.features, self.layers
 
     def __init__(self, data_depth, hidden_size):
         super().__init__()
         self.data_depth = data_depth
         self.hidden_size = hidden_size
-        self.layers = self._build_layers()
-        if self.add_features:
-            self.features = self._get_features()
+        self._models = self._build_models()
 
     def forward(self, image, data):
-        x = self.layers[0](image)
+        x = self._models[0](image)
         x_list = [x]
 
-        for layer in self.layers[1:]:
+        for layer in self._models[1:]:
             x = layer(torch.cat(x_list + [data], dim=1))
             x_list.append(x)
 
@@ -85,25 +71,23 @@ class ResidualEncoder(BasicEncoder):
     """
 
     add_image = True
-    add_features = True
 
-    def _build_layers(self):
-        return (
-            nn.Sequential(
-                self._conv2d(3, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-            ),
-            nn.Sequential(
-                self._conv2d(self.hidden_size + self.data_depth, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-                self._conv2d(self.hidden_size, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-                self._conv2d(self.hidden_size, 3),
-            )
+    def _build_models(self):
+        self.features = nn.Sequential(
+            self._conv2d(3, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
         )
+        self.layers = nn.Sequential(
+            self._conv2d(self.hidden_size + self.data_depth, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+            self._conv2d(self.hidden_size, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+            self._conv2d(self.hidden_size, 3),
+        )
+        return self.features, self.layers
 
 
 class DenseEncoder(BasicEncoder):
@@ -116,26 +100,25 @@ class DenseEncoder(BasicEncoder):
     """
 
     add_image = True
-    add_features = False
 
-    def _build_layers(self):
-        return (
-            nn.Sequential(
-                self._conv2d(3, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-            ),
-            nn.Sequential(
-                self._conv2d(self.hidden_size + self.data_depth, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-            ),
-            nn.Sequential(
-                self._conv2d(self.hidden_size * 2 + self.data_depth, self.hidden_size),
-                nn.LeakyReLU(inplace=True),
-                nn.BatchNorm2d(self.hidden_size),
-            ),
-            nn.Sequential(
-                self._conv2d(self.hidden_size * 2 + self.data_depth, 3)
-            )
+    def _build_models(self):
+        self.conv1 = nn.Sequential(
+            self._conv2d(3, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
         )
+        self.conv2 = nn.Sequential(
+            self._conv2d(self.hidden_size + self.data_depth, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+        )
+        self.conv3 = nn.Sequential(
+            self._conv2d(self.hidden_size * 2 + self.data_depth, self.hidden_size),
+            nn.LeakyReLU(inplace=True),
+            nn.BatchNorm2d(self.hidden_size),
+        )
+        self.conv4 = nn.Sequential(
+            self._conv2d(self.hidden_size * 3 + self.data_depth, 3)
+        )
+
+        return self.conv1, self.conv2, self.conv3, self.conv4
