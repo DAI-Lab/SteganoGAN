@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-
 import gc
 import inspect
 import json
 import os
 import pickle
-# import time
 from collections import Counter
+from uuid import uuid4
 
 import imageio
 import torch
@@ -20,6 +19,22 @@ from steganogan.utils import bits_to_bytearray, bytearray_to_text, ssim, text_to
 DEFAULT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     'train')
+
+METRIC_FIELDS = [
+    'val.encoder_mse',
+    'val.decoder_loss',
+    'val.decoder_acc',
+    'val.cover_score',
+    'val.generated_score',
+    'val.ssim',
+    'val.psnr',
+    'val.bpp',
+    'train.encoder_mse',
+    'train.decoder_loss',
+    'train.decoder_acc',
+    'train.cover_score',
+    'train.generated_score',
+]
 
 
 class SteganoGAN(object):
@@ -65,9 +80,9 @@ class SteganoGAN(object):
     def encode(self, image, output, text):
         """Encode an image.
         Args:
-            image(str): Path to the image to be encoded.
-            output(str): Path to where we want to save the encoded image.
-            text(str): String of what we want to encode inside the image.
+            image(str): Path to the image to be used as cover.
+            output(str): Path where the generated image will be saved.
+            text(str): Message to hide inside the image.
         """
         # Force to use cpu when encode / decode
         if self.cuda:
@@ -77,12 +92,12 @@ class SteganoGAN(object):
         image = torch.FloatTensor(image).permute(2, 1, 0).unsqueeze(0)
 
         _, _, height, width = image.size()
-        data = self._make_payload(width, height, self.data_depth, text)
+        payload = self._make_payload(width, height, self.data_depth, text)
 
-        encoded_image = self.encoder(image, data)[0].clamp(-1.0, 1.0)
-        #  print(encoded_image.min(), encoded_image.max())
-        encoded_image = (encoded_image.permute(2, 1, 0).detach().cpu().numpy() + 1.0) * 127.5
-        imwrite(output, encoded_image.astype('uint8'))
+        generated_image = self.encoder(image, payload)[0].clamp(-1.0, 1.0)
+        #  print(generated_image.min(), generated_image.max())
+        generated_image = (generated_image.permute(2, 1, 0).detach().cpu().numpy() + 1.0) * 127.5
+        imwrite(output, generated_image.astype('uint8'))
         print('Encoding completed.')
 
     def decode(self, image):
@@ -109,6 +124,7 @@ class SteganoGAN(object):
         # choose most common message
         if len(candidates) == 0:
             raise ValueError('Failed to find message.')
+
         candidate, count = candidates.most_common(1)[0]
         return candidate
 
@@ -119,36 +135,52 @@ class SteganoGAN(object):
         """
         message = text_to_bits(text) + [0] * 32
 
-        data = message
-        while len(data) < width * height * depth:
-            data += message
-        data = data[:width * height * depth]
+        payload = message
+        while len(payload) < width * height * depth:
+            payload += message
 
-        return torch.FloatTensor(data).view(1, depth, height, width)
+        payload = payload[:width * height * depth]
 
-    def _inference(self, cover, quantize=False):
-        """cover image -> (cover, y_true, stega, y_pred)"""
+        return torch.FloatTensor(payload).view(1, depth, height, width)
+
+    def _random_data(self, cover):
+        """Generate random data ready to be hidden inside the cover image.
+
+        Args:
+            cover (image): Image to use as cover.
+
+        Returns:
+            generated (image): Image generated with the encoded message.
+        """
         N, _, H, W = cover.size()
-        cover = cover.to(self.device)
-        y_true = torch.zeros((N, self.data_depth, H, W), device=self.device).random_(0, 2)
+        cover.to(self.device)
+        return torch.zeros((N, self.data_depth, H, W), device=self.device).random_(0, 2)
 
-        stega = self.encoder(cover, y_true)
+    def _encode_decode(self, cover, quantize=False):
+        """Encode random data and then decode it.
+
+        Args:
+            cover (image): Image to use as cover.
+            quantize (bool): whether to quantize the generated image or not.
+
+        Returns:
+            generated (image): Image generated with the encoded message.
+            payload (bytes): Random data that has been encoded in the image.
+            decoded (bytes): Data decoded from the generated image.
+        """
+        payload = self._random_data(cover)
+        generated = self.encoder(cover, payload)
         if quantize:
-            stega = (255.0 * (stega + 1.0) / 2.0).long()
-            stega = 2.0 * stega.float() / 255.0 - 1.0
-        y_pred = self.decoder(stega)
+            generated = (255.0 * (generated + 1.0) / 2.0).long()
+            generated = 2.0 * generated.float() / 255.0 - 1.0
 
-        return cover, y_true, stega, y_pred
+        decoded = self.decoder(generated)
 
-    def _evaluate(self, cover, y_true, stega, y_pred):
-        """(cover, y_true, stega, y_pred) -> metrics"""
-        encoder_mse = mse_loss(stega, cover)
-        decoder_loss = binary_cross_entropy_with_logits(y_pred, y_true)
-        decoder_acc = (y_pred >= 0.0).eq(y_true >= 0.5).sum().float() / y_true.numel()
-        cover_score = torch.mean(self.critic(cover))
-        stega_score = torch.mean(self.critic(stega))
+        return generated, payload, decoded
 
-        return encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score
+    def _critic(self, image):
+        """Evaluate the image using the critic"""
+        return torch.mean(self.critic(image))
 
     def _get_optimizers(self):
         _dec_list = list(self.decoder.parameters()) + list(self.encoder.parameters())
@@ -163,88 +195,91 @@ class SteganoGAN(object):
         os.makedirs(self.train_path + '/weights', exist_ok=True)
         os.makedirs(self.train_path + '/samples', exist_ok=True)
 
-    def _create_metrics(self):
-        return {
-            'val.encoder_mse': list(),
-            'val.decoder_loss': list(),
-            'val.decoder_acc': list(),
-            'val.cover_score': list(),
-            'val.stega_score': list(),
-            'val.ssim': list(),
-            'val.psnr': list(),
-            'val.bpp': list(),
-            'train.encoder_mse': list(),
-            'train.decoder_loss': list(),
-            'train.decoder_acc': list(),
-            'train.cover_score': list(),
-            'train.stega_score': list(),
-        }
-
-    def _critic_inference(self, train, metrics):
+    def _fit_critic(self, train, metrics):
         """Critic process"""
         for cover, _ in tqdm(train, disable=not self.fit_log):
             gc.collect()
-            cover, y_true, stega, y_pred = self._inference(cover)
-            _, _, _, cover_score, stega_score = self._evaluate(cover, y_true, stega, y_pred)
+            payload = self._random_data(cover)
+            generated = self.encoder(cover, payload)
+            cover_score = self._critic(cover)
+            generated_score = self._critic(generated)
 
             self.critic_optimizer.zero_grad()
-            (cover_score - stega_score).backward(retain_graph=True)
+            (cover_score - generated_score).backward(retain_graph=True)
             self.critic_optimizer.step()
 
             for p in self.critic.parameters():
                 p.data.clamp_(-0.1, 0.1)
 
             metrics['train.cover_score'].append(cover_score.item())
-            metrics['train.stega_score'].append(stega_score.item())
+            metrics['train.generated_score'].append(generated_score.item())
 
-    def _encoder_decoder(self, train, metrics):
-        """Encoder, Decoder process"""
+    def _fit_coders(self, train, metrics):
+        """Fit the encoder and the decoder on the train images."""
         for cover, _ in tqdm(train, disable=not self.fit_log):
             gc.collect()
-            cover, y_true, stega, y_pred = self._inference(cover)
-
-            evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
-            encoder_mse, decoder_loss, decoder_acc, _, stega_score = evaluate_result
+            generated, payload, decoded = self._encode_decode(cover)
+            encoder_mse, decoder_loss, decoder_acc = self._coding_scores(
+                cover, generated, payload, decoded)
+            generated_score = self._critic(generated)
 
             self.decoder_optimizer.zero_grad()
-            (100.0 * encoder_mse + decoder_loss + stega_score).backward()
+            (100.0 * encoder_mse + decoder_loss + generated_score).backward()
             self.decoder_optimizer.step()
 
             metrics['train.encoder_mse'].append(encoder_mse.item())
             metrics['train.decoder_loss'].append(decoder_loss.item())
             metrics['train.decoder_acc'].append(decoder_acc.item())
 
+    def _coding_scores(self, cover, generated, payload, decoded):
+        encoder_mse = mse_loss(generated, cover)
+        decoder_loss = binary_cross_entropy_with_logits(decoded, payload)
+        decoder_acc = (decoded >= 0.0).eq(payload >= 0.5).sum().float() / payload.numel()
+
+        return encoder_mse, decoder_loss, decoder_acc
+
     def _validate(self, validate, metrics):
         """Validation process"""
-        for cover_image, _ in tqdm(validate, disable=not self.fit_log):
+        for cover, _ in tqdm(validate, disable=not self.fit_log):
             gc.collect()
-            cover, y_true, stega, y_pred = self._inference(cover_image, quantize=True)
-
-            evaluate_result = self._evaluate(cover, y_true, stega, y_pred)
-            encoder_mse, decoder_loss, decoder_acc, cover_score, stega_score = evaluate_result
+            generated, payload, decoded = self._encode_decode(cover, quantize=True)
+            encoder_mse, decoder_loss, decoder_acc = self._coding_scores(
+                cover, generated, payload, decoded)
+            generated_score = self._critic(generated)
+            cover_score = self._critic(cover)
 
             metrics['val.encoder_mse'].append(encoder_mse.item())
             metrics['val.decoder_loss'].append(decoder_loss.item())
             metrics['val.decoder_acc'].append(decoder_acc.item())
             metrics['val.cover_score'].append(cover_score.item())
-            metrics['val.stega_score'].append(stega_score.item())
-            metrics['val.ssim'].append(ssim(cover, stega).item())
+            metrics['val.generated_score'].append(generated_score.item())
+            metrics['val.ssim'].append(ssim(cover, generated).item())
             metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
             metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
 
-    def _exemplar(self, exemplar, epoch):
-        cover, y_true, stega, y_pred = self._inference(exemplar)
-        for i in range(stega.size(0)):
-            imwi_dir = self.train_path + '/samples/{}.cover.png'.format(i)
-            image = (cover[i].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
-            imageio.imwrite(imwi_dir, (255.0 * image).astype('uint8'))
-            image_output = self.train_path + '/samples/{}.stega-{:2d}.png'.format(i, epoch)
-            _img = (stega[i].clamp(-1.0, 1.0).permute(1, 2, 0).detach().cpu().numpy() + 1.0)
-            image = _img / 2.0
-            imageio.imwrite(image_output, (255.0 * image).astype('uint8'))
+    def _generate_samples(self, cover, epoch):
+        generated, payload, decoded = self._encode_decode(cover)
+        samples_path = os.path.join(self.train_path, 'samples')
+        samples = generated.size(0)
+        for sample in range(samples):
+            cover_path = os.path.join(samples_path, '{}.cover.png'.format(sample))
+            sample_name = '{}.generated-{:2d}.png'.format(sample, epoch)
+            sample_path = os.path.join(samples_path, sample_name)
+
+            image = (cover[sample].permute(1, 2, 0).detach().cpu().numpy() + 1.0) / 2.0
+            imageio.imwrite(cover_path, (255.0 * image).astype('uint8'))
+
+            sampled = generated[sample].clamp(-1.0, 1.0).permute(1, 2, 0)
+            sampled = sampled.detach().cpu().numpy() + 1.0
+
+            image = sampled / 2.0
+            imageio.imwrite(sample_path, (255.0 * image).astype('uint8'))
 
     def fit(self, train, validate, epochs=5):
         """Train a new model with the given ImageLoader class."""
+
+        fit_id = str(uuid4())[:8]
+        print('Starting fit {}'.format(fit_id))
 
         # In case we changed the device
         self.encoder.to(self.device)
@@ -255,8 +290,8 @@ class SteganoGAN(object):
             self.critic_optimizer, self.decoder_optimizer = self._get_optimizers()
             self.epochs = 0
 
-        exemplar = next(iter(validate))[0]
-        self._create_folders()  # Needed for exemplar
+        sample_cover = next(iter(validate))[0]
+        self._create_folders()  # Needed for sampling
 
         if self.fit_log:
             history = list()
@@ -267,21 +302,15 @@ class SteganoGAN(object):
             # Count how many epochs we have trained for this steganogan
             self.epochs += 1
 
-            metrics = self._create_metrics()
+            metrics = {field: list() for field in METRIC_FIELDS}
+
             if self.fit_log:
                 print('Epoch {}/{}'.format(self.epochs, total))
 
-            # Fit the critic
-            self._critic_inference(train, metrics)
-
-            # Fit the encoder/decoder
-            self._encoder_decoder(train, metrics)
-
-            # Fit the validation
+            self._fit_critic(train, metrics)
+            self._fit_coders(train, metrics)
             self._validate(validate, metrics)
-
-            # Exemplar
-            self._exemplar(exemplar, epoch)
+            self._generate_samples(sample_cover, epoch)
 
             # Logging
             self.train_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
@@ -290,12 +319,12 @@ class SteganoGAN(object):
             if self.fit_log:
                 print(self.train_metrics)
                 history.append(metrics)
-                train_name = '/train_{}.log'.format(epoch)
+                train_name = '/train.log'
                 with open(self.train_path + train_name, 'wt') as fout:
                     fout.write(json.dumps(history, indent=4))
 
-                save_name = '{}.acc-{:03f}.p'.format(self.epochs,
-                                                      self.train_metrics['val.decoder_acc'])
+                save_name = '{}.{}.acc-{:03f}.p'.format(
+                    fit_id, self.epochs, self.train_metrics['val.decoder_acc'])
 
                 self.save(os.path.join(self.train_path, save_name))
 

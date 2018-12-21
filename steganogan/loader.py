@@ -27,8 +27,11 @@ class ImageFolder(torchvision.datasets.ImageFolder):
 
 class DataLoader(torch.utils.data.DataLoader):
 
-    def __init__(self, path, transform=DEFAULT_TRANSFORM, limit=np.inf,
-                 shuffle=True, num_workers=4, batch_size=4, *args, **kwargs):
+    def __init__(self, path, transform=None, limit=np.inf, shuffle=True,
+                 num_workers=4, batch_size=4, *args, **kwargs):
+
+        if transform is None:
+            transform = DEFAULT_TRANSFORM
 
         path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),

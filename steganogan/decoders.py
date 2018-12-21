@@ -52,22 +52,34 @@ class DenseDecoder(nn.Module):
         super(DenseDecoder, self).__init__()
         self.data_depth = data_depth
         self.conv1 = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=hidden_size, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=3,
+                      out_channels=hidden_size,
+                      kernel_size=3,
+                      padding=1),
             nn.LeakyReLU(inplace=True),
             nn.BatchNorm2d(hidden_size),
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(in_channels=hidden_size, out_channels=hidden_size, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=hidden_size,
+                      out_channels=hidden_size,
+                      kernel_size=3,
+                      padding=1),
             nn.LeakyReLU(inplace=True),
             nn.BatchNorm2d(hidden_size),
         )
         self.conv3 = nn.Sequential(
-            nn.Conv2d(in_channels=hidden_size*2, out_channels=hidden_size, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=hidden_size * 2,
+                      out_channels=hidden_size,
+                      kernel_size=3,
+                      padding=1),
             nn.LeakyReLU(inplace=True),
             nn.BatchNorm2d(hidden_size),
         )
         self.conv4 = nn.Sequential(
-            nn.Conv2d(in_channels=hidden_size*3, out_channels=data_depth, kernel_size=3, padding=1),
+            nn.Conv2d(in_channels=hidden_size * 3,
+                      out_channels=data_depth,
+                      kernel_size=3,
+                      padding=1),
         )
 
     def forward(self, x):

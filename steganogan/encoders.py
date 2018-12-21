@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class BasicEncoder(nn.Module):
