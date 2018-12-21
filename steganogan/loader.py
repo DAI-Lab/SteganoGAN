@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
-
 import numpy as np
 import torch
 import torchvision
@@ -32,10 +30,6 @@ class DataLoader(torch.utils.data.DataLoader):
 
         if transform is None:
             transform = DEFAULT_TRANSFORM
-
-        path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            path)
 
         super().__init__(
             ImageFolder(path, transform, limit),

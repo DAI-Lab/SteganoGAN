@@ -5,7 +5,6 @@ import json
 import os
 import pickle
 from collections import Counter
-from uuid import uuid4
 
 import imageio
 import torch
@@ -59,7 +58,7 @@ class SteganoGAN(object):
         return torch.device('cpu')
 
     def __init__(self, data_depth, encoder, decoder, critic,
-                 cuda=False, train_path=DEFAULT_PATH, fit_log=False, **kwargs):
+                 cuda=False, verbose=False, fit_log_path=None, **kwargs):
 
         self.data_depth = data_depth
         kwargs['data_depth'] = data_depth
@@ -73,9 +72,15 @@ class SteganoGAN(object):
         self.decoder_optimizer = None
 
         # Misc
-        self.train_path = train_path
-        self.fit_log = fit_log
-        self.train_metrics = None
+        self.fit_metrics = None
+        self.history = list()
+
+        self.verbose = False
+        self.fit_log_path = fit_log_path
+        if fit_log_path:
+            os.makedirs(self.fit_log_path, exist_ok=True)
+            self.samples_path = os.path.join(self.fit_log_path, 'samples')
+            os.makedirs(self.samples_path, exist_ok=True)
 
     def encode(self, image, output, text):
         """Encode an image.
@@ -101,9 +106,6 @@ class SteganoGAN(object):
         print('Encoding completed.')
 
     def decode(self, image):
-
-        if self.cuda:
-            self.decoder.to(torch.device('cpu'))
 
         if not os.path.exists(image):
             raise ValueError('Unable to read %s.' % image)
@@ -189,15 +191,9 @@ class SteganoGAN(object):
 
         return critic_optimizer, decoder_optimizer
 
-    def _create_folders(self):
-        # Logging
-        os.makedirs(self.train_path, exist_ok=True)
-        os.makedirs(self.train_path + '/weights', exist_ok=True)
-        os.makedirs(self.train_path + '/samples', exist_ok=True)
-
     def _fit_critic(self, train, metrics):
         """Critic process"""
-        for cover, _ in tqdm(train, disable=not self.fit_log):
+        for cover, _ in tqdm(train, disable=self.verbose):
             gc.collect()
             payload = self._random_data(cover)
             generated = self.encoder(cover, payload)
@@ -216,7 +212,7 @@ class SteganoGAN(object):
 
     def _fit_coders(self, train, metrics):
         """Fit the encoder and the decoder on the train images."""
-        for cover, _ in tqdm(train, disable=not self.fit_log):
+        for cover, _ in tqdm(train, disable=not self.verbose):
             gc.collect()
             generated, payload, decoded = self._encode_decode(cover)
             encoder_mse, decoder_loss, decoder_acc = self._coding_scores(
@@ -240,7 +236,7 @@ class SteganoGAN(object):
 
     def _validate(self, validate, metrics):
         """Validation process"""
-        for cover, _ in tqdm(validate, disable=not self.fit_log):
+        for cover, _ in tqdm(validate, disable=not self.verbose):
             gc.collect()
             generated, payload, decoded = self._encode_decode(cover, quantize=True)
             encoder_mse, decoder_loss, decoder_acc = self._coding_scores(
@@ -257,9 +253,8 @@ class SteganoGAN(object):
             metrics['val.psnr'].append(10 * torch.log10(4 / encoder_mse).item())
             metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
 
-    def _generate_samples(self, cover, epoch):
+    def _generate_samples(self, samples_path, cover, epoch):
         generated, payload, decoded = self._encode_decode(cover)
-        samples_path = os.path.join(self.train_path, 'samples')
         samples = generated.size(0)
         for sample in range(samples):
             cover_path = os.path.join(samples_path, '{}.cover.png'.format(sample))
@@ -278,9 +273,6 @@ class SteganoGAN(object):
     def fit(self, train, validate, epochs=5):
         """Train a new model with the given ImageLoader class."""
 
-        fit_id = str(uuid4())[:8]
-        print('Starting fit {}'.format(fit_id))
-
         # In case we changed the device
         self.encoder.to(self.device)
         self.decoder.to(self.device)
@@ -290,11 +282,8 @@ class SteganoGAN(object):
             self.critic_optimizer, self.decoder_optimizer = self._get_optimizers()
             self.epochs = 0
 
-        sample_cover = next(iter(validate))[0]
-        self._create_folders()  # Needed for sampling
-
-        if self.fit_log:
-            history = list()
+        if self.fit_log_path:
+            sample_cover = next(iter(validate))[0]
 
         # Start training
         total = self.epochs + epochs
@@ -304,41 +293,39 @@ class SteganoGAN(object):
 
             metrics = {field: list() for field in METRIC_FIELDS}
 
-            if self.fit_log:
+            if self.verbose:
                 print('Epoch {}/{}'.format(self.epochs, total))
 
             self._fit_critic(train, metrics)
             self._fit_coders(train, metrics)
             self._validate(validate, metrics)
-            self._generate_samples(sample_cover, epoch)
 
-            # Logging
-            self.train_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
-            self.train_metrics['epoch'] = epoch
+            if self.fit_log_path:
+                self.fit_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
+                self.fit_metrics['epoch'] = epoch
+                self.history.append(metrics)
 
-            if self.fit_log:
-                print(self.train_metrics)
-                history.append(metrics)
-                train_name = '/train.log'
-                with open(self.train_path + train_name, 'wt') as fout:
-                    fout.write(json.dumps(history, indent=4))
+                metrics_path = os.path.join(self.fit_log_path, 'metrics.log')
+                with open(metrics_path, 'w') as metrics_file:
+                    json.dump(self.history, metrics_file, indent=4)
 
-                save_name = '{}.{}.acc-{:03f}.p'.format(
-                    fit_id, self.epochs, self.train_metrics['val.decoder_acc'])
+                save_name = '{}.acc-{:03f}.p'.format(
+                    self.epochs, self.fit_metrics['val.decoder_acc'])
 
-                self.save(os.path.join(self.train_path, save_name))
-
-                sv_dir = 'weights/{}t'.format(save_name)
-
-                save_dir = os.path.join(self.train_path, sv_dir)
-                torch.save((self.encoder, self.decoder, self.critic), save_dir)
+                self.save(os.path.join(self.fit_log_path, save_name), self.cuda)
+                self._generate_samples(self.samples_path, sample_cover, epoch)
 
             # Empty cuda cache (this may help for memory leaks)
             if self.cuda:
                 torch.cuda.empty_cache()
 
-    def save(self, path):
+    def save(self, path, cuda=False):
         """Save the fitted model in the given path. Raises an exception if there is no model."""
+
+        if self.cuda and cuda:
+            self.encoder.to(torch.device('cpu'))
+            self.decoder.to(torch.device('cpu'))
+
         with open(path, 'wb') as pickle_file:
             pickle.dump(self, pickle_file)
 
