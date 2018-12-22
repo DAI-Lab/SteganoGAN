@@ -17,7 +17,8 @@ install_requires = [
     'scipy>=1.1.0',
     'scikit-learn==0.19.1',
     'torch>=0.4.0',
-    'torchvision==0.2.1'
+    'torchvision==0.2.1',
+    'tqdm==4.28.1'
 ]
 
 setup_requires = [
@@ -74,7 +75,7 @@ setup(
     description="Steganography tool based on DeepLearning GANs",
     entry_points={
         'console_scripts': [
-            'steganogan=steganogan:_main'
+            'steganogan=steganogan:cli.main'
         ],
     },
     extras_require={
