@@ -1,43 +1,81 @@
+<p align="center">
+<img width=30% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/mlblocks-icon.png" alt=“SteganoGAN” />
+</p>
+
+<p align="center">
+<i>
+Image steganography using generative adversarial networks.
+</i>
+</p>
+
 [![PyPI Shield](https://img.shields.io/pypi/v/steganogan.svg)](https://pypi.python.org/pypi/steganogan)
 [![Travis CI Shield](https://travis-ci.org/DAI-Lab/steganogan.svg?branch=master)](https://travis-ci.org/DAI-Lab/steganogan)
 
 # SteganoGAN
-Image steganography using generative adversarial networks.
 
 - Free software: MIT license
 - Documentation: https://DAI-Lab.github.io/steganogan
 - Homepage: https://github.com/DAI-Lab/steganogan
 
-## Usage
-To use this repository to encode and decode images, install the package by 
-running `pip install .` and try running the following:
+# Overview
 
-```
-from steganogan import Steganographer
+**SteganoGAN** is a stagenographic tool that uses Generative Adversarial Network models
+to hide messages into realistic looking images and later on recover them.
 
-in_path = "tests/resources/flag.jpg"
-out_path = "tmp.png"
+# Installation
 
-model = Steganographer()
-model.encode(in_path, "Hello!", out_path)
+The simplest and recommended way to install MLBlocks is using `pip`:
 
-print(model.decode(out_path))
+```bash
+pip install steganogan
 ```
 
-## Research
-Before you can start training the models, you need to download the datasets. We 
-provide a Bash script to automate this process:
+Alternatively, you can also clone the repository and install it from sources
+
+```bash
+git clone git@github.com:DAI-Lab/steganogan.git
+cd steganogan
+make install
+```
+
+For development, you can use the `make install-develop` target instead in order to install all
+the required dependencies for testing, code linting and notebook running.
+
+# Usage
+
+The simplest way to use **SteganoGAN** is loading one of the pretrained models  which have been
+included in the research folder:
 
 ```
-cd research/data
-bash download.sh
+>>> from steganogan import SteganoGAN
+>>> steganogan = SteganoGAN.load('research/models/dense.steg')
+Using CUDA device
 ```
 
-This process can take up to 24 hours, depending on your internet speed. Next, you
-should make sure you meet all the requirements. If you want GPU support, you should
-follow the PyTorch installation instructions at https://pytorch.org before installing
-the other dependencies by running:
+Once we have loaded our model, we are ready to give it an input image path, the path of the
+image that we want to generate, and the message that we want to hide:
 
-> make install-develop
+```
+>>> steganogan.encode('research/input.png', 'research/output.png', 'This is a super secret message!')
+Encoding completed.
+```
 
-You can start running experiments now!
+This will generate an `output.png` image that will look almost like the input one and will
+contain the message hidden inside it.
+
+After this, when we want to extract the message from the image, we can simply pass it to the
+`decode` method:
+
+```
+>>> steganogan.decode('research/output.png')
+'This is a super secret message!'
+```
+
+# Fitting a new model
+
+A usage example notebook has been included in the `research` folder with a step by step guide
+about how to fit a new model on a new images dataset, save it to a file, and later on reload it
+and use it to encode and decode messages.
+
+A convenience script has been also included in the `research/data` folder to download a couple
+of demo datasets to train models with.

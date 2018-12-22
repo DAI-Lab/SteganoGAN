@@ -108,3 +108,4 @@ ENV/
 .DS_Store
 
 research/data
+research/*.png

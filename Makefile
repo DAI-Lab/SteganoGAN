@@ -50,10 +50,6 @@ lint: ## check style with flake8 and isort
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
 	pip install -e .[dev]
 
-.PHONY: install-research
-install-research: clean-build clean-pyc ## install the package in editable mode and dependencies for research
-	pip install -e .[research]
-
 .PHONY: test-all
 test-all: ## run tests on every Python version with tox
 	tox

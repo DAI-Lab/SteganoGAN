@@ -30,10 +30,6 @@ tests_require = [
     'tox>=2.9.1',
 ]
 
-research_requires = [
-    'jupyter==1.0.0',
-]
-
 development_requires = [
     # general
     'bumpversion>=0.5.3',
@@ -56,6 +52,9 @@ development_requires = [
     # distribute on PyPI
     'twine>=1.10.0',
     'wheel>=0.30.0',
+
+    # Notebooks
+    'jupyter==1.0.0',
 ]
 
 setup(
@@ -76,7 +75,6 @@ setup(
     extras_require={
         'test': tests_require,
         'dev': development_requires + tests_require,
-        'research': research_requires + development_requires + tests_require,
     },
     install_package_data=True,
     install_requires=install_requires,
