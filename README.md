@@ -71,10 +71,13 @@ steganogan decode [options] path/to/generated/image.png
 The script has some additional options to control its behavior:
 
 * `-o, --output PATH`: Path where the generated image will be stored. Defaults to `output.png`.
-* `-a, --architecture ARCH`: Architecture to use, basic or dense.
+* `-a, --architecture ARCH`: Architecture to use, basic or dense. Defaults to dense.
 * `-v, --verbose`: Be verbose.
 * `--cpu`: force CPU usage even if CUDA is available. This might be needed if there is a GPU
   available in the system but the VRAM amount is too low.
+
+**NOTE**: Make sure to use the same architecture for both encoding and decoding, otherwise
+SteganoGAN won't be able to decode the message.
 
 ## Python
 
