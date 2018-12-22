@@ -50,23 +50,38 @@ class SteganoGAN(object):
 
         return class_or_instance(**init_args)
 
-    def _get_device(self):
-        """Returns torch device"""
-        if self.cuda and torch.cuda.is_available():
-            return torch.device('cuda')
+    def set_device(self, cuda=True):
+        """Sets the torch device depending on whether cuda is avaiable or not."""
+        if cuda and torch.cuda.is_available():
+            self.cuda = True
+            self.device = torch.device('cuda')
+        else:
+            self.cuda = False
+            self.device = torch.device('cpu')
 
-        return torch.device('cpu')
+        if self.verbose:
+            if not cuda:
+                print('Using CPU device')
+            elif not self.cuda:
+                print('CUDA is not available. Defaulting to CPU device')
+            else:
+                print('Using CUDA device')
+
+        self.encoder.to(self.device)
+        self.decoder.to(self.device)
+        self.critic.to(self.device)
 
     def __init__(self, data_depth, encoder, decoder, critic,
                  cuda=False, verbose=False, fit_log_path=None, **kwargs):
+
+        self.verbose = verbose
 
         self.data_depth = data_depth
         kwargs['data_depth'] = data_depth
         self.encoder = self._get_instance(encoder, kwargs)
         self.decoder = self._get_instance(decoder, kwargs)
         self.critic = self._get_instance(critic, kwargs)
-        self.cuda = cuda
-        self.device = self._get_device()
+        self.set_device(cuda)
 
         self.critic_optimizer = None
         self.decoder_optimizer = None
@@ -75,75 +90,11 @@ class SteganoGAN(object):
         self.fit_metrics = None
         self.history = list()
 
-        self.verbose = False
         self.fit_log_path = fit_log_path
         if fit_log_path:
             os.makedirs(self.fit_log_path, exist_ok=True)
             self.samples_path = os.path.join(self.fit_log_path, 'samples')
             os.makedirs(self.samples_path, exist_ok=True)
-
-    def encode(self, image, output, text):
-        """Encode an image.
-        Args:
-            image(str): Path to the image to be used as cover.
-            output(str): Path where the generated image will be saved.
-            text(str): Message to hide inside the image.
-        """
-        # Force to use cpu when encode / decode
-        if self.cuda:
-            self.encoder.to(torch.device('cpu'))
-
-        image = imread(image, pilmode='RGB') / 127.5 - 1.0
-        image = torch.FloatTensor(image).permute(2, 1, 0).unsqueeze(0)
-
-        _, _, height, width = image.size()
-        payload = self._make_payload(width, height, self.data_depth, text)
-
-        generated_image = self.encoder(image, payload)[0].clamp(-1.0, 1.0)
-        #  print(generated_image.min(), generated_image.max())
-        generated_image = (generated_image.permute(2, 1, 0).detach().cpu().numpy() + 1.0) * 127.5
-        imwrite(output, generated_image.astype('uint8'))
-        print('Encoding completed.')
-
-    def decode(self, image):
-
-        if not os.path.exists(image):
-            raise ValueError('Unable to read %s.' % image)
-
-        # extract a bit vector
-        image = imread(image, pilmode='RGB') / 255.0
-        image = torch.FloatTensor(image).permute(2, 1, 0).unsqueeze(0)
-        image = self.decoder(image).view(-1) > 0
-
-        # split and decode messages
-        candidates = Counter()
-        bits = image.data.cpu().numpy().tolist()
-        for candidate in bits_to_bytearray(bits).split(b'\x00\x00\x00\x00'):
-            candidate = bytearray_to_text(bytearray(candidate))
-            if candidate:
-                candidates[candidate] += 1
-
-        # choose most common message
-        if len(candidates) == 0:
-            raise ValueError('Failed to find message.')
-
-        candidate, count = candidates.most_common(1)[0]
-        return candidate
-
-    def _make_payload(self, width, height, depth, text):
-        """
-        This takes a piece of text and encodes it into a bit vector. It then
-        fills a matrix of size (width, height) with copies of the bit vector.
-        """
-        message = text_to_bits(text) + [0] * 32
-
-        payload = message
-        while len(payload) < width * height * depth:
-            payload += message
-
-        payload = payload[:width * height * depth]
-
-        return torch.FloatTensor(payload).view(1, depth, height, width)
 
     def _random_data(self, cover):
         """Generate random data ready to be hidden inside the cover image.
@@ -193,8 +144,9 @@ class SteganoGAN(object):
 
     def _fit_critic(self, train, metrics):
         """Critic process"""
-        for cover, _ in tqdm(train, disable=self.verbose):
+        for cover, _ in tqdm(train, disable=not self.verbose):
             gc.collect()
+            cover = cover.to(self.device)
             payload = self._random_data(cover)
             generated = self.encoder(cover, payload)
             cover_score = self._critic(cover)
@@ -214,6 +166,7 @@ class SteganoGAN(object):
         """Fit the encoder and the decoder on the train images."""
         for cover, _ in tqdm(train, disable=not self.verbose):
             gc.collect()
+            cover = cover.to(self.device)
             generated, payload, decoded = self._encode_decode(cover)
             encoder_mse, decoder_loss, decoder_acc = self._coding_scores(
                 cover, generated, payload, decoded)
@@ -238,6 +191,7 @@ class SteganoGAN(object):
         """Validation process"""
         for cover, _ in tqdm(validate, disable=not self.verbose):
             gc.collect()
+            cover = cover.to(self.device)
             generated, payload, decoded = self._encode_decode(cover, quantize=True)
             encoder_mse, decoder_loss, decoder_acc = self._coding_scores(
                 cover, generated, payload, decoded)
@@ -273,11 +227,6 @@ class SteganoGAN(object):
     def fit(self, train, validate, epochs=5):
         """Train a new model with the given ImageLoader class."""
 
-        # In case we changed the device
-        self.encoder.to(self.device)
-        self.decoder.to(self.device)
-        self.critic.to(self.device)
-
         if self.critic_optimizer is None:
             self.critic_optimizer, self.decoder_optimizer = self._get_optimizers()
             self.epochs = 0
@@ -300,9 +249,10 @@ class SteganoGAN(object):
             self._fit_coders(train, metrics)
             self._validate(validate, metrics)
 
+            self.fit_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
+            self.fit_metrics['epoch'] = epoch
+
             if self.fit_log_path:
-                self.fit_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
-                self.fit_metrics['epoch'] = epoch
                 self.history.append(metrics)
 
                 metrics_path = os.path.join(self.fit_log_path, 'metrics.log')
@@ -312,25 +262,87 @@ class SteganoGAN(object):
                 save_name = '{}.acc-{:03f}.p'.format(
                     self.epochs, self.fit_metrics['val.decoder_acc'])
 
-                self.save(os.path.join(self.fit_log_path, save_name), self.cuda)
+                self.save(os.path.join(self.fit_log_path, save_name))
                 self._generate_samples(self.samples_path, sample_cover, epoch)
 
             # Empty cuda cache (this may help for memory leaks)
             if self.cuda:
                 torch.cuda.empty_cache()
 
-    def save(self, path, cuda=False):
+    def _make_payload(self, width, height, depth, text):
+        """
+        This takes a piece of text and encodes it into a bit vector. It then
+        fills a matrix of size (width, height) with copies of the bit vector.
+        """
+        message = text_to_bits(text) + [0] * 32
+
+        payload = message
+        while len(payload) < width * height * depth:
+            payload += message
+
+        payload = payload[:width * height * depth]
+
+        return torch.FloatTensor(payload).view(1, depth, height, width)
+
+    def encode(self, cover, output, text):
+        """Encode an image.
+        Args:
+            cover (str): Path to the image to be used as cover.
+            output (str): Path where the generated image will be saved.
+            text (str): Message to hide inside the image.
+        """
+        cover = imread(cover, pilmode='RGB') / 127.5 - 1.0
+        cover = torch.FloatTensor(cover).permute(2, 1, 0).unsqueeze(0)
+
+        cover_size = cover.size()
+        # _, _, height, width = cover.size()
+        payload = self._make_payload(cover_size[3], cover_size[2], self.data_depth, text)
+
+        cover = cover.to(self.device)
+        payload = payload.to(self.device)
+        generated = self.encoder(cover, payload)[0].clamp(-1.0, 1.0)
+
+        generated = (generated.permute(2, 1, 0).detach().cpu().numpy() + 1.0) * 127.5
+        imwrite(output, generated.astype('uint8'))
+        print('Encoding completed.')
+
+    def decode(self, image):
+
+        if not os.path.exists(image):
+            raise ValueError('Unable to read %s.' % image)
+
+        # extract a bit vector
+        image = imread(image, pilmode='RGB') / 255.0
+        image = torch.FloatTensor(image).permute(2, 1, 0).unsqueeze(0)
+        image = image.to(self.device)
+
+        image = self.decoder(image).view(-1) > 0
+
+        # split and decode messages
+        candidates = Counter()
+        bits = image.data.cpu().numpy().tolist()
+        for candidate in bits_to_bytearray(bits).split(b'\x00\x00\x00\x00'):
+            candidate = bytearray_to_text(bytearray(candidate))
+            if candidate:
+                candidates[candidate] += 1
+
+        # choose most common message
+        if len(candidates) == 0:
+            raise ValueError('Failed to find message.')
+
+        candidate, count = candidates.most_common(1)[0]
+        return candidate
+
+    def save(self, path):
         """Save the fitted model in the given path. Raises an exception if there is no model."""
-
-        if self.cuda and cuda:
-            self.encoder.to(torch.device('cpu'))
-            self.decoder.to(torch.device('cpu'))
-
         with open(path, 'wb') as pickle_file:
             pickle.dump(self, pickle_file)
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path, cuda=True):
         """Loads an instance of SteganoGAN from the given path."""
         with open(path, 'rb') as pickle_file:
-            return pickle.load(pickle_file)
+            steganogan = pickle.load(pickle_file)
+
+        steganogan.set_device(cuda)
+        return steganogan
