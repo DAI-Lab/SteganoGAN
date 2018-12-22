@@ -4,8 +4,6 @@ from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
 import torch
-import numpy as np
-from torch import nn
 
 from steganogan import encoders
 from tests.utils import assert_called_with_tensors

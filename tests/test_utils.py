@@ -2,10 +2,8 @@
 
 import zlib
 
-from reedsolo import RSCodec
-
 import torch
-import numpy as np
+from reedsolo import RSCodec
 
 from steganogan import utils
 

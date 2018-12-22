@@ -14,4 +14,3 @@ def assert_called_with_tensors(mock, calls):
                 assert (mock_arg == arg).all()
             else:
                 assert mock_arg == arg
-
