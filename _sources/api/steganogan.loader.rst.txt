@@ -1,0 +1,7 @@
+steganogan.loader module
+========================
+
+.. automodule:: steganogan.loader
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>steganogan.utils &mdash; SteganoGAN 0.1.0-dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> SteganoGAN
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">SteganoGAN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#fitting-a-new-model">Fitting a new model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#stable-release">Stable release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#from-source">From source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/steganogan.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/steganogan.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.critics.html">steganogan.critics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.decoders.html">steganogan.decoders module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.encoders.html">steganogan.encoders module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.loader.html">steganogan.loader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.models.html">steganogan.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.utils.html">steganogan.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Development Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#types-of-contributions">Types of Contributions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#report-bugs">Report Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#fix-bugs">Fix Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#implement-features">Implement Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#write-documentation">Write Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#submit-feedback">Submit Feedback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#get-started">Get Started!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#unit-testing-guidelines">Unit Testing Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#tips">Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#release-workflow">Release Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">0.1.0</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SteganoGAN</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>steganogan.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for steganogan.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">zlib</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">exp</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">reedsolo</span> <span class="k">import</span> <span class="n">RSCodec</span>
+<span class="kn">from</span> <span class="nn">torch.nn.functional</span> <span class="k">import</span> <span class="n">conv2d</span>
+
+<span class="n">rs</span> <span class="o">=</span> <span class="n">RSCodec</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="text_to_bits"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.text_to_bits">[docs]</a><span class="k">def</span> <span class="nf">text_to_bits</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert text to a list of ints in {0, 1}&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">bytearray_to_bits</span><span class="p">(</span><span class="n">text_to_bytearray</span><span class="p">(</span><span class="n">text</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="bits_to_text"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.bits_to_text">[docs]</a><span class="k">def</span> <span class="nf">bits_to_text</span><span class="p">(</span><span class="n">bits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a list of ints in {0, 1} to text&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">bytearray_to_text</span><span class="p">(</span><span class="n">bits_to_bytearray</span><span class="p">(</span><span class="n">bits</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="bytearray_to_bits"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.bytearray_to_bits">[docs]</a><span class="k">def</span> <span class="nf">bytearray_to_bits</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert bytearray to a list of bits&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">bits</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">bits</span> <span class="o">=</span> <span class="s1">&#39;00000000&#39;</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">bits</span><span class="p">):]</span> <span class="o">+</span> <span class="n">bits</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bits</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="bits_to_bytearray"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.bits_to_bytearray">[docs]</a><span class="k">def</span> <span class="nf">bits_to_bytearray</span><span class="p">(</span><span class="n">bits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a list of bits to a bytearray&quot;&quot;&quot;</span>
+    <span class="n">ints</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span><span class="p">):</span>
+        <span class="n">byte</span> <span class="o">=</span> <span class="n">bits</span><span class="p">[</span><span class="n">b</span> <span class="o">*</span> <span class="mi">8</span><span class="p">:(</span><span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">]</span>
+        <span class="n">ints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">bit</span><span class="p">)</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">byte</span><span class="p">]),</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">ints</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="text_to_bytearray"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.text_to_bytearray">[docs]</a><span class="k">def</span> <span class="nf">text_to_bytearray</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compress and add error correction&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s2">&quot;expected a string&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="bytearray_to_text"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.bytearray_to_text">[docs]</a><span class="k">def</span> <span class="nf">bytearray_to_text</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply error correction and decompress&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">),</span> <span class="s2">&quot;expected a bytearray&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="first_element"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.first_element">[docs]</a><span class="k">def</span> <span class="nf">first_element</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the first element of two&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">storage</span></div>
+
+
+<div class="viewcode-block" id="gaussian"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.gaussian">[docs]</a><span class="k">def</span> <span class="nf">gaussian</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gaussian window.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Window_function#Gaussian_window</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_exp</span> <span class="o">=</span> <span class="p">[</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">window_size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_size</span><span class="p">)]</span>
+    <span class="n">gauss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">_exp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gauss</span> <span class="o">/</span> <span class="n">gauss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="create_window"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.create_window">[docs]</a><span class="k">def</span> <span class="nf">create_window</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+    <span class="n">_1D_window</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_2D_window</span> <span class="o">=</span> <span class="n">_1D_window</span><span class="o">.</span><span class="n">mm</span><span class="p">(</span><span class="n">_1D_window</span><span class="o">.</span><span class="n">t</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">_2D_window</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">window</span></div>
+
+
+<span class="k">def</span> <span class="nf">_ssim</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">size_average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">padding_size</span> <span class="o">=</span> <span class="n">window_size</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">mu1</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_size</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+    <span class="n">mu2</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_size</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+
+    <span class="n">mu1_sq</span> <span class="o">=</span> <span class="n">mu1</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mu2_sq</span> <span class="o">=</span> <span class="n">mu2</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">mu1_mu2</span> <span class="o">=</span> <span class="n">mu1</span> <span class="o">*</span> <span class="n">mu2</span>
+
+    <span class="n">sigma1_sq</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="n">img1</span> <span class="o">*</span> <span class="n">img1</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_size</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu1_sq</span>
+    <span class="n">sigma2_sq</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="n">img2</span> <span class="o">*</span> <span class="n">img2</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_size</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu2_sq</span>
+    <span class="n">sigma12</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="n">img1</span> <span class="o">*</span> <span class="n">img2</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding_size</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu1_mu2</span>
+
+    <span class="n">C1</span> <span class="o">=</span> <span class="mf">0.01</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="mf">0.03</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="n">_ssim_quotient</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">mu1_mu2</span> <span class="o">+</span> <span class="n">C1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma12</span> <span class="o">+</span> <span class="n">C2</span><span class="p">))</span>
+    <span class="n">_ssim_divident</span> <span class="o">=</span> <span class="p">((</span><span class="n">mu1_sq</span> <span class="o">+</span> <span class="n">mu2_sq</span> <span class="o">+</span> <span class="n">C1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sigma1_sq</span> <span class="o">+</span> <span class="n">sigma2_sq</span> <span class="o">+</span> <span class="n">C2</span><span class="p">))</span>
+
+    <span class="n">ssim_map</span> <span class="o">=</span> <span class="n">_ssim_quotient</span> <span class="o">/</span> <span class="n">_ssim_divident</span>
+
+    <span class="k">if</span> <span class="n">size_average</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ssim_map</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ssim_map</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ssim"><a class="viewcode-back" href="../../api/steganogan.utils.html#steganogan.utils.ssim">[docs]</a><span class="k">def</span> <span class="nf">ssim</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">size_average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">img1</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">create_window</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">img1</span><span class="o">.</span><span class="n">is_cuda</span><span class="p">:</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="n">img1</span><span class="o">.</span><span class="n">get_device</span><span class="p">())</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_ssim</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">size_average</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, MIT Data To AI Lab
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

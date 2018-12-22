@@ -1,0 +1,7 @@
+steganogan.critics module
+=========================
+
+.. automodule:: steganogan.critics
+    :members:
+    :undoc-members:
+    :show-inheritance:

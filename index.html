@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SteganoGAN &mdash; SteganoGAN 0.1.0-dev documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SteganoGAN" href="readme.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> SteganoGAN
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">SteganoGAN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html#fitting-a-new-model">Fitting a new model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#stable-release">Stable release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#from-source">From source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/steganogan.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/steganogan.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.critics.html">steganogan.critics module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.decoders.html">steganogan.decoders module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.encoders.html">steganogan.encoders module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.loader.html">steganogan.loader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.models.html">steganogan.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.utils.html">steganogan.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Development Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#report-bugs">Report Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#fix-bugs">Fix Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#implement-features">Implement Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#write-documentation">Write Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#submit-feedback">Submit Feedback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#unit-testing-guidelines">Unit Testing Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#tips">Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#release-workflow">Release Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="history.html#id1">0.1.0</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">SteganoGAN</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>SteganoGAN</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/DAI-Lab/steganogan/blob/master/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p align="left">
+<img width=15% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/Logo_DAI_highres.png" alt=“SteganoGAN” />
+<i>An open source project from Data to AI Lab at MIT.</i>
+</p><a class="reference external image-reference" href="https://pypi.python.org/pypi/steganogan"><img alt="PyPI Shield" src="https://img.shields.io/pypi/v/steganogan.svg" /></a>
+<a class="reference external image-reference" href="https://travis-ci.org/DAI-Lab/SteganoGAN"><img alt="Travis CI Shield" src="https://travis-ci.org/DAI-Lab/SteganoGAN.svg?branch=master" /></a>
+<div class="section" id="steganogan">
+<h1>SteganoGAN<a class="headerlink" href="#steganogan" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>License: MIT</li>
+<li>Documentation: <a class="reference external" href="https://DAI-Lab.github.io/steganogan">https://DAI-Lab.github.io/steganogan</a></li>
+<li>Homepage: <a class="reference external" href="https://github.com/DAI-Lab/steganogan">https://github.com/DAI-Lab/steganogan</a></li>
+</ul>
+</div>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p><strong>SteganoGAN</strong> is a steganographic tool that uses adversarial training to hide messages in images.</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>In order to install <strong>SteganogGAN</strong>, clone the repository and install it from source running
+the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:DAI-Lab/steganogan.git
+<span class="nb">cd</span> steganogan
+make install
+</pre></div>
+</div>
+<p>For development, you can use the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install-develop</span></code> command instead in order to install all
+the required dependencies for testing, code linting and notebook running.</p>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The simplest way to use <strong>SteganoGAN</strong> is loading one of the pretrained models  which have been
+included in the research folder:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">steganogan</span> <span class="kn">import</span> <span class="n">SteganoGAN</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">steganogan</span> <span class="o">=</span> <span class="n">SteganoGAN</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;research/models/dense.steg&#39;</span><span class="p">)</span>
+<span class="n">Using</span> <span class="n">CUDA</span> <span class="n">device</span>
+</pre></div>
+</div>
+<p>Once we have loaded our model, we are ready to give it an input image path, the path of the
+image that we want to generate, and the message that we want to hide:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; steganogan.encode(&#39;research/input.png&#39;, &#39;research/output.png&#39;, &#39;This is a super secret message!&#39;)
+Encoding completed.
+</pre></div>
+</div>
+<p>This will generate an <code class="docutils literal notranslate"><span class="pre">output.png</span></code> image that will look almost like the input one and will
+contain the message hidden inside it.</p>
+<p>After this, when we want to extract the message from the image, we can simply pass it to the
+<code class="docutils literal notranslate"><span class="pre">decode</span></code> method:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; steganogan.decode(&#39;research/output.png&#39;)
+&#39;This is a super secret message!&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="fitting-a-new-model">
+<h1>Fitting a new model<a class="headerlink" href="#fitting-a-new-model" title="Permalink to this headline">¶</a></h1>
+<p>A usage example notebook has been included in the <code class="docutils literal notranslate"><span class="pre">research</span></code> folder with a step by step guide
+about how to fit a new model on a new images dataset, save it to a file, and later on reload it
+and use it to encode and decode messages.</p>
+<p>A convenience script has been also included in the <code class="docutils literal notranslate"><span class="pre">research/data</span></code> folder to download a couple
+of demo datasets to train models with.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="readme.html" class="btn btn-neutral float-right" title="SteganoGAN" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, MIT Data To AI Lab
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

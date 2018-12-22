@@ -1,0 +1,7 @@
+steganogan.encoders module
+==========================
+
+.. automodule:: steganogan.encoders
+    :members:
+    :undoc-members:
+    :show-inheritance:
