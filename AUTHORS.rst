@@ -5,9 +5,11 @@ Credits
 Development Lead
 ----------------
 
-* MIT Data To AI Lab <dailabmit@gmail.com>
+* Kalyan Veeramachaneni <kalyan@mit.edu>
+* Kevin Zhang <kevz@mit.edu>
 
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Plamen Valentinov <plamen@pythiac.com>
+* Carles Sala <csala@csail.mit.edu>
