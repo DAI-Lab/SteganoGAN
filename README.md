@@ -3,14 +3,8 @@
 <i>An open source project from Data to AI Lab at MIT.</i>
 </p>
 
-<p align="center">
-<i>
-Image steganography using generative adversarial networks.
-</i>
-</p>
-
 [![PyPI Shield](https://img.shields.io/pypi/v/steganogan.svg)](https://pypi.python.org/pypi/steganogan)
-[![Travis CI Shield](https://travis-ci.org/DAI-Lab/steganogan.svg?branch=master)](https://travis-ci.org/DAI-Lab/steganogan)
+[![Travis CI Shield](https://travis-ci.org/DAI-Lab/SteganoGAN.svg?branch=master)](https://travis-ci.org/DAI-Lab/SteganoGAN)
 
 # SteganoGAN
 
