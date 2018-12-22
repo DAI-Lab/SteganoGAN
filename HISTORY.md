@@ -1,5 +1,7 @@
 # History
 
-## 0.1.0
+## 0.1.0 - First release to PyPi
 
-* First release on PyPI.
+* SteganoGAN class which can be fitted, saved, loaded and used to encode and decode messages.
+* Basic command line interface that allow using pretrained models.
+* Basic and Dense pretrained models for demo purposes.
