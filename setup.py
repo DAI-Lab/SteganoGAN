@@ -18,7 +18,7 @@ install_requires = [
     'scikit-learn==0.19.1',
     'torch>=0.4.0',
     'torchvision==0.2.1',
-    'tqdm==4.28.1'
+    'tqdm==4.28.1',
 ]
 
 setup_requires = [
@@ -67,7 +67,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
@@ -91,7 +90,7 @@ setup(
     keywords='steganogan',
     name='steganogan',
     packages=find_packages(include=['steganogan', 'steganogan.*']),
-    python_requires='>=3.4',
+    python_requires='>=3.5',
     setup_requires=setup_requires,
     test_suite='tests',
     tests_require=tests_require,

@@ -14,7 +14,7 @@ Image steganography using generative adversarial networks.
 
 # SteganoGAN
 
-- Free software: MIT license
+- License: MIT
 - Documentation: https://DAI-Lab.github.io/steganogan
 - Homepage: https://github.com/DAI-Lab/steganogan
 
@@ -24,13 +24,8 @@ Image steganography using generative adversarial networks.
 
 # Installation
 
-The simplest and recommended way to install SteganoGAN is using `pip`:
-
-```bash
-pip install steganogan
-```
-
-Alternatively, you can also clone the repository and install it from source
+In order to install **SteganogGAN**, clone the repository and install it from source running
+the `make install` command.
 
 ```bash
 git clone git@github.com:DAI-Lab/steganogan.git
@@ -38,7 +33,7 @@ cd steganogan
 make install
 ```
 
-For development, you can use the `make install-develop` target instead in order to install all
+For development, you can use the `make install-develop` command instead in order to install all
 the required dependencies for testing, code linting and notebook running.
 
 # Usage
