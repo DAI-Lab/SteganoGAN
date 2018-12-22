@@ -305,7 +305,9 @@ class SteganoGAN(object):
 
         generated = (generated.permute(2, 1, 0).detach().cpu().numpy() + 1.0) * 127.5
         imwrite(output, generated.astype('uint8'))
-        print('Encoding completed.')
+
+        if self.verbose:
+            print('Encoding completed.')
 
     def decode(self, image):
 
@@ -340,10 +342,11 @@ class SteganoGAN(object):
             pickle.dump(self, pickle_file)
 
     @classmethod
-    def load(cls, path, cuda=True):
+    def load(cls, path, cuda=True, verbose=False):
         """Loads an instance of SteganoGAN from the given path."""
         with open(path, 'rb') as pickle_file:
             steganogan = pickle.load(pickle_file)
 
+        steganogan.verbose = verbose
         steganogan.set_device(cuda)
         return steganogan
