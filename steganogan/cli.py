@@ -41,6 +41,7 @@ def _decode(args):
 
 def _get_parser():
 
+    # Parent Parser - Shared options
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument('-v', '--verbose', action='store_true', help='Be verbose')
     parent.add_argument('-a', '--architecture', default='dense', choices=('basic', 'dense'),
@@ -53,7 +54,7 @@ def _get_parser():
     subparsers = parser.add_subparsers(title='action', help='Action to perform')
     parser.set_defaults(action=None)
 
-    # Encodea Parser
+    # Encode Parser
     encode = subparsers.add_parser('encode', parents=[parent],
                                    help='Hide a message into a steganographic image')
     encode.set_defaults(action=_encode)
@@ -62,7 +63,7 @@ def _get_parser():
     encode.add_argument('cover', help='Path to the image to use as cover')
     encode.add_argument('message', help='Message to encode')
 
-    # Decoder
+    # Decode Parser
     decode = subparsers.add_parser('decode', parents=[parent],
                                    help='Read a message from a steganographic image')
     decode.set_defaults(action=_decode)
