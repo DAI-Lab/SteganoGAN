@@ -9,8 +9,8 @@
 # SteganoGAN
 
 - License: MIT
-- Documentation: https://DAI-Lab.github.io/steganogan
-- Homepage: https://github.com/DAI-Lab/steganogan
+- Documentation: https://DAI-Lab.github.io/SteganoGAN
+- Homepage: https://github.com/DAI-Lab/SteganoGAN
 
 # Overview
 
@@ -18,12 +18,17 @@
 
 # Installation
 
-In order to install **SteganogGAN**, clone the repository and install it from source running
-the `make install` command.
+The simplest and recommended way to install SteganoGAN is using `pip`:
 
 ```bash
-git clone git@github.com:DAI-Lab/steganogan.git
-cd steganogan
+pip install steganogan
+```
+
+Alternatively, clone the repository and install it from source running the `make install` command.
+
+```bash
+git clone git@github.com:DAI-Lab/SteganoGAN.git
+cd SteganoGAN
 make install
 ```
 
@@ -32,8 +37,48 @@ the required dependencies for testing, code linting and notebook running.
 
 # Usage
 
-The simplest way to use **SteganoGAN** is loading one of the pretrained models  which have been
-included in the research folder:
+## Command Line
+
+**SteganoGAN** includes a command line interface, which allows to easily hide messages in images
+and later on read them back.
+
+### Hide a message inside an image
+
+To encode an image, after **SteganoGAN** has been installed, just execute `steganogan encode`
+passing the path to the image to be used as cover and the message to hide in it:
+
+```
+steganogan encode [options] path/to/cover/image.png "Message to hide"
+```
+
+### Read a message from an image
+
+To decode a message from a generated image, execute `steganogan decode` passing the path
+to the image:
+
+```
+steganogan decode [options] path/to/generated/image.png
+```
+
+### Additional options
+
+The script has some additional options to control its behavior:
+
+* `-o, --output PATH`: Path where the generated image will be stored. Defaults to `output.png`.
+* `-a, --architecture ARCH`: Architecture to use, basic or dense. Defaults to dense.
+* `-v, --verbose`: Be verbose.
+* `--cpu`: force CPU usage even if CUDA is available. This might be needed if there is a GPU
+  available in the system but the VRAM amount is too low.
+
+**NOTE**: Make sure to use the same architecture for both encoding and decoding, otherwise
+SteganoGAN won't be able to decode the message.
+
+## Python
+
+The main way to interact with **SteganoGAN** from Python is through the class
+`steganogan.SteganoGAN`.
+
+This class can be loaded by giving it the path to a pretrained model:
 
 ```
 >>> from steganogan import SteganoGAN

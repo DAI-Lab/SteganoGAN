@@ -72,6 +72,11 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     description="Steganography tool based on DeepLearning GANs",
+    entry_points={
+        'console_scripts': [
+            'steganogan=steganogan:cli.main'
+        ],
+    },
     extras_require={
         'test': tests_require,
         'dev': development_requires + tests_require,
