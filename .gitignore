@@ -106,3 +106,6 @@ ENV/
 *.png
 *.jpg
 .DS_Store
+
+research/data
+research/*.png

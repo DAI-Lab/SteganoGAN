@@ -2,7 +2,8 @@
 
 # Div2K
 # -------------------------
-mkdir div2k; cd div2k
+mkdir div2k
+cd div2k
 
 wget http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_HR.zip
 mkdir val
@@ -18,7 +19,8 @@ cd ..
 
 # MSCOCO
 # -------------------------
-mkdir mscoco; cd mscoco
+mkdir mscoco
+cd mscoco
 
 wget http://images.cocodataset.org/zips/test2017.zip
 unzip test2017.zip
