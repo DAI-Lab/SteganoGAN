@@ -5,11 +5,14 @@ import torch
 import torchvision
 from torchvision import transforms
 
+_DEFAULT_MU = [.5, .5, .5]
+_DEFAULT_SIGMA = [.5, .5, .5]
+
 DEFAULT_TRANSFORM = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.RandomCrop(360, pad_if_needed=True),
     transforms.ToTensor(),
-    transforms.Normalize([0.5] * 3, [0.5] * 3),
+    transforms.Normalize(_DEFAULT_MU, _DEFAULT_SIGMA),
 ])
 
 
