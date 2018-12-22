@@ -77,7 +77,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">SteganoGAN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#command-line">Command Line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#hide-a-message-inside-an-image">Hide a message inside an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#read-a-message-from-an-image">Read a message from an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#additional-options">Additional options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#python">Python</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#fitting-a-new-model">Fitting a new model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../installation.html#stable-release">Stable release</a></li>
@@ -90,6 +99,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api/steganogan.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/steganogan.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.cli.html">steganogan.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.critics.html">steganogan.critics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.decoders.html">steganogan.decoders module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.encoders.html">steganogan.encoders module</a></li>
@@ -498,7 +508,9 @@
 
         <span class="n">generated</span> <span class="o">=</span> <span class="p">(</span><span class="n">generated</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">127.5</span>
         <span class="n">imwrite</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">generated</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;uint8&#39;</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Encoding completed.&#39;</span><span class="p">)</span></div>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Encoding completed.&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SteganoGAN.decode"><a class="viewcode-back" href="../../api/steganogan.models.html#steganogan.SteganoGAN.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
 
@@ -533,11 +545,12 @@
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SteganoGAN.load"><a class="viewcode-back" href="../../api/steganogan.models.html#steganogan.SteganoGAN.load">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads an instance of SteganoGAN from the given path.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pickle_file</span><span class="p">:</span>
             <span class="n">steganogan</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">)</span>
 
+        <span class="n">steganogan</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="n">steganogan</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">cuda</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">steganogan</span></div></div>
 </pre></div>

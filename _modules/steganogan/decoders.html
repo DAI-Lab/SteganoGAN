@@ -77,7 +77,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">SteganoGAN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#command-line">Command Line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#hide-a-message-inside-an-image">Hide a message inside an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#read-a-message-from-an-image">Read a message from an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#additional-options">Additional options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#python">Python</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#fitting-a-new-model">Fitting a new model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../installation.html#stable-release">Stable release</a></li>
@@ -90,6 +99,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api/steganogan.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/steganogan.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.cli.html">steganogan.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.critics.html">steganogan.critics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.decoders.html">steganogan.decoders module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.encoders.html">steganogan.encoders module</a></li>
@@ -197,7 +207,7 @@
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
 
-<div class="viewcode-block" id="BasicDecoder"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.BasicDecoder">[docs]</a><span class="k">class</span> <span class="nc">BasicDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicDecoder"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.decoders.BasicDecoder">[docs]</a><span class="k">class</span> <span class="nc">BasicDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The BasicDecoder module takes an steganographic image and attempts to decode</span>
 <span class="sd">    the embedded data tensor.</span>
@@ -228,11 +238,11 @@
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">data_depth</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="BasicDecoder.forward"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.BasicDecoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicDecoder.forward"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.decoders.BasicDecoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="DenseDecoder"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.DenseDecoder">[docs]</a><span class="k">class</span> <span class="nc">DenseDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="DenseDecoder"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.decoders.DenseDecoder">[docs]</a><span class="k">class</span> <span class="nc">DenseDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The DenseDecoder module takes an steganographic image and attempts to decode</span>
 <span class="sd">    the embedded data tensor.</span>
@@ -275,7 +285,7 @@
                       <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DenseDecoder.forward"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.DenseDecoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="DenseDecoder.forward"><a class="viewcode-back" href="../../api/steganogan.decoders.html#steganogan.decoders.DenseDecoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
         <span class="n">x3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>

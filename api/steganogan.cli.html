@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>steganogan package &mdash; SteganoGAN 0.1.0-dev documentation</title>
+  <title>steganogan.cli module &mdash; SteganoGAN 0.1.0-dev documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="steganogan.cli module" href="steganogan.cli.html" />
-    <link rel="prev" title="Usage" href="../usage.html" /> 
+    <link rel="next" title="steganogan.critics module" href="steganogan.critics.html" />
+    <link rel="prev" title="steganogan package" href="steganogan.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -99,9 +99,9 @@
 </ul>
 <p class="caption"><span class="caption-text">Advanced Usage</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="steganogan.cli.html">steganogan.cli module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="steganogan.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="steganogan.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">steganogan.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="steganogan.critics.html">steganogan.critics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="steganogan.decoders.html">steganogan.decoders module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="steganogan.encoders.html">steganogan.encoders module</a></li>
@@ -185,14 +185,16 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>steganogan package</li>
+          <li><a href="steganogan.html">steganogan package</a> &raquo;</li>
+        
+      <li>steganogan.cli module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/DAI-Lab/steganogan/blob/master/docs/api/steganogan.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/DAI-Lab/steganogan/blob/master/docs/api/steganogan.cli.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -206,70 +208,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-steganogan">
-<span id="steganogan-package"></span><h1>steganogan package<a class="headerlink" href="#module-steganogan" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-steganogan.cli">
+<span id="steganogan-cli-module"></span><h1>steganogan.cli module<a class="headerlink" href="#module-steganogan.cli" title="Permalink to this headline">¶</a></h1>
 <p>Top-level package for SteganoGAN.</p>
-<dl class="class">
-<dt id="steganogan.SteganoGAN">
-<em class="property">class </em><code class="descclassname">steganogan.</code><code class="descname">SteganoGAN</code><span class="sig-paren">(</span><em>data_depth</em>, <em>encoder</em>, <em>decoder</em>, <em>critic</em>, <em>cuda=False</em>, <em>verbose=False</em>, <em>log_dir=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="steganogan.SteganoGAN.decode">
-<code class="descname">decode</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.decode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.decode" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="steganogan.cli.main">
+<code class="descclassname">steganogan.cli.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/cli.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.cli.main" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="steganogan.SteganoGAN.encode">
-<code class="descname">encode</code><span class="sig-paren">(</span><em>cover</em>, <em>output</em>, <em>text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.encode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.encode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Encode an image.
-:param cover: Path to the image to be used as cover.
-:type cover: str
-:param output: Path where the generated image will be saved.
-:type output: str
-:param text: Message to hide inside the image.
-:type text: str</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="steganogan.SteganoGAN.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>train</em>, <em>validate</em>, <em>epochs=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Train a new model with the given ImageLoader class.</p>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="steganogan.SteganoGAN.load">
-<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>path</em>, <em>cuda=True</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads an instance of SteganoGAN from the given path.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="steganogan.SteganoGAN.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the fitted model in the given path. Raises an exception if there is no model.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="steganogan.SteganoGAN.set_device">
-<code class="descname">set_device</code><span class="sig-paren">(</span><em>cuda=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.set_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.set_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the torch device depending on whether cuda is avaiable or not.</p>
-</dd></dl>
-
-</dd></dl>
-
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.cli.html">steganogan.cli module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.critics.html">steganogan.critics module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.decoders.html">steganogan.decoders module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.encoders.html">steganogan.encoders module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.loader.html">steganogan.loader module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.models.html">steganogan.models module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="steganogan.utils.html">steganogan.utils module</a></li>
-</ul>
-</div>
-</div>
 </div>
 
 
@@ -280,10 +226,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="steganogan.cli.html" class="btn btn-neutral float-right" title="steganogan.cli module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="steganogan.critics.html" class="btn btn-neutral float-right" title="steganogan.critics module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../usage.html" class="btn btn-neutral" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="steganogan.html" class="btn btn-neutral" title="steganogan package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

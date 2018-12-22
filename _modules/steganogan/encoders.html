@@ -77,7 +77,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">SteganoGAN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#command-line">Command Line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#hide-a-message-inside-an-image">Hide a message inside an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#read-a-message-from-an-image">Read a message from an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#additional-options">Additional options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#python">Python</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#fitting-a-new-model">Fitting a new model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../installation.html#stable-release">Stable release</a></li>
@@ -90,6 +99,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api/steganogan.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api/steganogan.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.cli.html">steganogan.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.critics.html">steganogan.critics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.decoders.html">steganogan.decoders module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/steganogan.encoders.html">steganogan.encoders module</a></li>
@@ -197,7 +207,7 @@
 <span class="kn">from</span> <span class="nn">torch</span> <span class="k">import</span> <span class="n">nn</span>
 
 
-<div class="viewcode-block" id="BasicEncoder"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.BasicEncoder">[docs]</a><span class="k">class</span> <span class="nc">BasicEncoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicEncoder"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.encoders.BasicEncoder">[docs]</a><span class="k">class</span> <span class="nc">BasicEncoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The BasicEncoder module takes an cover image and a data tensor and combines</span>
 <span class="sd">    them into a steganographic image.</span>
@@ -240,7 +250,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_models</span><span class="p">()</span>
 
-<div class="viewcode-block" id="BasicEncoder.forward"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.BasicEncoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicEncoder.forward"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.encoders.BasicEncoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">image</span><span class="p">)</span>
         <span class="n">x_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
 
@@ -254,7 +264,7 @@
         <span class="k">return</span> <span class="n">x</span></div></div>
 
 
-<div class="viewcode-block" id="ResidualEncoder"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.ResidualEncoder">[docs]</a><span class="k">class</span> <span class="nc">ResidualEncoder</span><span class="p">(</span><span class="n">BasicEncoder</span><span class="p">):</span>
+<div class="viewcode-block" id="ResidualEncoder"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.encoders.ResidualEncoder">[docs]</a><span class="k">class</span> <span class="nc">ResidualEncoder</span><span class="p">(</span><span class="n">BasicEncoder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ResidualEncoder module takes an cover image and a data tensor and combines</span>
 <span class="sd">    them into a steganographic image.</span>
@@ -283,7 +293,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span></div>
 
 
-<div class="viewcode-block" id="DenseEncoder"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.DenseEncoder">[docs]</a><span class="k">class</span> <span class="nc">DenseEncoder</span><span class="p">(</span><span class="n">BasicEncoder</span><span class="p">):</span>
+<div class="viewcode-block" id="DenseEncoder"><a class="viewcode-back" href="../../api/steganogan.encoders.html#steganogan.encoders.DenseEncoder">[docs]</a><span class="k">class</span> <span class="nc">DenseEncoder</span><span class="p">(</span><span class="n">BasicEncoder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The DenseEncoder module takes an cover image and a data tensor and combines</span>
 <span class="sd">    them into a steganographic image.</span>

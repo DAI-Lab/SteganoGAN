@@ -11,6 +11,7 @@ Submodules
 
 .. toctree::
 
+   steganogan.cli
    steganogan.critics
    steganogan.decoders
    steganogan.encoders

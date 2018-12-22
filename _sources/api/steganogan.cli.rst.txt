@@ -1,0 +1,7 @@
+steganogan.cli module
+=====================
+
+.. automodule:: steganogan.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -78,7 +78,16 @@
 <li class="toctree-l1"><a class="reference internal" href="readme.html">SteganoGAN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="readme.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="readme.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readme.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#command-line">Command Line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#hide-a-message-inside-an-image">Hide a message inside an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#read-a-message-from-an-image">Read a message from an image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#additional-options">Additional options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#python">Python</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="readme.html#fitting-a-new-model">Fitting a new model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#stable-release">Stable release</a></li>
@@ -91,6 +100,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/steganogan.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/steganogan.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/steganogan.cli.html">steganogan.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/steganogan.critics.html">steganogan.critics module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/steganogan.decoders.html">steganogan.decoders module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/steganogan.encoders.html">steganogan.encoders module</a></li>
@@ -208,6 +218,7 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -216,15 +227,9 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/steganogan.html#steganogan.BasicEncoder.add_image">add_image (steganogan.BasicEncoder attribute)</a>
+      <li><a href="api/steganogan.encoders.html#steganogan.encoders.BasicEncoder.add_image">add_image (steganogan.encoders.BasicEncoder attribute)</a>
 
       <ul>
-        <li><a href="api/steganogan.html#steganogan.DenseEncoder.add_image">(steganogan.DenseEncoder attribute)</a>
-</li>
-        <li><a href="api/steganogan.html#steganogan.ResidualEncoder.add_image">(steganogan.ResidualEncoder attribute)</a>
-</li>
-        <li><a href="api/steganogan.encoders.html#steganogan.encoders.BasicEncoder.add_image">(steganogan.encoders.BasicEncoder attribute)</a>
-</li>
         <li><a href="api/steganogan.encoders.html#steganogan.encoders.DenseEncoder.add_image">(steganogan.encoders.DenseEncoder attribute)</a>
 </li>
         <li><a href="api/steganogan.encoders.html#steganogan.encoders.ResidualEncoder.add_image">(steganogan.encoders.ResidualEncoder attribute)</a>
@@ -236,24 +241,12 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/steganogan.html#steganogan.BasicCritic">BasicCritic (class in steganogan)</a>
-
-      <ul>
-        <li><a href="api/steganogan.critics.html#steganogan.critics.BasicCritic">(class in steganogan.critics)</a>
+      <li><a href="api/steganogan.critics.html#steganogan.critics.BasicCritic">BasicCritic (class in steganogan.critics)</a>
 </li>
-      </ul></li>
-      <li><a href="api/steganogan.html#steganogan.BasicDecoder">BasicDecoder (class in steganogan)</a>
-
-      <ul>
-        <li><a href="api/steganogan.decoders.html#steganogan.decoders.BasicDecoder">(class in steganogan.decoders)</a>
+      <li><a href="api/steganogan.decoders.html#steganogan.decoders.BasicDecoder">BasicDecoder (class in steganogan.decoders)</a>
 </li>
-      </ul></li>
-      <li><a href="api/steganogan.html#steganogan.BasicEncoder">BasicEncoder (class in steganogan)</a>
-
-      <ul>
-        <li><a href="api/steganogan.encoders.html#steganogan.encoders.BasicEncoder">(class in steganogan.encoders)</a>
+      <li><a href="api/steganogan.encoders.html#steganogan.encoders.BasicEncoder">BasicEncoder (class in steganogan.encoders)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/steganogan.utils.html#steganogan.utils.bits_to_bytearray">bits_to_bytearray() (in module steganogan.utils)</a>
@@ -294,12 +287,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/steganogan.decoders.html#steganogan.decoders.DenseDecoder">DenseDecoder (class in steganogan.decoders)</a>
 </li>
-      <li><a href="api/steganogan.html#steganogan.DenseEncoder">DenseEncoder (class in steganogan)</a>
-
-      <ul>
-        <li><a href="api/steganogan.encoders.html#steganogan.encoders.DenseEncoder">(class in steganogan.encoders)</a>
+      <li><a href="api/steganogan.encoders.html#steganogan.encoders.DenseEncoder">DenseEncoder (class in steganogan.encoders)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -326,15 +315,11 @@
         <li><a href="api/steganogan.html#steganogan.SteganoGAN.fit">(steganogan.SteganoGAN method)</a>
 </li>
       </ul></li>
-      <li><a href="api/steganogan.html#steganogan.BasicCritic.forward">forward() (steganogan.BasicCritic method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/steganogan.critics.html#steganogan.critics.BasicCritic.forward">forward() (steganogan.critics.BasicCritic method)</a>
 
       <ul>
-        <li><a href="api/steganogan.html#steganogan.BasicDecoder.forward">(steganogan.BasicDecoder method)</a>
-</li>
-        <li><a href="api/steganogan.html#steganogan.BasicEncoder.forward">(steganogan.BasicEncoder method)</a>
-</li>
-        <li><a href="api/steganogan.critics.html#steganogan.critics.BasicCritic.forward">(steganogan.critics.BasicCritic method)</a>
-</li>
         <li><a href="api/steganogan.decoders.html#steganogan.decoders.BasicDecoder.forward">(steganogan.decoders.BasicDecoder method)</a>
 </li>
         <li><a href="api/steganogan.decoders.html#steganogan.decoders.DenseDecoder.forward">(steganogan.decoders.DenseDecoder method)</a>
@@ -373,15 +358,19 @@
   </ul></td>
 </tr></table>
 
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/steganogan.cli.html#steganogan.cli.main">main() (in module steganogan.cli)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/steganogan.html#steganogan.ResidualEncoder">ResidualEncoder (class in steganogan)</a>
-
-      <ul>
-        <li><a href="api/steganogan.encoders.html#steganogan.encoders.ResidualEncoder">(class in steganogan.encoders)</a>
+      <li><a href="api/steganogan.encoders.html#steganogan.encoders.ResidualEncoder">ResidualEncoder (class in steganogan.encoders)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -411,6 +400,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/steganogan.html#module-steganogan">steganogan (module)</a>
+</li>
+      <li><a href="api/steganogan.cli.html#module-steganogan.cli">steganogan.cli (module)</a>
 </li>
       <li><a href="api/steganogan.critics.html#module-steganogan.critics">steganogan.critics (module)</a>
 </li>
