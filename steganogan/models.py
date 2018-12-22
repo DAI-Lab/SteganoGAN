@@ -72,7 +72,7 @@ class SteganoGAN(object):
         self.critic.to(self.device)
 
     def __init__(self, data_depth, encoder, decoder, critic,
-                 cuda=False, verbose=False, fit_log_path=None, **kwargs):
+                 cuda=False, verbose=False, log_dir=None, **kwargs):
 
         self.verbose = verbose
 
@@ -90,10 +90,10 @@ class SteganoGAN(object):
         self.fit_metrics = None
         self.history = list()
 
-        self.fit_log_path = fit_log_path
-        if fit_log_path:
-            os.makedirs(self.fit_log_path, exist_ok=True)
-            self.samples_path = os.path.join(self.fit_log_path, 'samples')
+        self.log_dir = log_dir
+        if log_dir:
+            os.makedirs(self.log_dir, exist_ok=True)
+            self.samples_path = os.path.join(self.log_dir, 'samples')
             os.makedirs(self.samples_path, exist_ok=True)
 
     def _random_data(self, cover):
@@ -106,7 +106,6 @@ class SteganoGAN(object):
             generated (image): Image generated with the encoded message.
         """
         N, _, H, W = cover.size()
-        cover.to(self.device)
         return torch.zeros((N, self.data_depth, H, W), device=self.device).random_(0, 2)
 
     def _encode_decode(self, cover, quantize=False):
@@ -153,7 +152,7 @@ class SteganoGAN(object):
             generated_score = self._critic(generated)
 
             self.critic_optimizer.zero_grad()
-            (cover_score - generated_score).backward(retain_graph=True)
+            (cover_score - generated_score).backward(retain_graph=False)
             self.critic_optimizer.step()
 
             for p in self.critic.parameters():
@@ -231,7 +230,7 @@ class SteganoGAN(object):
             self.critic_optimizer, self.decoder_optimizer = self._get_optimizers()
             self.epochs = 0
 
-        if self.fit_log_path:
+        if self.log_dir:
             sample_cover = next(iter(validate))[0]
 
         # Start training
@@ -252,22 +251,24 @@ class SteganoGAN(object):
             self.fit_metrics = {k: sum(v) / len(v) for k, v in metrics.items()}
             self.fit_metrics['epoch'] = epoch
 
-            if self.fit_log_path:
+            if self.log_dir:
                 self.history.append(metrics)
 
-                metrics_path = os.path.join(self.fit_log_path, 'metrics.log')
+                metrics_path = os.path.join(self.log_dir, 'metrics.log')
                 with open(metrics_path, 'w') as metrics_file:
                     json.dump(self.history, metrics_file, indent=4)
 
                 save_name = '{}.acc-{:03f}.p'.format(
                     self.epochs, self.fit_metrics['val.decoder_acc'])
 
-                self.save(os.path.join(self.fit_log_path, save_name))
+                self.save(os.path.join(self.log_dir, save_name))
                 self._generate_samples(self.samples_path, sample_cover, epoch)
 
             # Empty cuda cache (this may help for memory leaks)
             if self.cuda:
                 torch.cuda.empty_cache()
+
+            gc.collect()
 
     def _make_payload(self, width, height, depth, text):
         """

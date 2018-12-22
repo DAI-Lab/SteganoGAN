@@ -1,5 +1,6 @@
-<p align="center">
-<img width=30% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/mlblocks-icon.png" alt=“SteganoGAN” />
+<p align="left">
+<img width=15% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/Logo_DAI_highres.png" alt=“SteganoGAN” />
+<i>An open source project from Data to AI Lab at MIT.</i>
 </p>
 
 <p align="center">
@@ -19,18 +20,17 @@ Image steganography using generative adversarial networks.
 
 # Overview
 
-**SteganoGAN** is a stagenographic tool that uses Generative Adversarial Network models
-to hide messages into realistic looking images and later on recover them.
+**SteganoGAN** is a steganographic tool that uses adversarial training to hide messages in images.
 
 # Installation
 
-The simplest and recommended way to install MLBlocks is using `pip`:
+The simplest and recommended way to install SteganoGAN is using `pip`:
 
 ```bash
 pip install steganogan
 ```
 
-Alternatively, you can also clone the repository and install it from sources
+Alternatively, you can also clone the repository and install it from source
 
 ```bash
 git clone git@github.com:DAI-Lab/steganogan.git
