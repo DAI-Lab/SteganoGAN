@@ -16,7 +16,7 @@ install_requires = [
     'reedsolo>=0.3',
     'scipy>=1.1.0',
     'scikit-learn==0.19.1',
-    'torch>=0.4.0',
+    'torch>=1.0.0',
     'torchvision==0.2.1',
     'tqdm==4.28.1',
 ]
