@@ -12,7 +12,7 @@
 - Homepage: https://github.com/DAI-Lab/SteganoGAN
 
 ## Overview
-**SteganoGAN** is a library for creating steganographic images using adversarial training.
+**SteganoGAN** is a tool for creating steganographic images using adversarial training.
 
 ## Installation
 To get started with **SteganoGAN**, we recommend using `pip`:
