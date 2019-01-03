@@ -50,14 +50,20 @@ class SteganoGAN(object):
 
         return class_or_instance(**init_args)
 
+    def _move_models(self, device):
+        self.device = device
+        self.encoder.to(self.device)
+        self.decoder.to(self.device)
+        self.critic.to(self.device)
+
     def set_device(self, cuda=True):
         """Sets the torch device depending on whether cuda is avaiable or not."""
         if cuda and torch.cuda.is_available():
             self.cuda = True
-            self.device = torch.device('cuda')
+            self._move_models(torch.device('cuda'))
         else:
             self.cuda = False
-            self.device = torch.device('cpu')
+            self._move_models(torch.device('cpu'))
 
         if self.verbose:
             if not cuda:
@@ -66,10 +72,6 @@ class SteganoGAN(object):
                 print('CUDA is not available. Defaulting to CPU device')
             else:
                 print('Using CUDA device')
-
-        self.encoder.to(self.device)
-        self.decoder.to(self.device)
-        self.critic.to(self.device)
 
     def __init__(self, data_depth, encoder, decoder, critic,
                  cuda=False, verbose=False, log_dir=None, **kwargs):
@@ -207,6 +209,7 @@ class SteganoGAN(object):
             metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
 
     def _generate_samples(self, samples_path, cover, epoch):
+        cover = cover.to(self.device)
         generated, payload, decoded = self._encode_decode(cover)
         samples = generated.size(0)
         for sample in range(samples):
@@ -252,14 +255,14 @@ class SteganoGAN(object):
             self.fit_metrics['epoch'] = epoch
 
             if self.log_dir:
-                self.history.append(metrics)
+                self.history.append(self.fit_metrics)
 
                 metrics_path = os.path.join(self.log_dir, 'metrics.log')
                 with open(metrics_path, 'w') as metrics_file:
                     json.dump(self.history, metrics_file, indent=4)
 
-                save_name = '{}.acc-{:03f}.p'.format(
-                    self.epochs, self.fit_metrics['val.decoder_acc'])
+                save_name = '{}.bpp-{:03f}.p'.format(
+                    self.epochs, self.fit_metrics['val.bpp'])
 
                 self.save(os.path.join(self.log_dir, save_name))
                 self._generate_samples(self.samples_path, sample_cover, epoch)
@@ -338,8 +341,11 @@ class SteganoGAN(object):
 
     def save(self, path):
         """Save the fitted model in the given path. Raises an exception if there is no model."""
+        using_cuda = self.cuda
+        self.set_device(cuda=False)
         with open(path, 'wb') as pickle_file:
             pickle.dump(self, pickle_file)
+        self.set_device(cuda=using_cuda)
 
     @classmethod
     def load(cls, path, cuda=True, verbose=False):
