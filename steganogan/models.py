@@ -344,14 +344,14 @@ class SteganoGAN(object):
         using_cuda = self.cuda
         self.set_device(cuda=False)
         with open(path, 'wb') as pickle_file:
-            pickle.dump(self, pickle_file)
+            torch.save(self, pickle_file)
         self.set_device(cuda=using_cuda)
 
     @classmethod
     def load(cls, path, cuda=True, verbose=False):
         """Loads an instance of SteganoGAN from the given path."""
         with open(path, 'rb') as pickle_file:
-            steganogan = pickle.load(pickle_file)
+            steganogan = torch.load(pickle_file, map_location="cpu")
 
         steganogan.verbose = verbose
         steganogan.set_device(cuda)
