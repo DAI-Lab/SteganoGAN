@@ -75,20 +75,22 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">SteganoGAN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readme.html#overview">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readme.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readme.html#usage">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#command-line">Command Line</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="readme.html#hide-a-message-inside-an-image">Hide a message inside an image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="readme.html#read-a-message-from-an-image">Read a message from an image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="readme.html#additional-options">Additional options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#command-line">Command Line</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="readme.html#hide-a-message-inside-an-image">Hide a message inside an image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="readme.html#read-a-message-from-an-image">Read a message from an image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="readme.html#additional-options">Additional options</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#python">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#python">Python</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="readme.html#fitting-a-new-model">Fitting a new model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#research">Research</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#stable-release">Stable release</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#from-source">From source</a></li>
@@ -217,50 +219,48 @@
 <li>Documentation: <a class="reference external" href="https://DAI-Lab.github.io/SteganoGAN">https://DAI-Lab.github.io/SteganoGAN</a></li>
 <li>Homepage: <a class="reference external" href="https://github.com/DAI-Lab/SteganoGAN">https://github.com/DAI-Lab/SteganoGAN</a></li>
 </ul>
-</div>
 <div class="section" id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
-<p><strong>SteganoGAN</strong> is a steganographic tool that uses adversarial training to hide messages in images.</p>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><strong>SteganoGAN</strong> is a tool for creating steganographic images using adversarial training.</p>
 </div>
 <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>The simplest and recommended way to install SteganoGAN is using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To get started with <strong>SteganoGAN</strong>, we recommend using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install steganogan
 </pre></div>
 </div>
-<p>Alternatively, clone the repository and install it from source running the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> command.</p>
+<p>Alternatively, you can clone the repository and install it from source by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:DAI-Lab/SteganoGAN.git
 <span class="nb">cd</span> SteganoGAN
 make install
 </pre></div>
 </div>
 <p>For development, you can use the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install-develop</span></code> command instead in order to install all
-the required dependencies for testing, code linting and notebook running.</p>
+the required dependencies for testing and linting.</p>
 </div>
 <div class="section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="command-line">
-<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h2>
-<p><strong>SteganoGAN</strong> includes a command line interface, which allows to easily hide messages in images
-and later on read them back.</p>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h3>
+<p><strong>SteganoGAN</strong> includes a simple command line interface for encoding and decoding steganographic images.</p>
 <div class="section" id="hide-a-message-inside-an-image">
-<h3>Hide a message inside an image<a class="headerlink" href="#hide-a-message-inside-an-image" title="Permalink to this headline">¶</a></h3>
-<p>To encode an image, after <strong>SteganoGAN</strong> has been installed, just execute <code class="docutils literal notranslate"><span class="pre">steganogan</span> <span class="pre">encode</span></code>
-passing the path to the image to be used as cover and the message to hide in it:</p>
+<h4>Hide a message inside an image<a class="headerlink" href="#hide-a-message-inside-an-image" title="Permalink to this headline">¶</a></h4>
+<p>To create a steganographic image, you simply need to supply the path to the cover image and the secret
+message:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>steganogan encode [options] path/to/cover/image.png &quot;Message to hide&quot;
 </pre></div>
 </div>
 </div>
 <div class="section" id="read-a-message-from-an-image">
-<h3>Read a message from an image<a class="headerlink" href="#read-a-message-from-an-image" title="Permalink to this headline">¶</a></h3>
-<p>To decode a message from a generated image, execute <code class="docutils literal notranslate"><span class="pre">steganogan</span> <span class="pre">decode</span></code> passing the path
-to the image:</p>
+<h4>Read a message from an image<a class="headerlink" href="#read-a-message-from-an-image" title="Permalink to this headline">¶</a></h4>
+<p>To recover the secret message from a steganographic image, you simply supply the path to the steganographic
+image that was generated by a compatible model:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>steganogan decode [options] path/to/generated/image.png
 </pre></div>
 </div>
 </div>
 <div class="section" id="additional-options">
-<h3>Additional options<a class="headerlink" href="#additional-options" title="Permalink to this headline">¶</a></h3>
+<h4>Additional options<a class="headerlink" href="#additional-options" title="Permalink to this headline">¶</a></h4>
 <p>The script has some additional options to control its behavior:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">-o,</span> <span class="pre">--output</span> <span class="pre">PATH</span></code>: Path where the generated image will be stored. Defaults to <code class="docutils literal notranslate"><span class="pre">output.png</span></code>.</li>
@@ -269,48 +269,45 @@ to the image:</p>
 <li><code class="docutils literal notranslate"><span class="pre">--cpu</span></code>: force CPU usage even if CUDA is available. This might be needed if there is a GPU
 available in the system but the VRAM amount is too low.</li>
 </ul>
-<p><strong>NOTE</strong>: Make sure to use the same architecture for both encoding and decoding, otherwise
-SteganoGAN won’t be able to decode the message.</p>
+<p><strong>WARNING</strong>: Make sure to use the same architecture specification (<code class="docutils literal notranslate"><span class="pre">--architecture</span></code>) during both
+the encoding and decoding stage; otherwise, <code class="docutils literal notranslate"><span class="pre">SteganoGAN</span></code> will fail to decode the message.</p>
 </div>
 </div>
 <div class="section" id="python">
-<h2>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
-<p>The main way to interact with <strong>SteganoGAN</strong> from Python is through the class
-<code class="docutils literal notranslate"><span class="pre">steganogan.SteganoGAN</span></code>.</p>
-<p>This class can be loaded by giving it the path to a pretrained model:</p>
+<h3>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h3>
+<p>The primary way to interact with <strong>SteganoGAN</strong> from Python is through the <code class="docutils literal notranslate"><span class="pre">steganogan.SteganoGAN</span></code>
+class. This class can be instantiated using a pretrained model:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">steganogan</span> <span class="kn">import</span> <span class="n">SteganoGAN</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">steganogan</span> <span class="o">=</span> <span class="n">SteganoGAN</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;research/models/dense.steg&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">steganogan</span> <span class="o">=</span> <span class="n">SteganoGAN</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;steganogan/pretrained/dense.steg&#39;</span><span class="p">)</span>
 <span class="n">Using</span> <span class="n">CUDA</span> <span class="n">device</span>
 </pre></div>
 </div>
-<p>Once we have loaded our model, we are ready to give it an input image path, the path of the
-image that we want to generate, and the message that we want to hide:</p>
+<p>Once we have loaded our model, we can give it the input image path, the output image path, and
+the secret message:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; steganogan.encode(&#39;research/input.png&#39;, &#39;research/output.png&#39;, &#39;This is a super secret message!&#39;)
 Encoding completed.
 </pre></div>
 </div>
-<p>This will generate an <code class="docutils literal notranslate"><span class="pre">output.png</span></code> image that will look almost like the input one and will
-contain the message hidden inside it.</p>
-<p>After this, when we want to extract the message from the image, we can simply pass it to the
-<code class="docutils literal notranslate"><span class="pre">decode</span></code> method:</p>
+<p>This will generate an <code class="docutils literal notranslate"><span class="pre">output.png</span></code> image that closely resembles the input image but contains the
+secret message. In order to recover the message, we can simply pass <code class="docutils literal notranslate"><span class="pre">output.png</span></code> to the <code class="docutils literal notranslate"><span class="pre">decode</span></code>
+method:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; steganogan.decode(&#39;research/output.png&#39;)
 &#39;This is a super secret message!&#39;
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="fitting-a-new-model">
-<h1>Fitting a new model<a class="headerlink" href="#fitting-a-new-model" title="Permalink to this headline">¶</a></h1>
-<p>A usage example notebook has been included in the <code class="docutils literal notranslate"><span class="pre">research</span></code> folder with a step by step guide
-about how to fit a new model on a new images dataset, save it to a file, and later on reload it
-and use it to encode and decode messages.</p>
-<p>A convenience script has been also included in the <code class="docutils literal notranslate"><span class="pre">research/data</span></code> folder to download a couple
-of demo datasets to train models with.</p>
+<div class="section" id="research">
+<h2>Research<a class="headerlink" href="#research" title="Permalink to this headline">¶</a></h2>
+<p>We provide example scripts in the <code class="docutils literal notranslate"><span class="pre">research</span></code> folder which demonstrate how you can train your own
+<code class="docutils literal notranslate"><span class="pre">SteganoGAN</span></code> models from scratch on arbitrary datasets. In addition, we provide a convenience
+script in <code class="docutils literal notranslate"><span class="pre">research/data</span></code> for downloading two popular image datasets.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -365,7 +362,8 @@ of demo datasets to train models with.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
