@@ -50,6 +50,12 @@ class SteganoGAN(object):
 
         return class_or_instance(**init_args)
 
+    def _move_models(self, device):
+        self.device = device
+        self.encoder.to(self.device)
+        self.decoder.to(self.device)
+        self.critic.to(self.device)
+
     def set_device(self, cuda=True):
         """Sets the torch device depending on whether cuda is avaiable or not."""
         if cuda and torch.cuda.is_available():
@@ -335,17 +341,11 @@ class SteganoGAN(object):
 
     def save(self, path):
         """Save the fitted model in the given path. Raises an exception if there is no model."""
-        prev_device = self.device
-        self._move_models(torch.device('cpu'))
+        using_cuda = self.cuda
+        self.set_device(cuda=False)
         with open(path, 'wb') as pickle_file:
             pickle.dump(self, pickle_file)
-        self._move_models(prev_device)
-
-    def _move_models(self, device):
-        self.device = device
-        self.encoder.to(self.device)
-        self.decoder.to(self.device)
-        self.critic.to(self.device)
+        self.set_device(cuda=using_cuda)
 
     @classmethod
     def load(cls, path, cuda=True, verbose=False):
