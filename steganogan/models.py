@@ -143,6 +143,10 @@ class SteganoGAN(object):
 
     def _fit_critic(self, train, metrics):
         """Critic process"""
+        # Empty cuda cache (this may help for memory leaks)
+        if self.cuda:
+            torch.cuda.empty_cache()
+
         for cover, _ in tqdm(train, disable=not self.verbose):
             gc.collect()
             cover = cover.to(self.device)
@@ -163,6 +167,10 @@ class SteganoGAN(object):
 
     def _fit_coders(self, train, metrics):
         """Fit the encoder and the decoder on the train images."""
+        # Empty cuda cache (this may help for memory leaks)
+        if self.cuda:
+            torch.cuda.empty_cache()
+
         for cover, _ in tqdm(train, disable=not self.verbose):
             gc.collect()
             cover = cover.to(self.device)
@@ -188,6 +196,10 @@ class SteganoGAN(object):
 
     def _validate(self, validate, metrics):
         """Validation process"""
+        # Empty cuda cache (this may help for memory leaks)
+        if self.cuda:
+            torch.cuda.empty_cache()
+
         for cover, _ in tqdm(validate, disable=not self.verbose):
             gc.collect()
             cover = cover.to(self.device)
@@ -264,10 +276,6 @@ class SteganoGAN(object):
 
                 self.save(os.path.join(self.log_dir, save_name))
                 self._generate_samples(self.samples_path, sample_cover, epoch)
-
-            # Empty cuda cache (this may help for memory leaks)
-            if self.cuda:
-                torch.cuda.empty_cache()
 
             gc.collect()
 

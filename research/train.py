@@ -12,7 +12,7 @@ from steganogan.encoders import BasicEncoder, ResidualEncoder, DenseEncoder
 
 def main():
     torch.manual_seed(42)
-    timestamp = int(time())
+    timestamp = str(int(time()*1000))
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', default=4, type=int)
