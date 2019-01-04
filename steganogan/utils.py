@@ -49,7 +49,6 @@ def text_to_bytearray(text):
 
 def bytearray_to_text(x):
     """Apply error correction and decompress"""
-    assert isinstance(x, bytearray), "expected a bytearray"
     try:
         text = rs.decode(x)
         text = zlib.decompress(text)

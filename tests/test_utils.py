@@ -72,3 +72,36 @@ def test_bits_to_bytearray():
     """
     # setup
     pass
+
+
+def test_first_element():
+    """Test for first_element method, it has to return the first element that we pass"""
+    # setup
+    my_first_element = 1
+    my_second_element = 2
+
+    expected = my_first_element
+
+    # run
+    result = utils.first_element(my_first_element, my_second_element)
+
+    # assert
+    assert (result == expected)
+
+
+def test_create_window():
+    """Tests to create a 2d window with 1.5 sigma for the gaussian method
+    Args:
+        windows_size = 4
+        channel = 2
+    """
+    # setup
+    expected_window = utils.gaussian(4, 1.5).unsqueeze(1)
+    expected_window = expected_window.mm(expected_window.t()).float().unsqueeze(0).unsqueeze(0)
+    expected_window = expected_window.expand(2, 1, 4, 4).contiguous()
+
+    # run
+    result = utils.create_window(4, 2)
+
+    # assert
+    assert (result == expected_window).all()
