@@ -207,6 +207,7 @@ class SteganoGAN(object):
             metrics['val.bpp'].append(self.data_depth * (2 * decoder_acc.item() - 1))
 
     def _generate_samples(self, samples_path, cover, epoch):
+        cover = cover.to(self.device)
         generated, payload, decoded = self._encode_decode(cover)
         samples = generated.size(0)
         for sample in range(samples):
@@ -252,14 +253,14 @@ class SteganoGAN(object):
             self.fit_metrics['epoch'] = epoch
 
             if self.log_dir:
-                self.history.append(metrics)
+                self.history.append(self.fit_metrics)
 
                 metrics_path = os.path.join(self.log_dir, 'metrics.log')
                 with open(metrics_path, 'w') as metrics_file:
                     json.dump(self.history, metrics_file, indent=4)
 
-                save_name = '{}.acc-{:03f}.p'.format(
-                    self.epochs, self.fit_metrics['val.decoder_acc'])
+                save_name = '{}.bpp-{:03f}.p'.format(
+                    self.epochs, self.fit_metrics['val.bpp'])
 
                 self.save(os.path.join(self.log_dir, save_name))
                 self._generate_samples(self.samples_path, sample_cover, epoch)
@@ -338,15 +339,12 @@ class SteganoGAN(object):
 
     def save(self, path):
         """Save the fitted model in the given path. Raises an exception if there is no model."""
-        with open(path, 'wb') as pickle_file:
-            pickle.dump(self, pickle_file)
+        torch.save(self, path)
 
     @classmethod
     def load(cls, path, cuda=True, verbose=False):
         """Loads an instance of SteganoGAN from the given path."""
-        with open(path, 'rb') as pickle_file:
-            steganogan = pickle.load(pickle_file)
-
+        steganogan = torch.load(path, map_location='cpu')
         steganogan.verbose = verbose
         steganogan.set_device(cuda)
         return steganogan
