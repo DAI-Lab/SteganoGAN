@@ -44,7 +44,7 @@ test: ## run tests quickly with the default Python
 .PHONY: lint
 lint: ## check style with flake8 and isort
 	flake8 steganogan tests
-	isort -c --recursive steganogan tests
+	isort -c --recursive steganogan tests research
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development

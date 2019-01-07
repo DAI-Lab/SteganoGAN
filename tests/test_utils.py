@@ -71,4 +71,3 @@ def test_bits_to_bytearray():
     We want to test if we can turn bytearray into bits
     """
     # setup
-    pass

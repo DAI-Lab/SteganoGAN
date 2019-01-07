@@ -16,7 +16,7 @@ install_requires = [
     'reedsolo>=0.3',
     'scipy>=1.1.0',
     'scikit-learn==0.19.1',
-    'torch>=0.4.0',
+    'torch>=1.0.0',
     'torchvision==0.2.1',
     'tqdm==4.28.1',
 ]
@@ -95,6 +95,6 @@ setup(
     test_suite='tests',
     tests_require=tests_require,
     url='https://github.com/DAI-Lab/steganogan',
-    version='0.1.0',
+    version='0.1.1-dev',
     zip_safe=False,
 )
