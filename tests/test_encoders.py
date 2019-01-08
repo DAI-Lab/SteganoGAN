@@ -34,6 +34,17 @@ class TestBasicEncoder(TestCase):
             padding=1
         )
 
+    def test_upgrade_legacy(self):
+        """Test that we set a version to our encoder for future code changes"""
+        # setup
+        expected_version = '1'
+
+        # run
+        self.test_encoder.upgrade_legacy()
+
+        # assert
+        assert self.test_encoder.VERSION == expected_version
+
     def test_forward_1_layer(self):
         """If there is only one layer it must be called with image as the only argument."""
         # setup

@@ -43,9 +43,16 @@ class BasicEncoder(nn.Module):
 
     def __init__(self, data_depth, hidden_size):
         super().__init__()
+        self.VERSION = '1'
         self.data_depth = data_depth
         self.hidden_size = hidden_size
         self._models = self._build_models()
+
+    def upgrade_legacy(self):
+        """Transform legacy pretrained models to make them ussable with new code structure"""
+        # Transform to version 1
+        if not hasattr(self, 'VERSION'):
+            self.VERSION = '1'
 
     def forward(self, image, data):
         x = self._models[0](image)
