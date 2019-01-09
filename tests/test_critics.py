@@ -84,7 +84,7 @@ class TestBasicCritic(TestCase):
         assert (result == expected).all()
         assert_called_with_tensors(layer1, [call_1])
 
-    def test_upgrade_legacy(self):
+    def test_upgrade_legacy_without_version(self):
         """Test that upgrade legacy works, must set _models to layers"""
         # setup
         self.test_critic.layers = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
@@ -97,3 +97,15 @@ class TestBasicCritic(TestCase):
         assert self.test_critic.version == expected_version
         assert self.test_critic._models == self.test_critic.layers
 
+    @patch('steganogan.critics.nn.Sequential', autospec=True)
+    def test_upgrade_legacy_with_version_1(self, sequential_mock):
+        """The object must be the same and not changed by the method"""
+        # setup
+        critic = critics.BasicCritic(1)
+        expected = copy.deepcopy(critic)
+
+        # run
+        critic.upgrade_legacy()
+
+        # assert
+        assert critic.__dict__ == expected.__dict__
