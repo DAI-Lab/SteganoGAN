@@ -6,12 +6,13 @@ from unittest import TestCase
 def test__get_steganogan():
     """
     VALIDATE:
-        * args
-        * return value
+        * The model path is the right one, with the right architecture
+        * SteganoGAN.load is called with the right values
+        * The output of SteganoGAN.load is returned
 
-    TODO:
-        * generate args
-        * mock SteganoGAN and check that load it's called with the model's path, cpu and verbose.
+    MOCK:
+        * SteganoGAN
+        * args
     """
     pass
 
@@ -19,11 +20,10 @@ def test__get_steganogan():
 def test__encode():
     """
     VALIDATE:
-        * steganogan.encode has been called with the args
+        * steganogan.encode has been called with the right values
 
-    TODO:
-        * mock cli._get_steganogan to return a mock of steganogan
-        * mock steganogan in order to check that encode has been called with the args
+    MOCK:
+        * cli._get_steganogan to return a mock of steganogan
     """
     pass
 
@@ -31,10 +31,9 @@ def test__encode():
 def test__decode():
     """
     VALIDATE:
-        * steganogan.decode has been called with the args
+        * steganogan.decode has been called with the right values
 
-    TODO:
+    MOCK:
         * mock cli._get_steganogan to return a mock of steganogan
-        * mock steganogan in order to check that encode has been called with the args
     """
     pass

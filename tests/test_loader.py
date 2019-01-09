@@ -9,16 +9,14 @@ from unittest.mock import Mock, call, patch
 class TestDataLoader(TestCase):
     """
     METHOD:
-        __init__(self)
+        __init__(self, ...)
 
     VALIDATE:
-        * attributes
         * DEFAULT_TRANSFORM when we don't pass a transformation
+        * Arguments passed to super().__init__
 
-    TODO:
-        * test that DataLoader it's initiated with the params that we pass.
-        * test that transform it's DEFAULT_TRANSFORM if we don't pass transform.
-        * mock torch.utils.data.DataLoader
+    MOCK:
+        * torch.utils.data.DataLoader.__init__   (only the method!)
     """
 
 
@@ -28,11 +26,21 @@ class TestImageFolder(TestCase):
         __init__(self, path, transform, limit=np.inf)
 
     VALIDATE:
-        * attributes
-        * length
+        * limit attribute
+        * Arguments passed to super().__init__
 
-    TODO:
-        * test that the limit it's not above the images loaded. (method __len__ should do that)
-        * mock torchvision.datasets.ImageFolder
+    MOCK:
+        * torchvision.datasets.ImageFolder.__init__   (only the method!)
     """
 
+    """
+    METHOD:
+        __len__(self)
+
+    VALIDATE:
+        * lenght returned
+
+    TEST CASES:
+        * lenght_gt_limit
+        * length_lt_limit
+    """
