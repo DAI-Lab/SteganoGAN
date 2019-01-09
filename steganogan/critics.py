@@ -39,16 +39,16 @@ class BasicCritic(nn.Module):
 
     def __init__(self, hidden_size):
         super().__init__()
-        self.VERSION = '1'
+        self.version = '1'
         self.hidden_size = hidden_size
         self._models = self._build_models()
 
     def upgrade_legacy(self):
         """Transform legacy pretrained models to make them ussable with new code structure"""
         # Transform to version 1
-        if not hasattr(self, 'VERSION'):
+        if not hasattr(self, 'version'):
             self._models = self.layers
-            self.VERSION = '1'
+            self.version = '1'
 
     def forward(self, x):
         x = self._models(x)

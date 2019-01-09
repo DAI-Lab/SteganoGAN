@@ -8,6 +8,8 @@ import torch
 from steganogan import critics
 from tests.utils import assert_called_with_tensors
 
+import copy
+
 
 class TestBasicCritic(TestCase):
 
@@ -92,6 +94,6 @@ class TestBasicCritic(TestCase):
         self.test_critic.upgrade_legacy()
 
         # assert
-        assert self.test_critic.VERSION == expected_version
+        assert self.test_critic.version == expected_version
         assert self.test_critic._models == self.test_critic.layers
 

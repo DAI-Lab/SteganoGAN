@@ -8,6 +8,8 @@ import torch
 from steganogan import decoders
 from tests.utils import assert_called_with_tensors
 
+import copy
+
 
 class TestBasicDecoder(TestCase):
 
@@ -60,7 +62,7 @@ class TestBasicDecoder(TestCase):
         assert batchnorm_mock.call_args_list == expected_batch_calls
         assert conv2d_mock.call_args_list == expected_conv_calls
 
-    def test_upgrade_legacy(self):
+    def test_upgrade_legacy_without_version(self):
         """Upgrade legacy must create self._models from conv1, conv2, conv3, conv4"""
         # setup
         self.test_decoder.layers = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
@@ -72,7 +74,20 @@ class TestBasicDecoder(TestCase):
 
         # assert
         assert self.test_decoder._models == [self.test_decoder.layers]
-        assert self.test_decoder.VERSION == expected_version
+        assert self.test_decoder.version == expected_version
+
+    @patch('steganogan.decoders.nn.Sequential', autospec=True)
+    def test_upgrade_legacy_with_version_1(self, sequential_mock):
+        """The object must be the same and not changed by the method"""
+        # setup
+        decoder = decoders.BasicDecoder(1, 1)
+        expected = copy.deepcopy(decoder)
+
+        # run
+        decoder.upgrade_legacy()
+
+        # assert
+        assert decoder.__dict__ == expected.__dict__
 
     def test_forward_1_layer(self):
         """If there is only one layer it must be called with image as the only argument."""
@@ -120,7 +135,7 @@ class TestDenseDecoder(TestCase):
         def __init__(self):
             pass
 
-    def test_upgrade_legacy(self):
+    def test_upgrade_legacy_without_version(self):
         """Upgrade legacy must create self._models from conv1, conv2, conv3, conv4"""
         # setup
         test_decoder = self.TestDecoder() # instance an empty decoder
@@ -143,7 +158,20 @@ class TestDenseDecoder(TestCase):
 
         # assert
         assert test_decoder._models == expected_models
-        assert test_decoder.VERSION == expected_version
+        assert test_decoder.version == expected_version
+
+    @patch('steganogan.decoders.nn.Sequential', autospec=True)
+    def test_upgrade_legacy_with_version_1(self, sequential_mock):
+        """The object must be the same and not changed by the method"""
+        # setup
+        decoder = decoders.DenseDecoder(1, 1)
+        expected = copy.deepcopy(decoder)
+
+        # run
+        decoder.upgrade_legacy()
+
+        # assert
+        assert decoder.__dict__ == expected.__dict__
 
 
     @patch('steganogan.decoders.nn.Sequential')

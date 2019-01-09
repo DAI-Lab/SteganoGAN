@@ -8,6 +8,8 @@ import torch
 from steganogan import encoders
 from tests.utils import assert_called_with_tensors
 
+import copy
+
 
 class TestBasicEncoder(TestCase):
 
@@ -34,7 +36,7 @@ class TestBasicEncoder(TestCase):
             padding=1
         )
 
-    def test_upgrade_legacy(self):
+    def test_upgrade_legacy_no_version(self):
         """Test that we set a version to our encoder for future code changes"""
         # setup
         expected_version = '1'
@@ -43,7 +45,20 @@ class TestBasicEncoder(TestCase):
         self.test_encoder.upgrade_legacy()
 
         # assert
-        assert self.test_encoder.VERSION == expected_version
+        assert self.test_encoder.version == expected_version
+
+    @patch('steganogan.encoders.nn.Sequential', autospec=True)
+    def test_upgrade_legacy_with_version_1(self, sequential_mock):
+        """The object must be the same and not changed by the method"""
+        # setup
+        encoder = encoders.BasicEncoder(1, 1)
+        expected = copy.deepcopy(encoder)
+
+        # run
+        encoder.upgrade_legacy()
+
+        # assert
+        assert encoder.__dict__ == expected.__dict__
 
     def test_forward_1_layer(self):
         """If there is only one layer it must be called with image as the only argument."""

@@ -42,7 +42,7 @@ class BasicDecoder(nn.Module):
 
     def __init__(self, data_depth, hidden_size):
         super().__init__()
-        self.VERSION = '1'
+        self.version = '1'
         self.data_depth = data_depth
         self.hidden_size = hidden_size
 
@@ -51,10 +51,10 @@ class BasicDecoder(nn.Module):
     def upgrade_legacy(self):
         """Transform legacy pretrained models to make them ussable with new code structure"""
         # Transform to version 1
-        if not hasattr(self, 'VERSION'):
+        if not hasattr(self, 'version'):
             self._models = [self.layers]
 
-            self.VERSION = '1'
+            self.version = '1'
 
     def forward(self, x):
         x = self._models[0](x)
@@ -102,7 +102,7 @@ class DenseDecoder(BasicDecoder):
     def upgrade_legacy(self):
         """Transform legacy pretrained models to make them ussable with new code structure"""
         # Transform to version 1
-        if not hasattr(self, 'VERSION'):
+        if not hasattr(self, 'version'):
             self._models = [
                 self.conv1,
                 self.conv2,
@@ -110,4 +110,4 @@ class DenseDecoder(BasicDecoder):
                 self.conv4
             ]
 
-            self.VERSION = '1'
+            self.version = '1'
