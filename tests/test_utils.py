@@ -7,6 +7,41 @@ from reedsolo import RSCodec
 
 from steganogan import utils
 
+def test_text_to_bits():
+    """
+    METHOD:
+        text_to_bits(text)
+
+    TESTS:
+        test_text_to_bits
+
+    VALIDATE:
+        return value
+
+    MOCK:
+        bytearray_to_bits
+        text_to_bytearray
+    """
+    pass
+
+
+def test_bits_to_text():
+    """
+    METHOD:
+        bits_to_text(bits)
+
+    TESTS:
+        test_bits_to_text
+
+    VALIDATE:
+        return value
+
+    MOCK:
+        bytearray_to_text
+        bits_to_bytearray
+    """
+    pass
+
 
 def test_gaussian():
     """Test Gaussian method"""
@@ -30,47 +65,77 @@ def test_gaussian():
 def test_text_to_bytearray():
     """Test text_To_bytearray.
     We want to test if th encoder it's returning the same value for RSCodec(250)
+
+    METHOD:
+        text_to_bytearray(text)
+
+    TEST:
+        test_text_to_bytearray
+
+    VALIDATE:
+        return value
+
+    TODO:
+        remove assert from that method
+
+    FIXTURE:
+        expected_result calculated by zlib.compress and rs.encode
+
     """
     # setup
     rs = RSCodec(250)
-    expected1 = rs.encode(zlib.compress('Hola mundo'.encode('utf-8')))
-    expected2 = rs.encode(zlib.compress('Hello world'.encode('utf-8')))
+    expected = rs.encode(zlib.compress('Hello world'.encode('utf-8')))
 
     # run
-    result1 = utils.text_to_bytearray('Hola mundo')
-    result2 = utils.text_to_bytearray('Hello world')
+    result = utils.text_to_bytearray('Hello world')
 
     # assert
-    assert (result1 == expected1)
-    assert (result2 == expected2)
+    assert (result == expected)
 
 
 def test_bytearray_to_text():
     """Test bytearray_to_text method.
     We want to test if we can decode with RSCodec(250) and decompress with zlib a text.
+
+    METHOD:
+        bytearray_to_text(x)
+
+    TEST:
+        test_bytearray_to_text
+
+    VALIDATE:
+        return value
+
+    FIXTURE:
+        x
+
     """
     # setup
     rs = RSCodec(250)
-    text1 = rs.encode(zlib.compress('Hola mundo'.encode('utf-8')))
-    text2 = rs.encode(zlib.compress('Hello world'.encode('utf-8')))
+    text = rs.encode(zlib.compress('Hello world'.encode('utf-8')))
 
-    expected1 = zlib.decompress(rs.decode(text1)).decode('utf-8')
-    expected2 = zlib.decompress(rs.decode(text2)).decode('utf-8')
+    expected = zlib.decompress(rs.decode(text)).decode('utf-8')
 
     # run
-    result1 = utils.bytearray_to_text(text1)
-    result2 = utils.bytearray_to_text(text2)
+    result = utils.bytearray_to_text(text)
 
     # assert
-    assert (result1 == expected1)
-    assert (result2 == expected2)
+    assert (result == expected)
 
 
 def test_bits_to_bytearray():
     """Test bits_to_bytearray.
     We want to test if we can turn bytearray into bits
+
+    METHOD:
+        bits_to_bytearray(bits)
+
+    TESTS:
+        test_bits_to_bytearray
+
+    FIXTURES:
+        bits_value
     """
-    # setup
     pass
 
 
@@ -80,12 +145,11 @@ def test_first_element():
     my_first_element = 1
     my_second_element = 2
 
-    expected = my_first_element
-
     # run
     result = utils.first_element(my_first_element, my_second_element)
 
     # assert
+    expected = my_first_element
     assert (result == expected)
 
 
@@ -94,6 +158,18 @@ def test_create_window():
     Args:
         windows_size = 4
         channel = 2
+
+    METHOD:
+        create_window(window_size, channel)
+
+    TEST:
+        test_create_window
+
+    VALIDATE:
+        return value
+
+    MOCK:
+        gaussain??
     """
     # setup
     expected_window = utils.gaussian(4, 1.5).unsqueeze(1)
@@ -105,3 +181,43 @@ def test_create_window():
 
     # assert
     assert (result == expected_window).all()
+
+
+def _ssim():
+    """
+    METHOD:
+        _ssim(img1, img2, window, windows_size, channel, size_average=True)
+
+    TESTS:
+        test__ssim_size_average_true
+        test_ssim_size_average_false
+
+    VALIDATE:
+        return value
+
+    MOCK:
+        conv2d
+    """
+    pass
+
+
+def ssim():
+    """
+    METHOD:
+        ssim(img1, img2, window_size=11, size_average=True)
+
+    TESTS:
+        test_ssim_window_size_eq_11
+        test_ssim_window_size_gt_11
+        test_ssim_window_size_lt_11
+        test_ssim_size_average_true
+        test_ssim_size_average_false
+
+    VALIDATE:
+        return value
+
+    MOCK:
+        create_window
+        _ssim
+    """
+    pass
