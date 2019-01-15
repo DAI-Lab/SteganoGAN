@@ -1,46 +1,69 @@
 # -*- coding: utf-8 -*-
 
-import zlib
-
-import torch
 from reedsolo import RSCodec
+import torch
+from unittest import TestCase
+from unittest.mock import patch
+import zlib
 
 from steganogan import utils
 
-def test_text_to_bits():
-    """
-    METHOD:
-        text_to_bits(text)
 
-    TESTS:
-        test_text_to_bits
+class TextEncrypting(TestCase):
 
-    VALIDATE:
-        return value
+    @classmethod
+    def setUpClass(cls):
+        """Read the fixtures used in this test case"""
+        f = open('tests/fixtures/hi_to_bits.txt', 'r') # this holds the word hi
+        cls.bits_hi = f.readlines()
+        f.close()
+        cls.bits_hi = [int(x) for x in cls.bits_hi[0]]
 
-    MOCK:
-        bytearray_to_bits
-        text_to_bytearray
-    """
-    pass
+        f = open('tests/fixtures/bytearray_hi.txt', 'rb')
+        cls.bytearray_hi = bytearray(f.read())
+        f.close()
 
+    def test_text_to_bits(self):
+        """Test that our utility converts text into bits."""
 
-def test_bits_to_text():
-    """
-    METHOD:
-        bits_to_text(bits)
+        # run
+        result = utils.text_to_bits('hi')
 
-    TESTS:
-        test_bits_to_text
+        # assert
+        assert self.bits_hi == result
 
-    VALIDATE:
-        return value
+    def test_bits_to_text(self):
+        """Test that our utility converts bits to text"""
+        # run
+        result = utils.bits_to_text(self.bits_hi)
 
-    MOCK:
-        bytearray_to_text
-        bits_to_bytearray
-    """
-    pass
+        # assert
+        assert result == 'hi'
+
+    def test_text_to_bytearray(self):
+        """Test text_to_bytearray return's value"""
+
+        # run
+        result = utils.text_to_bytearray('hi')
+
+        # assert
+        assert (result == self.bytearray_hi)
+
+    def test_bytearray_to_text(self):
+        """Test bytearray_to_text method's return value."""
+        # run
+        result = utils.bytearray_to_text(self.bytearray_hi)
+
+        # assert
+        assert (result == 'hi')
+
+    def test_bits_to_bytearray(self):
+        """Test bits_to_bytearray if the utility can turn bytearray into bits"""
+        # run
+        result = utils.bits_to_bytearray(self.bits_hi)
+
+        # assert
+        assert result == self.bytearray_hi
 
 
 def test_gaussian():
@@ -62,83 +85,6 @@ def test_gaussian():
     assert (result3 == expected3).all()
 
 
-def test_text_to_bytearray():
-    """Test text_To_bytearray.
-    We want to test if th encoder it's returning the same value for RSCodec(250)
-
-    METHOD:
-        text_to_bytearray(text)
-
-    TEST:
-        test_text_to_bytearray
-
-    VALIDATE:
-        return value
-
-    TODO:
-        remove assert from that method
-
-    FIXTURE:
-        expected_result calculated by zlib.compress and rs.encode
-
-    """
-    # setup
-    rs = RSCodec(250)
-    expected = rs.encode(zlib.compress('Hello world'.encode('utf-8')))
-
-    # run
-    result = utils.text_to_bytearray('Hello world')
-
-    # assert
-    assert (result == expected)
-
-
-def test_bytearray_to_text():
-    """Test bytearray_to_text method.
-    We want to test if we can decode with RSCodec(250) and decompress with zlib a text.
-
-    METHOD:
-        bytearray_to_text(x)
-
-    TEST:
-        test_bytearray_to_text
-
-    VALIDATE:
-        return value
-
-    FIXTURE:
-        x
-
-    """
-    # setup
-    rs = RSCodec(250)
-    text = rs.encode(zlib.compress('Hello world'.encode('utf-8')))
-
-    expected = zlib.decompress(rs.decode(text)).decode('utf-8')
-
-    # run
-    result = utils.bytearray_to_text(text)
-
-    # assert
-    assert (result == expected)
-
-
-def test_bits_to_bytearray():
-    """Test bits_to_bytearray.
-    We want to test if we can turn bytearray into bits
-
-    METHOD:
-        bits_to_bytearray(bits)
-
-    TESTS:
-        test_bits_to_bytearray
-
-    FIXTURES:
-        bits_value
-    """
-    pass
-
-
 def test_first_element():
     """Test for first_element method, it has to return the first element that we pass"""
     # setup
@@ -154,36 +100,22 @@ def test_first_element():
 
 
 def test_create_window():
-    """Tests to create a 2d window with 1.5 sigma for the gaussian method
-    Args:
-        windows_size = 4
-        channel = 2
-
-    METHOD:
-        create_window(window_size, channel)
-
-    TEST:
-        test_create_window
-
-    VALIDATE:
-        return value
-
-    MOCK:
-        gaussain??
-    """
-    # setup
-    expected_window = utils.gaussian(4, 1.5).unsqueeze(1)
-    expected_window = expected_window.mm(expected_window.t()).float().unsqueeze(0).unsqueeze(0)
-    expected_window = expected_window.expand(2, 1, 4, 4).contiguous()
-
+    """Tests the return value of create_window utility method"""
     # run
-    result = utils.create_window(4, 2)
+    result_1 = utils.create_window(1, 1)
+    result_2 = utils.create_window(2, 1)
+    result_3 = utils.create_window(3, 2)
 
     # assert
-    assert (result == expected_window).all()
+    expected_1 = torch.Tensor([[[[1.]]]])
+    expected_2 = torch.Tensor([[[[0.19773312, 0.24693881],
+          [0.24693881, 0.30838928]]]])
+
+    assert (result_1 == expected_1).all()
+    assert (result_2 == expected_2).all()
 
 
-def _ssim():
+def test__ssim_size_average_true():
     """
     METHOD:
         _ssim(img1, img2, window, windows_size, channel, size_average=True)
@@ -195,21 +127,51 @@ def _ssim():
     VALIDATE:
         return value
 
-    MOCK:
-        conv2d
     """
-    pass
+    # setup
+    window = utils.create_window(11, 1)
+    img1 = torch.Tensor([[[[0.19773312, 0.24693881],
+          [0.24693881, 0.30838928]]]])
+
+    # run
+    result = utils._ssim(img1, img1, window, 11, 1, size_average=True)
+
+    # assert
+    assert (result == torch.Tensor([1.])).all()
 
 
-def ssim():
+def test__ssim_size_average_false():
+    """
+    METHOD:
+        _ssim(img1, img2, window, windows_size, channel, size_average=True)
+
+    TESTS:
+        test__ssim_size_average_true
+        test_ssim_size_average_false
+
+    VALIDATE:
+        return value
+
+    """
+    # setup
+    window = utils.create_window(3, 1)
+    img1 = torch.Tensor([[[[4.19773312, 1.24693881],
+          [1.24693881, 2.30838928]]]])
+
+    # run
+    result = utils._ssim(img1, img1, window, 3, 1, size_average=False)
+
+    # assert
+    assert (result == torch.Tensor([1.])).all()
+
+
+@patch('steganogan.utils._ssim')
+def test_ssim_size_average_true(mock__ssim):
     """
     METHOD:
         ssim(img1, img2, window_size=11, size_average=True)
 
     TESTS:
-        test_ssim_window_size_eq_11
-        test_ssim_window_size_gt_11
-        test_ssim_window_size_lt_11
         test_ssim_size_average_true
         test_ssim_size_average_false
 
@@ -220,4 +182,61 @@ def ssim():
         create_window
         _ssim
     """
-    pass
+    # run
+    utils.ssim(
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        window_size=1,
+        size_average=False
+    )
+
+    # assert
+    mock__ssim.assert_called_once_with(
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        1,
+        1,
+        True
+    )
+
+@patch('steganogan.utils._ssim')
+def test_ssim_size_average_false(mock__ssim):
+
+    # run
+    utils.ssim(
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        window_size=1,
+        size_average=False
+    )
+
+    # assert
+    mock__ssim.assert_called_once_with(
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        torch.Tensor(
+            [[[[1.]]]]
+        ),
+        1,
+        1,
+        False
+    )
