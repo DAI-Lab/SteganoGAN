@@ -3,7 +3,6 @@ import gc
 import inspect
 import json
 import os
-import pickle
 from collections import Counter
 
 import imageio
