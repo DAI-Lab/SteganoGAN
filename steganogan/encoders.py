@@ -49,7 +49,7 @@ class BasicEncoder(nn.Module):
         self._models = self._build_models()
 
     def upgrade_legacy(self):
-        """Transform legacy pretrained models to make them ussable with new code structure"""
+        """Transform legacy pretrained models to make them usable with new code versions."""
         # Transform to version 1
         if not hasattr(self, 'version'):
             self.version = '1'

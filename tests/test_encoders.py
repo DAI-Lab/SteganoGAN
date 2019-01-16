@@ -38,18 +38,17 @@ class TestBasicEncoder(TestCase):
 
     def test_upgrade_legacy_no_version(self):
         """Test that we set a version to our encoder for future code changes"""
-        # setup
-        expected_version = '1'
 
         # run
         self.test_encoder.upgrade_legacy()
 
         # assert
-        assert self.test_encoder.version == expected_version
+        assert self.test_encoder.version == '1'
 
     @patch('steganogan.encoders.nn.Sequential', autospec=True)
     def test_upgrade_legacy_with_version_1(self, sequential_mock):
         """The object must be the same and not changed by the method"""
+
         # setup
         encoder = encoders.BasicEncoder(1, 1)
         expected = copy.deepcopy(encoder)
@@ -62,6 +61,7 @@ class TestBasicEncoder(TestCase):
 
     def test_forward_1_layer(self):
         """If there is only one layer it must be called with image as the only argument."""
+
         # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         self.test_encoder._models = [layer1]
@@ -70,14 +70,15 @@ class TestBasicEncoder(TestCase):
         image = torch.Tensor([[1, 2], [3, 4]])
         result = self.test_encoder.forward(image, 'some_data')
 
-        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
-
         # assert
         assert (result == torch.Tensor([[5, 6], [7, 8]])).all()
+
+        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
         assert_called_with_tensors(layer1, [call_1])
 
     def test_forward_more_than_2_layers(self):
         """If there are more than 2 layers, they must be called adding data to each result"""
+
         # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         layer2 = Mock(return_value=torch.Tensor([[9, 10], [11, 12]]))
@@ -102,6 +103,7 @@ class TestBasicEncoder(TestCase):
 
     def test_forward_add_image(self):
         """If add_image is true, image must be added to the result."""
+
         # setup
         self.test_encoder.add_image = True
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
@@ -153,6 +155,7 @@ class TestResidualEncoder(TestCase):
 
     def test_forward_1_layer(self):
         """If there is only one layer it must be called with image as the only argument."""
+
         # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         self.test_encoder._models = [layer1]
@@ -161,14 +164,15 @@ class TestResidualEncoder(TestCase):
         image = torch.Tensor([[1, 2], [3, 4]])
         result = self.test_encoder.forward(image, 'some_data')
 
-        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
-
         # assert
         assert (result == torch.Tensor([[6, 8], [10, 12]])).all()
+
+        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
         assert_called_with_tensors(layer1, [call_1])
 
     def test_forward_more_than_2_layers(self):
         """If there are more than 2 layers, they must be called adding data to each result"""
+
         # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         layer2 = Mock(return_value=torch.Tensor([[9, 10], [11, 12]]))
@@ -220,6 +224,7 @@ class TestDenseEncoder(TestCase):
 
     def test_forward_1_layer(self):
         """If there is only one layer it must be called with image as the only argument."""
+
         # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         self.test_encoder._models = [layer1]
@@ -228,14 +233,15 @@ class TestDenseEncoder(TestCase):
         image = torch.Tensor([[1, 2], [3, 4]])
         result = self.test_encoder.forward(image, 'some_data')
 
-        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
-
         # assert
         assert (result == torch.Tensor([[6, 8], [10, 12]])).all()
+
+        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
         assert_called_with_tensors(layer1, [call_1])
 
     def test_forward_more_than_2_layers(self):
         """If there are more than 2 layers, they must be called adding data to each result"""
+
         # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         layer2 = Mock(return_value=torch.Tensor([[9, 10], [11, 12]]))

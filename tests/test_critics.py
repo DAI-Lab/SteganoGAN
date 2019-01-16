@@ -41,8 +41,12 @@ class TestBasicCritic(TestCase):
     def test___init__(self, conv2d_mock, batchnorm2d_mock, sequential_mock):
         """Test that conv2d and batchnorm are called when creating a new critic with hidden_size"""
 
-        # setup
-        hidden_size = 2
+        # run
+        critic = critics.BasicCritic(2)
+
+        # assert
+        expected_batch_calls = [call(2), call(2), call(2)]
+        assert batchnorm2d_mock.call_args_list == expected_batch_calls
 
         expected_conv2d_calls = [
             call(in_channels=3, out_channels=2, kernel_size=3),
@@ -50,56 +54,45 @@ class TestBasicCritic(TestCase):
             call(in_channels=2, out_channels=2, kernel_size=3),
             call(in_channels=2, out_channels=1, kernel_size=3)
         ]
-
-        expected_batch_calls = [call(2), call(2), call(2)]
-
-        # run
-        critic = critics.BasicCritic(hidden_size)
-
-        # assert
         assert conv2d_mock.call_args_list == expected_conv2d_calls
-        assert batchnorm2d_mock.call_args_list == expected_batch_calls
 
     def test_forward(self):
-
         """Test the return value of method forward"""
-        # setup
-        test_critic = self.TestCritic()
 
+        # setup
         layer1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
+        test_critic = self.TestCritic()
         test_critic._models = layer1
 
-        image = torch.Tensor([[1, 2], [3, 4]])
-
-        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
-
-        expected = torch.Tensor([[5, 6], [7, 8]])
-
-        expected = torch.mean(expected.view(expected.size(0), -1), dim=1)
-
         # run
+        image = torch.Tensor([[1, 2], [3, 4]])
         result = test_critic.forward(image)
 
         # assert
+        expected = torch.Tensor([[5, 6], [7, 8]])
+        expected = torch.mean(expected.view(expected.size(0), -1), dim=1)
         assert (result == expected).all()
+
+        call_1 = call(torch.Tensor([[1, 2], [3, 4]]))
         assert_called_with_tensors(layer1, [call_1])
 
     def test_upgrade_legacy_without_version(self):
         """Test that upgrade legacy works, must set _models to layers"""
+
         # setup
         self.test_critic.layers = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
-        expected_version = '1'
 
         # run
         self.test_critic.upgrade_legacy()
 
         # assert
-        assert self.test_critic.version == expected_version
+        assert self.test_critic.version == '1'
         assert self.test_critic._models == self.test_critic.layers
 
     @patch('steganogan.critics.nn.Sequential', autospec=True)
     def test_upgrade_legacy_with_version_1(self, sequential_mock):
         """The object must be the same and not changed by the method"""
+
         # setup
         critic = critics.BasicCritic(1)
         expected = copy.deepcopy(critic)
