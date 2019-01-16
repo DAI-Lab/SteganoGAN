@@ -2,7 +2,7 @@
 
 import os
 from unittest import TestCase
-from unittest.mock import Mock, call, patch
+from unittest.mock import MagicMock, call, patch
 
 import torch
 
@@ -15,102 +15,151 @@ class TestSteganoGAN(TestCase):
         """Can be used to create a steganogan class with empty attributes"""
         def __init__(self):
             pass
-    """
-    METHOD:
-        __init__(self, data_depth, encoder, decoder, critic,
-                 cuda=True, verbose, log_dir, **kwargs)
 
-    VALIDATE:
-        * attributes
-
-    TESTS:
-        test__init__whithout_logdir
-        test__init__with_logdir
-
-    MOCK:
-        os.makedirs
-        steganogan.models.set_device
-    """
-    def test___init__without_logdir(self):
+    def test__get_instance_is_class(self):
+        """Test when given an class it returns a instance of it"""
 
         # setup
-        data_depth = 1
-        encoder = encoders.BasicEncoder
-        decoder = decoders.BasicDecoder
-        critic = critics.BasicCritic
-        cuda = False
-        verbose = True
-        log_dir = None
-        hidden_size = 2
+        steganogan = self.VoidSteganoGAN()
 
         # run
-        steganogan = models.SteganoGAN(data_depth, encoder, decoder, critic, cuda=cuda,
-                                       verbose=verbose, log_dir=log_dir, hidden_size=hidden_size)
+        encoder = steganogan._get_instance(
+            encoders.BasicEncoder, {'hidden_size': 2, 'data_depth': 1})
+
+        critic = steganogan._get_instance(
+            critics.BasicCritic, {'hidden_size': 2, 'data_depth': 1})
+
+        decoder = steganogan._get_instance(
+            decoders.BasicDecoder, {'hidden_size': 2, 'data_depth': 1})
 
         # assert
-        expected_data_depth = data_depth
-        expected_encoder = encoder
-        expected_decoder = decoder
-        expected_critic = critic
+        assert isinstance(encoder, encoders.BasicEncoder)
+        assert isinstance(critic, critics.BasicCritic)
+        assert isinstance(decoder, decoders.BasicDecoder)
 
-        expected_device = torch.device('cpu')
-        expected_critic_optimizer = None
-        expected_decoder_optimizer = None
-        expected_fit_metrics = None
+    def test__get_instance_is_instance(self):
+        """Test when given a instance of a class it returns the same instace of it"""
 
-        expected_history = list()
-        expected_log_dir = log_dir
+        # setup
+        steganogan = self.VoidSteganoGAN()
+        encoder = encoders.BasicEncoder(1, 2)
+        decoder = decoders.BasicDecoder(1, 2)
+        critic = critics.BasicCritic(1)
 
-        expected_to_call = [call(expected_device), call(expected_device), call(expected_device)]
+        # run
+        res_encoder = steganogan._get_instance(encoder, {})
+        res_decoder = steganogan._get_instance(decoder, {})
+        res_critic = steganogan._get_instance(critic, {})
 
+        # assert
+        assert res_encoder == encoder
+        assert res_decoder == decoder
+        assert res_critic == critic
 
-        # assert expected_data_depth == steganogan.data_depth
-        # assert expected_encoder == type(steganogan.encoder)
-        # assert expected_decoder == type(steganogan.decoder)
-        # assert expected_critic == type(steganogan.critic)
-        # assert expected_device == steganogan.device
-        # assert expected_critic_optimizer == steganogan.critic_optimizer
-        # assert expected_decoder_optimizer == steganogan.decoder_optimizer
-        # assert expected_fit_metrics == steganogan.fit_metrics
-        # assert expected_history == steganogan.history
-        # assert expected_log_dir == steganogan.log_dir
-        # assert expected_to_call == steganogan.critic.to.call_args_list
-        # assert expected_to_call == steganogan.decoder.to.call_args_list
-        # assert expected_to_call == steganogan.encoder.to.call_args_list
+    @patch('steganogan.models.torch.cuda.is_available')
+    def test_set_device_cuda(self, mock_cuda_is_available):
+        """Test that we create a device with torch.cuda.device('cuda') for our architectures"""
 
-    def test___init__log_dir(self):
-        pass
+        # setup
+        mock_cuda_is_available.return_value = True
 
+        steganogan = self.VoidSteganoGAN()
 
-    """
-    METHOD:
-        _get_instance(self, class_or_instance, **kwargs)
+        steganogan.verbose = True  # needed inside the method
+        steganogan.encoder = MagicMock()
+        steganogan.decoder = MagicMock()
+        steganogan.critic = MagicMock()
 
-    TESTS:
-        test__get_instance_is_class:
-            if the given object is not a class it is returned unmodified
+        # run
+        steganogan.set_device()
 
-        test__get_instance_is_not_class:
-            if the given object is a class an instance of the class is returned
-    """
+        # assert
+        assert steganogan.device == torch.device('cuda')
+        steganogan.encoder.to.assert_called_once_with(torch.device('cuda'))
+        steganogan.decoder.to.assert_called_once_with(torch.device('cuda'))
+        steganogan.critic.to.assert_called_once_with(torch.device('cuda'))
 
-    """
-    METHOD:
-        set_device(self, cuda=True)
+    @patch('steganogan.models.torch.cuda.is_available')
+    def test_set_device_cpu(self, mock_cuda_is_available):
+        """Test that we create a device with torch.cuda.device('cuda') for our architectures"""
 
-    TESTS:
-        test_set_device_cuda:
-            if cuda = True
+        # setup
+        mock_cuda_is_available.return_value = True
 
-        test_set_device_cpu:
-            if cuda = False
+        steganogan = self.VoidSteganoGAN()
 
-    MOCK:
-        torch.cuda.is_available
-        self.encoder
-        self.decoder
-        self.critic
-    """
+        steganogan.verbose = True  # needed inside the method
+        steganogan.encoder = MagicMock()
+        steganogan.decoder = MagicMock()
+        steganogan.critic = MagicMock()
+
+        # run
+        steganogan.set_device(cuda=False)
+
+        # assert
+        assert steganogan.device == torch.device('cpu')
+        steganogan.encoder.to.assert_called_once_with(torch.device('cpu'))
+        steganogan.decoder.to.assert_called_once_with(torch.device('cpu'))
+        steganogan.critic.to.assert_called_once_with(torch.device('cpu'))
+
+    @patch('os.makedirs')
+    @patch('steganogan.models.SteganoGAN.set_device')
+    @patch('steganogan.models.SteganoGAN._get_instance')
+    def test___init__without_logdir(self, mock__get_instance, mock_set_device, mock_os_makedirs):
+        """Test creating an instance of SteganoGAN without a log dir"""
+
+        # run
+        steganogan = models.SteganoGAN(1, encoders.BasicEncoder, decoders.BasicDecoder,
+                                       critics.BasicCritic, hidden_size=5)
+
+        # assert
+        expected_get_instance_calls = [
+            call(encoders.BasicEncoder, {'hidden_size': 5, 'data_depth': 1}),
+            call(decoders.BasicDecoder, {'hidden_size': 5, 'data_depth': 1}),
+            call(critics.BasicCritic, {'hidden_size': 5, 'data_depth': 1}),
+        ]
+
+        mock_set_device.assert_called_once_with(False)
+        mock_os_makedirs.assert_not_called()
+        assert mock__get_instance.call_args_list == expected_get_instance_calls
+
+        assert steganogan.data_depth == 1
+        assert steganogan.critic_optimizer is None
+        assert steganogan.decoder_optimizer is None
+        assert steganogan.fit_metrics is None
+        assert steganogan.history == list()
+
+    @patch('os.makedirs')
+    @patch('steganogan.models.SteganoGAN.set_device')
+    @patch('steganogan.models.SteganoGAN._get_instance')
+    def test___init__log_dir(self, mock__get_instance, mock_set_device, mock_os_makedirs):
+        """Test creating an instance of SteganoGAN with a log dir"""
+
+        # run
+        steganogan = models.SteganoGAN(1, encoders.BasicEncoder, decoders.BasicDecoder,
+                                       critics.BasicCritic, log_dir='test_dir', hidden_size=5)
+
+        # assert
+        expected_get_instance_calls = [
+            call(encoders.BasicEncoder, {'hidden_size': 5, 'data_depth': 1}),
+            call(decoders.BasicDecoder, {'hidden_size': 5, 'data_depth': 1}),
+            call(critics.BasicCritic, {'hidden_size': 5, 'data_depth': 1}),
+        ]
+
+        expected_os_makedirs_calls = [
+            call('test_dir', exist_ok=True),
+            call(os.path.join('test_dir', 'samples'), exist_ok=True),
+        ]
+
+        mock_set_device.assert_called_once_with(False)
+        mock_os_makedirs.call_args_list == expected_os_makedirs_calls
+        assert mock__get_instance.call_args_list == expected_get_instance_calls
+
+        assert steganogan.data_depth == 1
+        assert steganogan.critic_optimizer is None
+        assert steganogan.decoder_optimizer is None
+        assert steganogan.fit_metrics is None
+        assert steganogan.history == list()
 
     """
     METHOD:
@@ -123,8 +172,26 @@ class TestSteganoGAN(TestCase):
     MOCK:
         cover.size() to return N, _, H, W
         torch.zeros
-
     """
+    @patch('steganogan.models.torch.zeros')
+    def test__random_data(self, mock_torch_zeros):
+        """Test that we generate random data by calling torch.zeros"""
+
+        # setup
+        cover = MagicMock()
+        cover.size.return_value = (1, 2, 3, 4)
+
+        steganogan = self.VoidSteganoGAN()
+        steganogan.device = 'cpu'
+        steganogan.data_depth = 1
+
+        # run
+        steganogan._random_data(cover)
+
+        # assert
+        mock_torch_zeros.called_once_with((1, 1, 3, 4), device='cpu')
+        mock_torch_zeros.random_.called_once_with(0, 2)
+
 
     """
     METHOD:
@@ -342,6 +409,5 @@ class TestSteganoGAN(TestCase):
     MOCK:
         torch.load
     """
-
 
     pass
