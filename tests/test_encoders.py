@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
@@ -7,8 +8,6 @@ import torch
 
 from steganogan import encoders
 from tests.utils import assert_called_with_tensors
-
-import copy
 
 
 class TestBasicEncoder(TestCase):

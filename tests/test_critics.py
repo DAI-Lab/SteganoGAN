@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
@@ -7,8 +8,6 @@ import torch
 
 from steganogan import critics
 from tests.utils import assert_called_with_tensors
-
-import copy
 
 
 class TestBasicCritic(TestCase):
@@ -42,7 +41,7 @@ class TestBasicCritic(TestCase):
         """Test that conv2d and batchnorm are called when creating a new critic with hidden_size"""
 
         # run
-        critic = critics.BasicCritic(2)
+        critics.BasicCritic(2)
 
         # assert
         expected_batch_calls = [call(2), call(2), call(2)]

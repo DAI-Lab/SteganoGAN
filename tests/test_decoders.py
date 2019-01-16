@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
@@ -7,8 +8,6 @@ import torch
 
 from steganogan import decoders
 from tests.utils import assert_called_with_tensors
-
-import copy
 
 
 class TestBasicDecoder(TestCase):
@@ -43,7 +42,7 @@ class TestBasicDecoder(TestCase):
         """Test the init params and that the layers are created correctly"""
 
         # run
-        decoder = decoders.BasicDecoder(2, 5)
+        decoders.BasicDecoder(2, 5)
 
         # assert
         expected_batch_calls = [call(5), call(5), call(5)]
@@ -136,7 +135,7 @@ class TestDenseDecoder(TestCase):
         """Upgrade legacy must create self._models from conv1, conv2, conv3, conv4"""
 
         # setup
-        test_decoder = self.TestDecoder() # instance an empty decoder
+        test_decoder = self.TestDecoder()  # instance an empty decoder
         test_decoder.conv1 = Mock(return_value=torch.Tensor([[5, 6], [7, 8]]))
         test_decoder.conv2 = Mock(return_value=torch.Tensor([[9, 10], [11, 12]]))
         test_decoder.conv3 = Mock(return_value=torch.Tensor([[13, 14], [15, 16]]))
@@ -176,7 +175,7 @@ class TestDenseDecoder(TestCase):
         """Test the init params and that the layers are created correctly"""
 
         # run
-        decoder = decoders.DenseDecoder(2, 5)
+        decoders.DenseDecoder(2, 5)
 
         # assert
         expected_batch_calls = [call(5), call(5), call(5)]
