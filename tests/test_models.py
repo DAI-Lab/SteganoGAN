@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import os
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
-import os
-
 import torch
 
-from steganogan import encoders, critics, decoders, models
+from steganogan import critics, decoders, encoders, models
 
 
 class TestSteganoGAN(TestCase):
