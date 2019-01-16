@@ -62,7 +62,7 @@ Ready to contribute? Here's how to set up `SteganoGAN` for local development.
 1. Fork the `SteganoGAN` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/steganogan.git
+    $ git clone git@github.com:your_name_here/SteganoGAN.git
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed,
    this is how you set up your fork for local development::
@@ -201,6 +201,6 @@ Once this is done, run of the following commands:
 
     make release-major
 
-.. _GitHub issues page: https://github.com/DAI-Lab/steganogan/issues
-.. _Travis Build Status page: https://travis-ci.org/DAI-Lab/steganogan/pull_requests
+.. _GitHub issues page: https://github.com/DAI-Lab/SteganoGAN/issues
+.. _Travis Build Status page: https://travis-ci.org/DAI-Lab/SteganoGAN/pull_requests
 .. _Google docstrings style: https://google.github.io/styleguide/pyguide.html?showone=Comments#Comments
