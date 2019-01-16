@@ -550,6 +550,11 @@
         <span class="sd">&quot;&quot;&quot;Loads an instance of SteganoGAN from the given path.&quot;&quot;&quot;</span>
         <span class="n">steganogan</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
         <span class="n">steganogan</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+        <span class="n">steganogan</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">upgrade_legacy</span><span class="p">()</span>
+        <span class="n">steganogan</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">upgrade_legacy</span><span class="p">()</span>
+        <span class="n">steganogan</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">upgrade_legacy</span><span class="p">()</span>
+
         <span class="n">steganogan</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="n">cuda</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">steganogan</span></div></div>
 </pre></div>
