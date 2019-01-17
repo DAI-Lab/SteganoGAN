@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 
 import os
 from unittest import TestCase
@@ -10,6 +11,11 @@ from steganogan import critics, decoders, encoders, models
 
 
 class TestSteganoGAN(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        test_path = os.path.dirname(__file__)
+        cls.fixtures_path = os.path.join(test_path, 'fixtures')
 
     class VoidSteganoGAN(models.SteganoGAN):
         """Can be used to create a steganogan class with empty attributes"""
@@ -161,18 +167,6 @@ class TestSteganoGAN(TestCase):
         assert steganogan.fit_metrics is None
         assert steganogan.history == list()
 
-    """
-    METHOD:
-        _random_data(self, cover)
-
-    TESTS:
-        test__random_data:
-            torch.zeros it's called with N, H, W for the cover and the device
-
-    MOCK:
-        cover.size() to return N, _, H, W
-        torch.zeros
-    """
     @patch('steganogan.models.torch.zeros')
     def test__random_data(self, mock_torch_zeros):
         """Test that we generate random data by calling torch.zeros"""
@@ -192,7 +186,6 @@ class TestSteganoGAN(TestCase):
         mock_torch_zeros.called_once_with((1, 1, 3, 4), device='cpu')
         mock_torch_zeros.random_.called_once_with(0, 2)
 
-
     """
     METHOD:
         _encode_decode(self, cover, quantize=False)
@@ -208,19 +201,52 @@ class TestSteganoGAN(TestCase):
         _random_data, self.encoder
 
     """
+    @patch('steganogan.models.SteganoGAN._random_data')
+    def test__encode_decode_quantize_false(self, mock__random_data):
+        """Test that we encode *random data* and then decode it. """
 
-    """
-    METHOD:
-        _critic(self, image)
+        # setup
+        random_data_fixture = torch.load(os.path.join(self.fixtures_path, 'tensors/random.ts'))
+        mock__random_data.return_value = random_data_fixture
 
-    TESTS:
-        test__critic:
-            validate return value
+        cover_fixture = torch.load(os.path.join(self.fixtures_path, 'tensors/img.ts'))
 
-    MOCK:
-        image
-        torch.mean
-    """
+        steganogan = self.VoidSteganoGAN()
+        steganogan.encoder = MagicMock()
+        steganogan.decoder = MagicMock()
+        steganogan.encoder.return_value = cover_fixture
+        steganogan.decoder.return_value = random_data_fixture
+
+        # run
+        generated, payload, decoded = steganogan._encode_decode(cover_fixture)
+
+        # assert
+        steganogan.encoder.assert_called_once_with(cover_fixture, random_data_fixture)
+        steganogan.decoder.assert_called_once_with(cover_fixture)
+
+        assert (generated == cover_fixture).all()
+        assert (payload == random_data_fixture).all()
+        assert (decoded == random_data_fixture).all()
+
+    def test__encode_decode_quantize_true(self):
+        """Test that we aply quantize to our generated image"""
+        pass
+
+    def test__critic(self):
+        """Test that _critic it's calling torch.mean method with the critic's tensor"""
+
+        # setup
+        image_fixture  = torch.load(os.path.join(self.fixtures_path, 'tensors/img.ts'))
+        steganogan = self.VoidSteganoGAN()
+        steganogan.critic = MagicMock(return_value=image_fixture)
+
+        # run
+        result = steganogan._critic(image_fixture)
+
+        # assert
+        steganogan.critic.assert_called_once_with(image_fixture)
+
+        assert (result == torch.Tensor(np.array(-0.3195187))).all()
 
     """
     METHOD:
@@ -235,6 +261,35 @@ class TestSteganoGAN(TestCase):
         self.encoder.parameters
         Adam
     """
+    @patch('steganogan.models.Adam')
+    def test__get_optimizers(self, mock_Adam):
+        """Test the return values of this method"""
+
+        # setup
+        mock_Adam.return_value = 1
+        steganogan = self.VoidSteganoGAN()
+
+        steganogan.decoder = MagicMock()
+        steganogan.encoder = MagicMock()
+        steganogan.critic = MagicMock()
+
+        steganogan.decoder.parameters.return_value = [1]
+        steganogan.encoder.parameters.return_value = [1]
+        steganogan.critic.parameters.return_value = [1]
+
+        # run
+        result_1, result_2 = steganogan._get_optimizers()
+
+        # assert
+        expected_Adam_calls = [call([1], lr=1e-4), call([1, 1], lr=1e-4)]
+
+        steganogan.decoder.parameters.assert_called_once()
+        steganogan.encoder.parameters.assert_called_once()
+        steganogan.critic.parameters.assert_called_once()
+
+        assert mock_Adam.call_args_list == expected_Adam_calls
+        assert result_1 == 1
+        assert result_2 == 1
 
     """
     METHOD:
@@ -252,6 +307,40 @@ class TestSteganoGAN(TestCase):
         self.encoder
         self._critic
     """
+    @patch('steganogan.models.SteganoGAN._random_data')
+    @patch('steganogan.models.SteganoGAN._critic')
+    def test__fit_critic(self, mock__random_data, mock__critic):
+        """Test that fit critic it's being called properly"""
+
+        # setup
+        cover = MagicMock()
+        train = [(cover, 1)]
+
+        mock__critic.return_value = cover
+        mock__random_data.return_value = cover
+
+        steganogan = self.VoidSteganoGAN()
+        steganogan.verbose = True
+        steganogan.encoder = MagicMock()
+        steganogan.critic = MagicMock()
+        steganogan.device = MagicMock()
+        steganogan.critic_optimizer = MagicMock()
+
+        metrics = {'train.cover_score': list(), 'train.generated_score': list()}
+
+        # run
+        steganogan._fit_critic(train, metrics)
+
+        # assert
+        steganogan.encoder.assert_called_once_with(cover.to(), cover)
+        mock__critic.assert_called_once_with(cover.to())
+
+        steganogan.critic_optimizer.zero_grad.assert_called_once()
+        steganogan.critic_optimizer.step.assert_called_once()
+        steganogan.critic.parameters.assert_called_once()
+
+        assert metrics['train.cover_score'] is not list()
+        assert metrics['train.generated_score'] is not list()
 
     """
     METHOD:
