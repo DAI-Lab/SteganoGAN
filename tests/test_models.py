@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-import numpy as np
-
 import os
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
+import numpy as np
 import torch
 
 from steganogan import critics, decoders, encoders, models
@@ -71,7 +70,7 @@ class TestSteganoGAN(TestCase):
 
         steganogan = self.VoidSteganoGAN()
 
-        steganogan.verbose = True  # needed inside the method
+        steganogan.verbose = False  # needed inside the method
         steganogan.encoder = MagicMock()
         steganogan.decoder = MagicMock()
         steganogan.critic = MagicMock()
@@ -94,7 +93,7 @@ class TestSteganoGAN(TestCase):
 
         steganogan = self.VoidSteganoGAN()
 
-        steganogan.verbose = True  # needed inside the method
+        steganogan.verbose = False  # needed inside the method
         steganogan.encoder = MagicMock()
         steganogan.decoder = MagicMock()
         steganogan.critic = MagicMock()
@@ -236,7 +235,7 @@ class TestSteganoGAN(TestCase):
         """Test that _critic it's calling torch.mean method with the critic's tensor"""
 
         # setup
-        image_fixture  = torch.load(os.path.join(self.fixtures_path, 'tensors/img.ts'))
+        image_fixture = torch.load(os.path.join(self.fixtures_path, 'tensors/img.ts'))
         steganogan = self.VoidSteganoGAN()
         steganogan.critic = MagicMock(return_value=image_fixture)
 
@@ -307,38 +306,47 @@ class TestSteganoGAN(TestCase):
         self.encoder
         self._critic
     """
-    @patch('steganogan.models.SteganoGAN._random_data')
+    @patch('steganogan.models.gc')
     @patch('steganogan.models.SteganoGAN._critic')
-    def test__fit_critic(self, mock__random_data, mock__critic):
+    @patch('steganogan.models.SteganoGAN._random_data')
+    def test__fit_critic(self, mock__random_data, mock__critic, mock_gc):
         """Test that fit critic it's being called properly"""
 
         # setup
         cover = MagicMock()
-        train = [(cover, 1)]
 
         mock__critic.return_value = cover
         mock__random_data.return_value = cover
 
+        cover_backward = cover - cover
+
         steganogan = self.VoidSteganoGAN()
-        steganogan.verbose = True
+        steganogan.verbose = False
         steganogan.encoder = MagicMock()
         steganogan.critic = MagicMock()
         steganogan.device = MagicMock()
         steganogan.critic_optimizer = MagicMock()
 
+        steganogan.encoder.return_value = cover
+
         metrics = {'train.cover_score': list(), 'train.generated_score': list()}
 
         # run
-        steganogan._fit_critic(train, metrics)
+        steganogan._fit_critic([(cover, 1)], metrics)
 
         # assert
-        steganogan.encoder.assert_called_once_with(cover.to(), cover)
-        mock__critic.assert_called_once_with(cover.to())
+        mock_gc.collect.assert_called_once()
+        cover.to.assert_called_once_with(steganogan.device)
+        mock__random_data.asser_called_once_with(cover.to())
 
         steganogan.critic_optimizer.zero_grad.assert_called_once()
+        steganogan.encoder.assert_called_once_with(cover.to(), cover)
         steganogan.critic_optimizer.step.assert_called_once()
         steganogan.critic.parameters.assert_called_once()
 
+        cover_backward.backward.assert_called_once_with(retain_graph=False)
+
+        assert mock__critic.call_args_list == [call(cover.to()), call(cover)]
         assert metrics['train.cover_score'] is not list()
         assert metrics['train.generated_score'] is not list()
 
@@ -357,6 +365,61 @@ class TestSteganoGAN(TestCase):
         _encode_decode()
         _critic
     """
+    @patch('steganogan.models.SteganoGAN._coding_scores')
+    @patch('steganogan.models.gc')
+    @patch('steganogan.models.SteganoGAN._critic')
+    @patch('steganogan.models.SteganoGAN._encode_decode')
+    def test__fit_coders(self, mock__encode_decode, mock__critic, mock_gc, mock__coding_scores):
+        """Test that fit coders calls and proceeds the data."""
+
+        # setup
+        cover = MagicMock()
+        generated = MagicMock()
+        payload = MagicMock()
+        decoded = MagicMock()
+
+        encoder_mse = MagicMock()
+        decoder_loss = MagicMock()
+        decoder_acc = MagicMock()
+
+        mock__encode_decode.return_value = (generated, payload, decoded)
+
+        mock__critic.return_value = cover
+        mock__coding_scores.return_value = (encoder_mse, decoder_loss, decoder_acc)
+
+        mock_backward = (100.0 * encoder_mse + decoder_loss + cover)
+
+        steganogan = self.VoidSteganoGAN()
+        steganogan.verbose = False
+        steganogan.critic = MagicMock()
+        steganogan.device = MagicMock()
+        steganogan.decoder_optimizer = MagicMock()
+
+        metrics = {
+            'train.encoder_mse': list(),
+            'train.decoder_loss': list(),
+            'train.decoder_acc': list(),
+        }
+
+        # run
+        steganogan._fit_coders([(cover, 1)], metrics)
+
+        # assert
+        mock_gc.collect.assert_called_once_with()
+        cover.to.assert_called_once_with(steganogan.device)
+
+        mock__encode_decode.assert_called_once_with(cover.to())
+        mock__coding_scores.assert_called_once_with(cover.to(), generated, payload, decoded)
+        mock__critic.assert_called_once_with(generated)
+
+        steganogan.decoder_optimizer.zero_grad.assert_called_once_with()
+        steganogan.decoder_optimizer.step.assert_called_once_with()
+
+        mock_backward.backward.assert_called_once_with()
+
+        assert metrics['train.encoder_mse'][0] == encoder_mse.item()
+        assert metrics['train.decoder_loss'][0] == decoder_loss.item()
+        assert metrics['train.decoder_acc'][0] == decoder_acc.item()
 
     """
     METHOD:
@@ -371,6 +434,11 @@ class TestSteganoGAN(TestCase):
         binary_cross_entropy_with_logits
         payload.numel()
     """
+    @patch('steganogan.models.mse_loss')
+    @patch('steganogan.models.binary_cross_entropy_with_logits')
+    def test__coding_scores(self, mock_binary, mock_mse_loss):
+        """Test _coding_scores method that returns expected value"""
+        pass
 
     """
     METHOD:
@@ -386,6 +454,64 @@ class TestSteganoGAN(TestCase):
         _coding_scores
         ssim
     """
+    @patch('steganogan.models.gc')
+    @patch('steganogan.models.SteganoGAN._encode_decode')
+    @patch('steganogan.models.SteganoGAN._coding_scores')
+    @patch('steganogan.models.SteganoGAN._critic')
+    @patch('steganogan.models.ssim')
+    @patch('steganogan.models.torch.log10')
+    def test__validate(self, mock_torch_log, mock_ssim, mock__critic,
+                       mock__coding_scores, mock__encode_decode, mock_gc):
+        """Test _validate method in SteganoGAN"""
+
+        # setup
+        cover = MagicMock()
+        generated = MagicMock()
+        encoder_mse = MagicMock()
+        ssim_return_mock = MagicMock()
+        log_mock = MagicMock()
+        # log_res_mock = 10 * log_mock  # TODO: assert that this .item has been called
+
+        mock__encode_decode.return_value = (generated, generated, generated)
+        mock_ssim.return_value = ssim_return_mock
+        mock_torch_log.return_value = log_mock
+
+        mock__critic.return_value = cover
+        mock__coding_scores.return_value = (encoder_mse, encoder_mse, encoder_mse)
+
+        steganogan = self.VoidSteganoGAN()
+        steganogan.verbose = False
+        steganogan.critic = MagicMock()
+        steganogan.device = MagicMock()
+        steganogan.decoder_optimizer = MagicMock()
+        steganogan.data_depth = 1
+
+        metrics = {
+            'val.encoder_mse': list(),
+            'val.decoder_loss': list(),
+            'val.decoder_acc': list(),
+            'val.cover_score': list(),
+            'val.generated_score': list(),
+            'val.ssim': list(),
+            'val.psnr': list(),
+            'val.bpp': list(),
+        }
+
+        # run
+        steganogan._validate([(cover, 1)], metrics)
+
+        # assert
+        mock_gc.collect.assert_called_once_with()
+        mock__encode_decode.assert_called_once_with(cover.to(), quantize=True)
+        mock__coding_scores.assert_called_once_with(cover.to(), generated, generated, generated)
+        mock__critic.call_args_list == [call(generated), call(cover.to())]
+
+        encoder_mse.item.call_args_list = [call(), call(), call(), call()]
+        cover.item.called_once_with()
+        ssim_return_mock.item.called_once_with()
+        log_mock.item.called_once_with()
+
+        assert metrics['val.bpp'][0] == 1 * (2 * encoder_mse.item() - 1)
 
     """
     METHOD:
