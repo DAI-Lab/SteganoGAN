@@ -558,76 +558,66 @@ class TestSteganoGAN(TestCase):
 
         # setup
         steganogan = self.VoidSteganoGAN()
-        steganogan.device = MagicMock()
+        steganogan.device = 'some_device'
 
         cover = MagicMock()
         cover.to.return_value = cover
-        cover_permute_mock = MagicMock()
-        cover_detach_mock = MagicMock()
-        cover_cpu_mock = MagicMock()
-
-        cover[0].permute.return_value = cover_permute_mock
-        cover_permute_mock.detach.return_value = cover_detach_mock
-        cover_detach_mock.return_value = cover_cpu_mock
-        cover_cpu_mock.numpy.return_value = 1.0
+        cover_detach = cover.__getitem__.return_value.permute.return_value.detach
+        cover_numpy = cover_detach.return_value.cpu.return_value.numpy.return_value
+        cover_image = cover_numpy.__add__.return_value.__truediv__.return_value
+        cover_image_iw = cover_image.__rmul__.return_value
 
         generated = MagicMock()
         generated.to.return_value = generated
-        generated_permute_mock = MagicMock()
-        generated_detach_mock = MagicMock()
-        generated_cpu_mock = MagicMock()
+        gen_permute = generated.__getitem__.return_value.clamp.return_value.permute
+        gen_detach = gen_permute.return_value.detach
+        gen_numpy = gen_detach.return_value.cpu.return_value.numpy.return_value
+        gen_image = gen_numpy.__add__.return_value.__truediv__.return_value
+        gen_image_iw = gen_image.__rmul__.return_value
 
-        generated[0].permute.return_value = generated_permute_mock
-        generated_permute_mock.detach.return_value = generated_detach_mock
-        generated_detach_mock.return_value = generated_cpu_mock
-        generated_cpu_mock.numpy.return_value = 1.0
+        generated.size.return_value = 1
 
         payload = MagicMock()
         decoded = MagicMock()
 
-        generated.size.return_value = 1
-
         mock__encode_decode.return_value = (generated, payload, decoded)
 
         # run
-        # steganogan._generate_samples(samples_path='test_path', cover, 10)
+        steganogan._generate_samples('test_path', cover, 10)
 
         # assert
-        # generated.size.assert_called_once_with(0)
-        # cover.to.assert_called_once_with(steganogan.device)
+        expected_iwrite_call = [
+            call('test_path/0.cover.png', cover_image_iw.astype.return_value),
+            call('test_path/0.generated-10.png', gen_image_iw.astype.return_value)
+        ]
 
-        # cover_permute_mock.assert_called_once_with(1, 2, 0)
-        # cover_detach.assert_called_once_with()
-        # cover_cpu.assert_called_once_with()
-        # cover_cpu.numpy.assert_called_once_with()
+        cover.to.assert_called_once_with('some_device')
 
-    """
-    METHOD:
-        fit(self, train, validate, epochs=5)
+        cover.__getitem__.assert_called_once_with(0)
+        cover.__getitem__.return_value.permute.assert_called_once_with(1, 2, 0)
 
-    TESTS:
-        test_fit_with_logdir:
-            test that this method invokes the other methods for fitting.
+        cover_detach.assert_called_once_with()
+        cover_detach.return_value.cpu.assert_called_once_with()
+        cover_detach.return_value.cpu.return_value.numpy.assert_called_once_with()
 
-        test_fit_without_logdir:
-            test that we are generating samples
+        cover_numpy.__add__.assert_called_once_with(1)
+        cover_numpy.__add__.return_value.__truediv__.assert_called_once_with(2.0)
 
-        test_fit_cuda_true:
-            validate that we call the torch.cuda.empty_cache
+        generated.__getitem__.assert_called_once_with(0)
+        generated.__getitem__.return_value.clamp.assert_called_once_with(-1.0, 1.0)
 
-    MOCK:
-        train
-        validate
-        _fit_critic
-        _fit_coders
-        _validate
-        save
-        _generate_samples
-        torch.cuda.empty_cache
+        gen_detach.assert_called_once_with()
+        gen_detach.return_value.cpu.assert_called_once_with()
+        gen_detach.return_value.cpu.return_value.numpy.assert_called_once_with()
 
-    TODO:
-        if self.log_dir can be moved to a method that has that functionality
-    """
+        gen_numpy.__add__.assert_called_once_with(1)
+        gen_numpy.__add__.return_value.__truediv__.assert_called_once_with(2.0)
+
+        cover_image_iw.astype.assert_called_once_with('uint8')
+        gen_image_iw.astype.assert_called_once_with('uint8')
+
+        assert mock_imwrite.call_args_list == expected_iwrite_call
+
     @patch('steganogan.models.SteganoGAN._fit_critic')
     @patch('steganogan.models.SteganoGAN._fit_coders')
     @patch('steganogan.models.SteganoGAN._validate')
@@ -748,7 +738,6 @@ class TestSteganoGAN(TestCase):
         assert self.validate_item_call == 'some_validate'
 
         assert steganogan.epochs == 2
-
         mock_gc_collect.assert_called_once_with()
 
     def test_fit_with_log_dir(self):
@@ -812,37 +801,109 @@ class TestSteganoGAN(TestCase):
 
         mock_gc_collect.assert_called_once_with()
 
+    @patch('steganogan.models.torch.FloatTensor')
+    @patch('steganogan.models.text_to_bits')
+    def test__make_payload(self, mock_text_to_bits, mock_float_tensor):
+        """Test that the return value it's as expected"""
+
+        # setup
+        steganogan = self.VoidSteganoGAN()
+
+        payload = MagicMock()
+        payload.__add__.return_value.__len__.return_value = 10000
+
+        mock_text_to_bits.return_value = payload
+
+        # run
+        result = steganogan._make_payload(2, 3, 4, 'Hello')
+
+        # assert
+        expected_payload = payload.__add__.return_value[:1]
+        expected_view_call = [call(1, 4, 3, 2), call(1, 4, 3, 2)]
+        expected_result = mock_float_tensor.return_value.view(1, 4, 3, 2)
+
+        mock_text_to_bits.assert_called_once_with('Hello')
+        payload.__add__.assert_called_once_with([0] * 32)
+
+        payload.__add__.return_value.__getitem__.call_list_args == [call(slice(None, 24, None)),
+                                                                    call(slice(None, 24, None))]
+
+        mock_float_tensor.assert_called_once_with(expected_payload)
+
+        assert mock_float_tensor.return_value.view.call_args_list == expected_view_call
+        assert result == expected_result
+
+    @patch('steganogan.models.imread')
+    @patch('steganogan.models.imwrite')
+    @patch('steganogan.models.torch.FloatTensor')
+    @patch('steganogan.models.SteganoGAN._make_payload')
+    def test_encode(self, mock__make_payload, mock_float_tensor, mock_imwrite, mock_imread):
+        """Test that we encode the imagewith our encoder"""
+
+        # setup
+        cover = MagicMock()
+        cover = MagicMock()
+        torched_cover = MagicMock()
+        payload = MagicMock()
+        generated = MagicMock()
+        _gen = generated.__getitem__.return_value.clamp.return_value
+        _generated = _gen.permute.return_value.detach.return_value.cpu.return_value
+        _gen_astype = _generated.numpy.return_value.__add__.return_value.__mul__.return_value
+
+        mock_imread.return_value = cover
+
+        _cover_for_torch = cover.__truediv__.return_value.__sub__.return_value
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.return_value = torched_cover
+
+        cover.to.return_value = cover
+        payload.to.return_value = payload
+
+        steganogan = self.VoidSteganoGAN()
+        steganogan.device = 'some_device'
+        steganogan.data_depth = 2
+        steganogan.encoder = MagicMock(return_value=generated)
+        steganogan.verbose = False
+
+        mock__make_payload.return_value = payload
+
+        # run
+        steganogan.encode(cover, 'some_output', 'Hello')
+
+        # assert
+        mock_imread.assert_called_once_with(cover, pilmode='RGB')
+        mock_float_tensor.assert_called_once_with(_cover_for_torch)
+        mock_float_tensor.return_value.permute.assert_called_once_with(2, 1, 0)
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.assert_called_once_with(0)
+
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.assert_called_once_with(0)
+        torched_cover.size.assert_called_once_with()
+        assert torched_cover.size.return_value.__getitem__.call_args_list == [call(3), call(2)]
+
+        mock__make_payload.assert_called_once_with(
+            torched_cover.size.return_value.__getitem__.return_value,
+            torched_cover.size.return_value.__getitem__.return_value,
+            2,
+            'Hello'
+        )
+
+        torched_cover.to.assert_called_once_with('some_device')
+        payload.to.assert_called_once_with('some_device')
+
+        steganogan.encoder.assert_called_once_with(torched_cover.to(), payload)
+        generated.__getitem__.return_value.clamp.assert_called_once_with(-1.0, 1.0)
+
+        _gen.permute.assert_called_once_with(2, 1, 0)
+        _gen.permute.return_value.detach.assert_called_once_with()
+        _gen.permute.return_value.detach.return_value.cpu.assert_called_once_with()
+        _generated.numpy.assert_called_once_with()
+        _generated.numpy.return_value.__add__.assert_called_once_with(1)
+        _generated.numpy.return_value.__add__.return_value.__mul__.assert_called_once_with(127.5)
+        _gen_astype.astype.assert_called_once_with('uint8')
+
+        mock_imwrite.assert_called_once_with('some_output', _gen_astype.astype('unit8'))
+
     """
-    METHOD:
-        _make_payload(self, width, height, depth, text)
 
-    TESTS:
-        test__make_payload:
-            validate return value of this method.
-
-    MOCK:
-        text_to_bits
-        torch.FloatTensor
-    """
-
-    """
-    METHOD:
-        encode(self, cover, output, text)
-
-    TESTS:
-        test_encode:
-            validate that the image has been encoded
-
-    MOCK:
-        encoder
-        imread
-        _make_payload
-        cover
-        payload
-        imwrite
-    """
-
-    """
     METHOD:
         decode(self, cover)
 
@@ -857,31 +918,77 @@ class TestSteganoGAN(TestCase):
         decoder
         bits_to_bytearray_to_text
     """
+    def test_decode_path_exists(self):
+        """Test that we process to decode a cover"""
+        pass
 
-    """
-    METHOD:
-        save(self, path)
+    def test_decode_image_is_not_file(self):
+        """Raise an exception if image is not a file"""
 
-    TESTS:
-        test_save:
-            validate that we are saving the fitted model
+        # setup
+        steganogan = self.VoidSteganoGAN()
 
-    MOCK:
-        torch.save
-    """
+        # run
+        with self.assertRaises(ValueError):
+            steganogan.decode('not_existing_path')
 
-    """
-    METHOD:
-        load(cls, path, cuda=True, verbose=False)
+    @patch('steganogan.models.torch.save')
+    def test_save(self, mock_save):
+        """Test that we are saving the instance with torch"""
 
-    TESTS:
-        test_load_cuda_true
-        test_load_cuda_false
-        test_load_verbose_false
-        test_load_verbose_true
+        # setup
+        steganogan = self.VoidSteganoGAN()
 
-    MOCK:
-        torch.load
-    """
+        # run
+        steganogan.save('some_path')
 
-    pass
+        # assert
+        mock_save.assert_called_once_with(steganogan, 'some_path')
+
+    @patch('steganogan.models.torch.load')
+    def test_load(self, mock_load):
+        """Test that when loading a path, we execute and update steganogan"""
+
+        # setup
+        steganogan = MagicMock()
+        mock_load.return_value = steganogan
+
+        # run
+        result = models.SteganoGAN.load('some_path', cuda=False, verbose=False)
+
+        # assert
+        mock_load.assert_called_once_with('some_path', map_location='cpu')
+
+        assert not steganogan.verbose
+
+        steganogan.encoder.upgrade_legacy.assert_called_once_with()
+        steganogan.decoder.upgrade_legacy.assert_called_once_with()
+        steganogan.critic.upgrade_legacy.assert_called_once_with()
+
+        steganogan.set_device.assert_called_once_with(False)
+
+        assert result == steganogan
+
+    @patch('steganogan.models.torch.load')
+    def test_load_cuda_verbose_true(self, mock_load):
+        """Test that when loading a path, with cuda and verbose True"""
+
+        # setup
+        steganogan = MagicMock()
+        mock_load.return_value = steganogan
+
+        # run
+        result = models.SteganoGAN.load('some_path', cuda=True, verbose=True)
+
+        # assert
+        mock_load.assert_called_once_with('some_path', map_location='cpu')
+
+        assert steganogan.verbose
+
+        steganogan.encoder.upgrade_legacy.assert_called_once_with()
+        steganogan.decoder.upgrade_legacy.assert_called_once_with()
+        steganogan.critic.upgrade_legacy.assert_called_once_with()
+
+        steganogan.set_device.assert_called_once_with(True)
+
+        assert result == steganogan
