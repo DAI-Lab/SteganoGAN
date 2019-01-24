@@ -183,7 +183,7 @@ class TestSteganoGAN(TestCase):
 
     @patch('steganogan.models.torch.zeros')
     def test__random_data(self, mock_torch_zeros):
-        """Test that we generate random data by calling torch.zeros"""
+        """Test generate random data by calling torch.zeros"""
 
         # setup
         cover = MagicMock()
@@ -202,7 +202,7 @@ class TestSteganoGAN(TestCase):
 
     @patch('steganogan.models.SteganoGAN._random_data')
     def test__encode_decode_quantize_false(self, mock__random_data):
-        """Test that we encode *random data* and then decode it. """
+        """Test encode *random data* and decode data"""
 
         # setup
         random_data_fixture = torch.load(os.path.join(self.fixtures_path, 'tensors/random.ts'))
@@ -229,7 +229,7 @@ class TestSteganoGAN(TestCase):
 
     @patch('steganogan.models.SteganoGAN._random_data')
     def test__encode_decode_quantize_true(self, mock__random_data):
-        """Test that we apply quantize and then decode it. """
+        """Test apply quantize and then call decode"""
 
         # setup
         random_data_fixture = torch.load(os.path.join(self.fixtures_path, 'tensors/random.ts'))
@@ -258,7 +258,7 @@ class TestSteganoGAN(TestCase):
         assert decoded == steganogan.decoder.return_value
 
     def test__critic(self):
-        """Test that _critic it's calling torch.mean method with the critic's tensor"""
+        """Test _critic is calling torch.mean method with the critic's tensor"""
 
         # setup
         image_fixture = torch.load(os.path.join(self.fixtures_path, 'tensors/img.ts'))
@@ -307,7 +307,7 @@ class TestSteganoGAN(TestCase):
     @patch('steganogan.models.SteganoGAN._critic')
     @patch('steganogan.models.SteganoGAN._random_data')
     def test__fit_critic(self, mock__random_data, mock__critic, mock_gc):
-        """Test that fit critic it's being called properly"""
+        """Test fit critic it's processing as expected"""
 
         # setup
         cover = MagicMock()
@@ -356,7 +356,7 @@ class TestSteganoGAN(TestCase):
     @patch('steganogan.models.SteganoGAN._critic')
     @patch('steganogan.models.SteganoGAN._encode_decode')
     def test__fit_coders(self, mock__encode_decode, mock__critic, mock_gc, mock__coding_scores):
-        """Test that fit coders calls and proceeds the data."""
+        """Test fit coders calls and proceeds the data."""
 
         # setup
         cover = MagicMock()
@@ -409,19 +409,6 @@ class TestSteganoGAN(TestCase):
         assert metrics['train.decoder_loss'][0] == decoder_loss.item()
         assert metrics['train.decoder_acc'][0] == decoder_acc.item()
 
-    """
-    METHOD:
-        _coding_scores(self, cover, generated, payload, decoded)
-
-    TESTS:
-        test__coding_scores:
-            validate return values calculated in this method
-
-    MOCK:
-        mse_loss
-        binary_cross_entropy_with_logits
-        payload.numel()
-    """
     @patch('steganogan.models.mse_loss')
     @patch('steganogan.models.binary_cross_entropy_with_logits')
     def test__coding_scores(self, mock_binary, mock_mse_loss):
@@ -460,7 +447,7 @@ class TestSteganoGAN(TestCase):
     @patch('steganogan.models.torch.log10')
     def test__validate(self, mock_torch_log, mock_ssim, mock__critic,
                        mock__coding_scores, mock__encode_decode, mock_gc):
-        """Test _validate method in SteganoGAN"""
+        """Test _validate method in SteganoGAN it's updating the metrics and others."""
 
         # setup
         cover = MagicMock()
@@ -481,7 +468,6 @@ class TestSteganoGAN(TestCase):
         ssim_return_mock = MagicMock()
         log_mock = MagicMock()
         log_mock.item.return_value = 2.0
-        # log_res_mock = 10 * log_mock  # TODO: assert that this .item has been called
 
         mock__encode_decode.return_value = (generated, payload, decoded)
         mock_ssim.return_value = ssim_return_mock
@@ -540,21 +526,10 @@ class TestSteganoGAN(TestCase):
 
         assert expected_metrics == metrics
 
-    """
-    METHOD:
-        _generate_samples(self, samples_path, cover, epoch)
-
-    TESTS:
-        test__generate_samples:
-            validate that the method generates samples of images in the given path
-
-    MOCK:
-        imageio.imwrite
-    """
     @patch('steganogan.models.SteganoGAN._encode_decode')
     @patch('steganogan.models.imageio.imwrite')
     def test__generate_samples(self, mock_imwrite, mock__encode_decode):
-        """Validate that we are calling to imwrite in order to save to disk"""
+        """Test _generate_samples is saving to disk with imwrite"""
 
         # setup
         steganogan = self.VoidSteganoGAN()
@@ -626,10 +601,7 @@ class TestSteganoGAN(TestCase):
     @patch('steganogan.models.SteganoGAN._get_optimizers')
     def test_fit_optimizer_is_none(self, mock__get_optimizers, mock_cuda_empty, mock_gc_collect,
                                    mock__validate, mock__fit_coders, mock__fit_critic):
-        """
-        Ensure that _get_optimizers it's being called and epochs it's being reset.
-        Ensure that the rest of code runs as expected.
-        """
+        """Test fit method without optimizers"""
 
         # setup
         def validate_side_effect(x, metrics):
@@ -689,10 +661,7 @@ class TestSteganoGAN(TestCase):
     @patch('steganogan.models.SteganoGAN._get_optimizers')
     def test_fit_with_optimizers(self, mock__get_optimizers, mock_cuda_empty, mock_gc_collect,
                                  mock__validate, mock__fit_coders, mock__fit_critic):
-        """
-        Ensure that _get_optimizers it's being called and epochs it's being reset.
-        Ensure that the rest of code runs as expected.
-        """
+        """Test with existing optimizers"""
 
         # setup
         def validate_side_effect(x, metrics):
@@ -740,10 +709,86 @@ class TestSteganoGAN(TestCase):
         assert steganogan.epochs == 2
         mock_gc_collect.assert_called_once_with()
 
-    def test_fit_with_log_dir(self):
-        """Test that the block of code after if log_dir it's executed"""
-        # TODO: fix models first?
-        pass
+    @patch('steganogan.models.SteganoGAN._generate_samples')
+    @patch('steganogan.models.SteganoGAN.save')
+    @patch('steganogan.models.json.dump')
+    @patch('steganogan.models.open')
+    @patch('steganogan.models.SteganoGAN._fit_critic')
+    @patch('steganogan.models.SteganoGAN._fit_coders')
+    @patch('steganogan.models.SteganoGAN._validate')
+    @patch('steganogan.models.gc.collect')
+    @patch('steganogan.models.torch.cuda.empty_cache')
+    @patch('steganogan.models.SteganoGAN._get_optimizers')
+    def test_fit_with_log_dir(self, mock__get_optimizers, mock_cuda_empty, mock_gc_collect,
+                              mock__validate, mock__fit_coders, mock__fit_critic, mock_open,
+                              mock_dump, mock_save, mock__generate_samples):
+        """Test fit with log_dir"""
+
+        # setup
+        def validate_side_effect(x, metrics):
+            self.validate_item_call = deepcopy(x)
+            self.validate_dict_call = deepcopy(metrics)
+            for k, v in metrics.items():
+                v.append(1)
+
+        def critic_side_effect(x, metrics):
+            self.critic_item_call = deepcopy(x)
+            self.critic_dict_call = deepcopy(metrics)
+
+        def coders_side_effect(x, metrics):
+            self.coders_item_call = deepcopy(x)
+            self.coders_dict_call = deepcopy(metrics)
+
+        steganogan = self.VoidSteganoGAN()
+        steganogan.log_dir = None
+        steganogan.verbose = False
+        steganogan.critic_optimizer = 'some_optimizer'
+        steganogan.cuda = False
+        steganogan.epochs = 0
+        steganogan.log_dir = 'any_dir'
+        steganogan.samples_path = 'samples_path'
+        steganogan.history = list()
+
+        validate = MagicMock()
+        validate.__iter__.return_value = ['1', '2']
+
+        mock__validate.side_effect = validate_side_effect
+        mock__fit_critic.side_effect = critic_side_effect
+        mock__fit_coders.side_effect = coders_side_effect
+
+        # run
+        steganogan.fit('some_train', validate, epochs=1)
+
+        # assert
+        expected_metrics = {field: list() for field in models.METRIC_FIELDS}
+        expected_history = [{field: 1.0 for field in models.METRIC_FIELDS}]
+        expected_history[0]['epoch'] = 1
+
+        mock__get_optimizers.assert_not_called()
+
+        assert self.critic_dict_call == expected_metrics
+        assert self.critic_item_call == 'some_train'
+
+        assert self.coders_dict_call == expected_metrics
+        assert self.coders_item_call == 'some_train'
+
+        assert self.validate_dict_call == expected_metrics
+        assert self.validate_item_call == validate
+
+        assert steganogan.epochs == 1
+        mock_gc_collect.assert_called_once_with()
+
+        assert steganogan.history == expected_history
+        mock_open.assert_called_once_with('any_dir/metrics.log', 'w')
+
+        mock_dump.assert_called_once_with(
+            expected_history,
+            mock_open.return_value.__enter__.return_value,
+            indent=4
+        )
+
+        mock_save.assert_called_once_with('any_dir/1.bpp-1.000000.p')
+        mock__generate_samples.assert_called_once_with('samples_path', '1', 1)
 
     @patch('steganogan.models.SteganoGAN._fit_critic')
     @patch('steganogan.models.SteganoGAN._fit_coders')
@@ -752,7 +797,7 @@ class TestSteganoGAN(TestCase):
     @patch('steganogan.models.torch.cuda.empty_cache')
     def test_fit_with_cuda(self, mock_cuda_empty, mock_gc_collect, mock__validate,
                            mock__fit_coders, mock__fit_critic):
-        """Test that we call the torch.cuda.empty when cuda it's true"""
+        """Test calling torch.cuda.empty when cuda it's true"""
 
         # setup
         def validate_side_effect(x, metrics):
@@ -902,26 +947,6 @@ class TestSteganoGAN(TestCase):
 
         mock_imwrite.assert_called_once_with('some_output', _gen_astype.astype('unit8'))
 
-    """
-
-    METHOD:
-        decode(self, cover)
-
-    TESTS:
-        test_decode:
-            validate that the image has been decoded
-
-    MOCK:
-        os.path.exists
-        imread
-        image
-        decoder
-        bits_to_bytearray_to_text
-    """
-    def test_decode_path_exists(self):
-        """Test that we process to decode a cover"""
-        pass
-
     def test_decode_image_is_not_file(self):
         """Raise an exception if image is not a file"""
 
@@ -932,9 +957,106 @@ class TestSteganoGAN(TestCase):
         with self.assertRaises(ValueError):
             steganogan.decode('not_existing_path')
 
+    @patch('steganogan.models.os.path.exists')
+    @patch('steganogan.models.bytearray_to_text')
+    @patch('steganogan.models.torch.FloatTensor')
+    @patch('steganogan.models.imread')
+    @patch('steganogan.models.bits_to_bytearray')
+    def test_decode_image_zero_candidates(self, mock_bits, mock_imread, mock_float_tensor,
+                                          mock_bytearray_to_text, mock_os):
+        """Raise an exception when no candidates are found"""
+
+        # setup
+        steganogan = self.VoidSteganoGAN()
+        steganogan.decoder = MagicMock()
+        steganogan.device = 'some_device'
+
+        image = MagicMock()
+        tensor_image = MagicMock()
+        tensor_image.to.return_value = tensor_image
+        _image = MagicMock()
+
+        mock_imread.return_value = image
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.return_value = tensor_image
+
+        steganogan.decoder.return_value.view.return_value.__gt__.return_value = _image
+
+        bits_image = _image.data.cpu.return_value.numpy.return_value.tolist.return_value
+
+        mock_bytearray_to_text.return_value = None
+        mock_os.return_value = True
+
+        # run/assert
+        with self.assertRaises(ValueError):
+            steganogan.decode('existing_path')
+
+        # asserts
+        mock_imread.assert_called_once_with('existing_path', pilmode='RGB')
+        tensor_image.to.assert_called_once_with('some_device')
+
+        image.__truediv__.assert_called_once_with(255.0)
+
+        mock_float_tensor.assert_called_once_with(image.__truediv__.return_value)
+        mock_float_tensor.return_value.permute.assert_called_once_with(2, 1, 0)
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.assert_called_once_with(0)
+
+        mock_bits.assert_called_once_with(bits_image)
+
+    @patch('steganogan.models.os.path.exists')
+    @patch('steganogan.models.bytearray_to_text')
+    @patch('steganogan.models.torch.FloatTensor')
+    @patch('steganogan.models.imread')
+    @patch('steganogan.models.bits_to_bytearray')
+    def test_decode_image(self, mock_bits, mock_imread, mock_float_tensor,
+                          mock_bytearray_to_text, mock_os):
+        """Test decode a image and finding a candidate"""
+
+        # setup
+        steganogan = self.VoidSteganoGAN()
+        steganogan.decoder = MagicMock()
+        steganogan.device = 'some_device'
+
+        image = MagicMock()
+        tensor_image = MagicMock()
+        tensor_image.to.return_value = tensor_image
+
+        _image = MagicMock()
+        candidate = MagicMock()
+        _candidate = MagicMock()
+
+        mock_imread.return_value = image
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.return_value = tensor_image
+
+        steganogan.decoder.return_value.view.return_value.__gt__.return_value = _image
+
+        bits_image = _image.data.cpu.return_value.numpy.return_value.tolist.return_value
+        mock_bits.return_value.split.return_value = [candidate]
+
+        mock_bytearray_to_text.return_value = _candidate
+
+        mock_os.return_value = True
+
+        # run
+        result = steganogan.decode('existing_path')
+
+        # asserts
+        mock_imread.assert_called_once_with('existing_path', pilmode='RGB')
+        tensor_image.to.assert_called_once_with('some_device')
+
+        image.__truediv__.assert_called_once_with(255.0)
+
+        mock_float_tensor.assert_called_once_with(image.__truediv__.return_value)
+        mock_float_tensor.return_value.permute.assert_called_once_with(2, 1, 0)
+        mock_float_tensor.return_value.permute.return_value.unsqueeze.assert_called_once_with(0)
+
+        mock_bits.assert_called_once_with(bits_image)
+        mock_bytearray_to_text.assert_called_once_with(bytearray(candidate))
+
+        assert result == _candidate
+
     @patch('steganogan.models.torch.save')
     def test_save(self, mock_save):
-        """Test that we are saving the instance with torch"""
+        """Test saving the instance with torch"""
 
         # setup
         steganogan = self.VoidSteganoGAN()
@@ -947,7 +1069,7 @@ class TestSteganoGAN(TestCase):
 
     @patch('steganogan.models.torch.load')
     def test_load(self, mock_load):
-        """Test that when loading a path, we execute and update steganogan"""
+        """Test when loading a path, we execute and update steganogan"""
 
         # setup
         steganogan = MagicMock()
@@ -971,7 +1093,7 @@ class TestSteganoGAN(TestCase):
 
     @patch('steganogan.models.torch.load')
     def test_load_cuda_verbose_true(self, mock_load):
-        """Test that when loading a path, with cuda and verbose True"""
+        """Test loading a path, with cuda and verbose True"""
 
         # setup
         steganogan = MagicMock()
