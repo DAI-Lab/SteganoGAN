@@ -110,3 +110,6 @@ ENV/
 research/data
 research/*.png
 docs/api
+
+# VIM
+.*.swp
