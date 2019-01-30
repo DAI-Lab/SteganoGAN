@@ -1067,19 +1067,20 @@ class TestSteganoGAN(TestCase):
         # assert
         mock_save.assert_called_once_with(steganogan, 'some_path')
 
+    @patch('steganogan.models.os.path.join')
     @patch('steganogan.models.torch.load')
-    def test_load(self, mock_load):
-        """Test when loading a path, we execute and update steganogan"""
+    def test_load(self, mock_load, os_path_mock):
+        """Test loading a default architecture"""
 
         # setup
         steganogan = MagicMock()
         mock_load.return_value = steganogan
 
         # run
-        result = models.SteganoGAN.load('some_path', cuda=False, verbose=False)
+        result = models.SteganoGAN.load('some_architecture', cuda=False, verbose=False)
 
         # assert
-        mock_load.assert_called_once_with('some_path', map_location='cpu')
+        mock_load.assert_called_once_with(os_path_mock.return_value, map_location='cpu')
 
         assert not steganogan.verbose
 
@@ -1091,8 +1092,9 @@ class TestSteganoGAN(TestCase):
 
         assert result == steganogan
 
+    @patch('steganogan.models.os.path.join')
     @patch('steganogan.models.torch.load')
-    def test_load_cuda_verbose_true(self, mock_load):
+    def test_load_cuda_verbose_true(self, mock_load, os_path_mock):
         """Test loading a path, with cuda and verbose True"""
 
         # setup
@@ -1100,10 +1102,10 @@ class TestSteganoGAN(TestCase):
         mock_load.return_value = steganogan
 
         # run
-        result = models.SteganoGAN.load('some_path', cuda=True, verbose=True)
+        result = models.SteganoGAN.load('some_architecture', cuda=True, verbose=True)
 
         # assert
-        mock_load.assert_called_once_with('some_path', map_location='cpu')
+        mock_load.assert_called_once_with(os_path_mock.return_value, map_location='cpu')
 
         assert steganogan.verbose
 
@@ -1114,3 +1116,27 @@ class TestSteganoGAN(TestCase):
         steganogan.set_device.assert_called_once_with(True)
 
         assert result == steganogan
+
+    @patch('steganogan.models.os.path.abspath')
+    @patch('steganogan.models.torch.load')
+    def test_load_path_no_architecture(self, mock_load, os_path_mock):
+        """Test loading a model when passing a path and architecture is None"""
+
+        # setup
+        steganogan = MagicMock()
+        mock_load.return_value = steganogan
+
+        # run
+        result = models.SteganoGAN.load(None, 'some_path', cuda=True, verbose=True)
+
+        # assert
+        mock_load.assert_called_once_with(os_path_mock.return_value, map_location='cpu')
+        os_path_mock.assert_called_once_with('some_path')
+
+        assert result == steganogan
+
+    def test_load_path_and_architecture(self):
+
+        # run / assert
+        with self.assertRaises(ValueError):
+            models.SteganoGAN.load('some_arch', 'some_path')

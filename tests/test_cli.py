@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
 from unittest.mock import MagicMock, patch
 
 from steganogan import cli
@@ -24,18 +23,12 @@ def test__get_steganogan(mock_steganogan_load):
         verbose=True,
     )
 
-    model_name = '{}.steg'.format(params.architecture)
-    parent_path = os.path.dirname(os.path.dirname(__file__))
-    stega_path = os.path.join(parent_path, 'steganogan')
-    pretrained_path = os.path.join(stega_path, 'pretrained')
-    model_path = os.path.join(pretrained_path, model_name)
-
     # run
     cli_test = cli._get_steganogan(params)
 
     # assert
     mock_steganogan_load.assert_called_once_with(
-        model_path,
+        'basic',
         cuda=False,
         verbose=True
     )

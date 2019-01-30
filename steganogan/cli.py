@@ -7,16 +7,12 @@ __email__ = 'dailabmit@gmail.com'
 __version__ = '0.1.0.dev.dev'
 
 import argparse
-import os
 
 from steganogan.models import SteganoGAN
 
 
 def _get_steganogan(args):
-    model_name = '{}.steg'.format(args.architecture)
-    pretrained_path = os.path.join(os.path.dirname(__file__), 'pretrained')
-    model_path = os.path.join(pretrained_path, model_name)
-    return SteganoGAN.load(model_path, cuda=not args.cpu, verbose=args.verbose)
+    return SteganoGAN.load(args.architecture, cuda=not args.cpu, verbose=args.verbose)
 
 
 def _encode(args):

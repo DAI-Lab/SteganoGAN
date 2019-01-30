@@ -341,8 +341,30 @@ class SteganoGAN(object):
         torch.save(self, path)
 
     @classmethod
-    def load(cls, path, cuda=True, verbose=False):
-        """Loads an instance of SteganoGAN from the given path."""
+    def load(cls, architecture, path=None, cuda=True, verbose=False):
+        """Loads an instance of SteganoGAN from the given path.
+
+        Args:
+            architecture(str): Name of a pretrained model to be loaded from the default models.
+            path(str): Path to custom pretrained models. *architecture must be None.
+            cuda(bool): Force loaded model to use cuda (if available).
+            verbose(bool): Force loaded model to use or not verbose.
+        """
+
+        if path and not architecture:
+            # load from the path
+            path = os.path.abspath(path)
+
+        elif architecture and not path:
+            # load pretrained architecture from SteganoGAN
+            model_name = '{}.steg'.format(architecture)
+            pretrained_path = os.path.join(os.path.dirname(__file__), 'pretrained')
+            path = os.path.join(pretrained_path, model_name)
+
+        else:
+            raise ValueError(
+                'Please provide either an architecture or a path to pretrained model.')
+
         steganogan = torch.load(path, map_location='cpu')
         steganogan.verbose = verbose
 
