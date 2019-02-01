@@ -74,7 +74,7 @@ setup(
     description="Steganography tool based on DeepLearning GANs",
     entry_points={
         'console_scripts': [
-            'steganogan=steganogan:cli.main'
+            'steganogan=steganogan.cli:main'
         ],
     },
     extras_require={

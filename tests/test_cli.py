@@ -1,13 +1,75 @@
 # -*- coding: utf-8 -*-
 
-import os
 from unittest.mock import MagicMock, patch
 
 from steganogan import cli
 
 
 @patch('steganogan.cli.SteganoGAN.load')
-def test__get_steganogan(mock_steganogan_load):
+def test__get_steganogan_with_path_and_architecture(mock_steganogan_load):
+    """
+    Test that:
+        * The model is called with the path and not acrhitecture.
+        * SteganoGAN.load is called with the right values
+        * The output of SteganoGAN.load is returned
+    """
+
+    # setup
+    mock_steganogan_load.return_value = 'Steganogan'
+
+    params = MagicMock(
+        architecture='dense',
+        cpu=True,
+        path='my_path/basic',
+        verbose=True,
+    )
+
+    # run
+    cli_test = cli._get_steganogan(params)
+
+    # assert
+    mock_steganogan_load.assert_called_once_with(
+        path='my_path/basic',
+        cuda=False,
+        verbose=True
+    )
+
+    assert cli_test == 'Steganogan'
+
+
+@patch('steganogan.cli.SteganoGAN.load')
+def test__get_steganogan_with_path(mock_steganogan_load):
+    """
+    Test that:
+        * The model is loaded with the path.
+        * SteganoGAN.load is called with the right values
+        * The output of SteganoGAN.load is returned
+    """
+
+    # setup
+    mock_steganogan_load.return_value = 'Steganogan'
+
+    params = MagicMock(
+        cpu=True,
+        path='my_path/basic',
+        verbose=True,
+    )
+
+    # run
+    cli_test = cli._get_steganogan(params)
+
+    # assert
+    mock_steganogan_load.assert_called_once_with(
+        path='my_path/basic',
+        cuda=False,
+        verbose=True
+    )
+
+    assert cli_test == 'Steganogan'
+
+
+@patch('steganogan.cli.SteganoGAN.load')
+def test__get_steganogan_with_architecture(mock_steganogan_load):
     """
     Test that:
         * The model path is the right one, with the right architecture
@@ -22,20 +84,15 @@ def test__get_steganogan(mock_steganogan_load):
         cpu=True,
         architecture='basic',
         verbose=True,
+        path=None
     )
-
-    model_name = '{}.steg'.format(params.architecture)
-    parent_path = os.path.dirname(os.path.dirname(__file__))
-    stega_path = os.path.join(parent_path, 'steganogan')
-    pretrained_path = os.path.join(stega_path, 'pretrained')
-    model_path = os.path.join(pretrained_path, model_name)
 
     # run
     cli_test = cli._get_steganogan(params)
 
     # assert
     mock_steganogan_load.assert_called_once_with(
-        model_path,
+        architecture='basic',
         cuda=False,
         verbose=True
     )
