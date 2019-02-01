@@ -546,8 +546,26 @@
         <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SteganoGAN.load"><a class="viewcode-back" href="../../api/steganogan.models.html#steganogan.SteganoGAN.load">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Loads an instance of SteganoGAN from the given path.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">architecture</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads an instance of SteganoGAN for the given architecture (default pretrained models)</span>
+<span class="sd">        or loads a pretrained model from a given path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            architecture(str): Name of a pretrained model to be loaded from the default models.</span>
+<span class="sd">            path(str): Path to custom pretrained model. *Architecture must be None.</span>
+<span class="sd">            cuda(bool): Force loaded model to use cuda (if available).</span>
+<span class="sd">            verbose(bool): Force loaded model to use or not verbose.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">architecture</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.steg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">architecture</span><span class="p">)</span>
+            <span class="n">pretrained_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;pretrained&#39;</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pretrained_path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">architecture</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">architecture</span> <span class="ow">and</span> <span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;Please provide either an architecture or a path to pretrained model.&#39;</span><span class="p">)</span>
+
         <span class="n">steganogan</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
         <span class="n">steganogan</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 

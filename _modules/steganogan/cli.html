@@ -205,23 +205,24 @@
   <h1>Source code for steganogan.cli</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;Top-level package for SteganoGAN.&quot;&quot;&quot;</span>
-
-<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;MIT Data To AI Lab&#39;</span>
-<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;dailabmit@gmail.com&#39;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.0.dev.dev&#39;</span>
-
 <span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">steganogan.models</span> <span class="k">import</span> <span class="n">SteganoGAN</span>
 
 
 <span class="k">def</span> <span class="nf">_get_steganogan</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.steg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">architecture</span><span class="p">)</span>
-    <span class="n">pretrained_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;pretrained&#39;</span><span class="p">)</span>
-    <span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pretrained_path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">SteganoGAN</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">steganogan_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;cuda&#39;</span><span class="p">:</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cpu</span><span class="p">,</span>
+        <span class="s1">&#39;verbose&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">steganogan_kwargs</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">steganogan_kwargs</span><span class="p">[</span><span class="s1">&#39;architecture&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">architecture</span>
+
+    <span class="k">return</span> <span class="n">SteganoGAN</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">**</span><span class="n">steganogan_kwargs</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
@@ -249,8 +250,12 @@
     <span class="c1"># Parent Parser - Shared options</span>
     <span class="n">parent</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">add_help</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Be verbose&#39;</span><span class="p">)</span>
-    <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--architecture&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;basic&#39;</span><span class="p">,</span> <span class="s1">&#39;dense&#39;</span><span class="p">),</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Model architecture. Use the same one for both encoding and decoding&#39;</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--architecture&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">,</span>
+                       <span class="n">choices</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;basic&#39;</span><span class="p">,</span> <span class="s1">&#39;dense&#39;</span><span class="p">,</span> <span class="s1">&#39;residual&#39;</span><span class="p">},</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Model architecture. Use the same one for both encoding and decoding&#39;</span><span class="p">)</span>
+
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--path&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Load a pretrained model from a given path.&#39;</span><span class="p">)</span>
     <span class="n">parent</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--cpu&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Force CPU usage even if CUDA is available&#39;</span><span class="p">)</span>
 
