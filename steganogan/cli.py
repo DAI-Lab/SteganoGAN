@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
 
-"""Top-level package for SteganoGAN."""
-
-__author__ = 'MIT Data To AI Lab'
-__email__ = 'dailabmit@gmail.com'
-__version__ = '0.1.0.dev.dev'
-
 import argparse
 
 from steganogan.models import SteganoGAN
 
 
 def _get_steganogan(args):
-    return SteganoGAN.load(args.architecture, cuda=not args.cpu, verbose=args.verbose)
+
+    steganogan_kwargs = {
+        'cuda': not args.cpu,
+        'verbose': args.verbose
+    }
+
+    if args.path:
+        steganogan_kwargs['path'] = args.path
+    else:
+        steganogan_kwargs['architecture'] = args.architecture
+
+    return SteganoGAN.load(**steganogan_kwargs)
 
 
 def _encode(args):
@@ -40,8 +45,12 @@ def _get_parser():
     # Parent Parser - Shared options
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument('-v', '--verbose', action='store_true', help='Be verbose')
-    parent.add_argument('-a', '--architecture', default='dense', choices=('basic', 'dense'),
-                        help='Model architecture. Use the same one for both encoding and decoding')
+    group = parent.add_mutually_exclusive_group()
+    group.add_argument('-a', '--architecture', default='dense',
+                       choices={'basic', 'dense', 'residual'},
+                       help='Model architecture. Use the same one for both encoding and decoding')
+
+    group.add_argument('-p', '--path', help='Load a pretrained model from a given path.')
     parent.add_argument('--cpu', action='store_true',
                         help='Force CPU usage even if CUDA is available')
 
