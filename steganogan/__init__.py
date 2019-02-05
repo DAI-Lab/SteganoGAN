@@ -3,9 +3,8 @@
 
 __author__ = """MIT Data To AI Lab"""
 __email__ = 'dailabmit@gmail.com'
-__version__ = '0.1.1'
+__version__ = '0.1.2-dev'
 
-from steganogan import cli
 from steganogan.models import SteganoGAN
 
-__all__ = ('SteganoGAN', 'cli')
+__all__ = ('SteganoGAN', )

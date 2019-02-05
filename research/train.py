@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 import argparse
-import torch
 import json
 import os
 from time import time
+
+import torch
+
 from steganogan import SteganoGAN
-from steganogan.loader import DataLoader
 from steganogan.critics import BasicCritic
 from steganogan.decoders import DenseDecoder
-from steganogan.encoders import BasicEncoder, ResidualEncoder, DenseEncoder
+from steganogan.encoders import BasicEncoder, DenseEncoder, ResidualEncoder
+from steganogan.loader import DataLoader
+
 
 def main():
     torch.manual_seed(42)

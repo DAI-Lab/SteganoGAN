@@ -15,10 +15,10 @@ install_requires = [
     'imageio>=2.4.1',
     'reedsolo>=0.3',
     'scipy>=1.1.0',
-    'scikit-learn==0.19.1',
     'torch>=1.0.0',
-    'torchvision==0.2.1',
-    'tqdm==4.28.1',
+    'torchvision>=0.2.1',
+    'tqdm>=4.28.1',
+    'numpy>=1.15.4',
 ]
 
 setup_requires = [
@@ -74,7 +74,7 @@ setup(
     description="Steganography tool based on DeepLearning GANs",
     entry_points={
         'console_scripts': [
-            'steganogan=steganogan:cli.main'
+            'steganogan=steganogan.cli:main'
         ],
     },
     extras_require={
@@ -94,7 +94,7 @@ setup(
     setup_requires=setup_requires,
     test_suite='tests',
     tests_require=tests_require,
-    url='https://github.com/DAI-Lab/steganogan',
-    version='0.1.1',
+    url='https://github.com/DAI-Lab/SteganoGAN',
+    version='0.1.2-dev',
     zip_safe=False,
 )

@@ -1,5 +1,13 @@
 # History
 
+## 0.1.2
+
+* Add option to work with a custom pretrained model from CLI and Python
+* Refactorize Critics and Decoders to match Encoders code style
+* Make old pretrained models compatible with new code versions
+* Cleanup unneeded dependencies
+* Extensive unit testing
+
 ## 0.1.1
 
 * Add better pretrained models.

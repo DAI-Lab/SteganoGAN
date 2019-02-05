@@ -104,3 +104,19 @@ method:
 We provide example scripts in the `research` folder which demonstrate how you can train your own
 `SteganoGAN` models from scratch on arbitrary datasets. In addition, we provide a convenience 
 script in `research/data` for downloading two popular image datasets.
+
+## References
+
+If you use SteganoGAN for your research, please consider citing the following work:
+
+Zhang, Kevin Alex and Cuesta-Infante, Alfredo and Veeramachaneni, Kalyan. SteganoGAN: High Capacity Image Steganography with GANs. MIT EECS, January 2019. ([PDF](https://arxiv.org/pdf/1901.03892.pdf))
+
+```
+@article{zhang2019steganogan,
+  title={SteganoGAN: High Capacity Image Steganography with GANs},
+  author={Zhang, Kevin Alex and Cuesta-Infante, Alfredo and Veeramachaneni, Kalyan},
+  journal={arXiv preprint arXiv:1901.03892},
+  year={2019},
+  url={https://arxiv.org/abs/1901.03892}
+}
+```

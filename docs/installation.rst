@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/DAI-Lab/steganogan
+    $ git clone git://github.com/DAI-Lab/SteganoGAN
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/DAI-Lab/steganogan/tarball/master
+    $ curl  -OL https://github.com/DAI-Lab/SteganoGAN/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ make install
 
 
-.. _Github repo: https://github.com/DAI-Lab/steganogan
-.. _tarball: https://github.com/DAI-Lab/steganogan/tarball/master
+.. _Github repo: https://github.com/DAI-Lab/SteganoGAN
+.. _tarball: https://github.com/DAI-Lab/SteganoGAN/tarball/master

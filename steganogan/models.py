@@ -3,7 +3,6 @@ import gc
 import inspect
 import json
 import os
-import pickle
 from collections import Counter
 
 import imageio
@@ -342,9 +341,32 @@ class SteganoGAN(object):
         torch.save(self, path)
 
     @classmethod
-    def load(cls, path, cuda=True, verbose=False):
-        """Loads an instance of SteganoGAN from the given path."""
+    def load(cls, architecture=None, path=None, cuda=True, verbose=False):
+        """Loads an instance of SteganoGAN for the given architecture (default pretrained models)
+        or loads a pretrained model from a given path.
+
+        Args:
+            architecture(str): Name of a pretrained model to be loaded from the default models.
+            path(str): Path to custom pretrained model. *Architecture must be None.
+            cuda(bool): Force loaded model to use cuda (if available).
+            verbose(bool): Force loaded model to use or not verbose.
+        """
+
+        if architecture and not path:
+            model_name = '{}.steg'.format(architecture)
+            pretrained_path = os.path.join(os.path.dirname(__file__), 'pretrained')
+            path = os.path.join(pretrained_path, model_name)
+
+        elif (architecture is None and path is None) or (architecture and path):
+            raise ValueError(
+                'Please provide either an architecture or a path to pretrained model.')
+
         steganogan = torch.load(path, map_location='cpu')
         steganogan.verbose = verbose
+
+        steganogan.encoder.upgrade_legacy()
+        steganogan.decoder.upgrade_legacy()
+        steganogan.critic.upgrade_legacy()
+
         steganogan.set_device(cuda)
         return steganogan
