@@ -1,6 +1,7 @@
 * SteganoGAN version or git commit:
 * Python version (output of `python --version`):
 * Pip version (output of `pip --version`):
+* PyTorch version (output of `python -c "import torch; print(torch.__version__)"`):
 * Operating System:
 
 ### Description
