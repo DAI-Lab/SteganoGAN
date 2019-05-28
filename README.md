@@ -35,6 +35,8 @@ make install
 For development, you can use the `make install-develop` command instead in order to install all
 the required dependencies for testing and linting.
 
+**NOTE** SteganoGAN currently requires `torch` version to be `1.0.0` in order to work properly.
+
 ## Usage
 ### Command Line
 
