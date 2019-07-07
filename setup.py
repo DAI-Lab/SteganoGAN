@@ -16,7 +16,7 @@ install_requires = [
     'reedsolo>=0.3',
     'scipy>=1.1.0',
     'torch==1.0.0',
-    'torchvision>=0.2.1',
+    'torchvision==0.2.1',
     'tqdm>=4.28.1',
     'numpy>=1.15.4',
 ]
@@ -26,9 +26,8 @@ setup_requires = [
 ]
 
 tests_require = [
-    'coverage>=4.5.1',
     'pytest>=3.4.2',
-    'tox>=2.9.1',
+    'pytest-cov>=2.6.0',
 ]
 
 development_requires = [
@@ -56,6 +55,10 @@ development_requires = [
 
     # Notebooks
     'jupyter==1.0.0',
+
+    # Advanced testing
+    'coverage>=4.5.1',
+    'tox>=2.9.1'
 ]
 
 setup(
