@@ -219,7 +219,7 @@
 <span id="steganogan-decoders-module"></span><h1>steganogan.decoders module<a class="headerlink" href="#module-steganogan.decoders" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="steganogan.decoders.BasicDecoder">
-<em class="property">class </em><code class="descclassname">steganogan.decoders.</code><code class="descname">BasicDecoder</code><span class="sig-paren">(</span><em>data_depth</em>, <em>hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#BasicDecoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.BasicDecoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">steganogan.decoders.</code><code class="sig-name descname">BasicDecoder</code><span class="sig-paren">(</span><em class="sig-param">data_depth</em>, <em class="sig-param">hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#BasicDecoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.BasicDecoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <p>The BasicDecoder module takes an steganographic image and attempts to decode
 the embedded data tensor.</p>
@@ -227,7 +227,7 @@ the embedded data tensor.</p>
 Output: (N, D, H, W)</p>
 <dl class="method">
 <dt id="steganogan.decoders.BasicDecoder.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#BasicDecoder.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.BasicDecoder.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#BasicDecoder.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.BasicDecoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -241,7 +241,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="method">
 <dt id="steganogan.decoders.BasicDecoder.upgrade_legacy">
-<code class="descname">upgrade_legacy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#BasicDecoder.upgrade_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.BasicDecoder.upgrade_legacy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">upgrade_legacy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#BasicDecoder.upgrade_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.BasicDecoder.upgrade_legacy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform legacy pretrained models to make them usable with new code versions.</p>
 </dd></dl>
 
@@ -249,7 +249,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="class">
 <dt id="steganogan.decoders.DenseDecoder">
-<em class="property">class </em><code class="descclassname">steganogan.decoders.</code><code class="descname">DenseDecoder</code><span class="sig-paren">(</span><em>data_depth</em>, <em>hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#DenseDecoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.DenseDecoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">steganogan.decoders.</code><code class="sig-name descname">DenseDecoder</code><span class="sig-paren">(</span><em class="sig-param">data_depth</em>, <em class="sig-param">hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#DenseDecoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.DenseDecoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#steganogan.decoders.BasicDecoder" title="steganogan.decoders.BasicDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">steganogan.decoders.BasicDecoder</span></code></a></p>
 <p>The DenseDecoder module takes an steganographic image and attempts to decode
 the embedded data tensor.</p>
@@ -257,7 +257,7 @@ the embedded data tensor.</p>
 Output: (N, D, H, W)</p>
 <dl class="method">
 <dt id="steganogan.decoders.DenseDecoder.upgrade_legacy">
-<code class="descname">upgrade_legacy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#DenseDecoder.upgrade_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.DenseDecoder.upgrade_legacy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">upgrade_legacy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/decoders.html#DenseDecoder.upgrade_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.decoders.DenseDecoder.upgrade_legacy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform legacy pretrained models to make them usable with new code versions.</p>
 </dd></dl>
 

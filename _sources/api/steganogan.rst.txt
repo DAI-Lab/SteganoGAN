@@ -2,9 +2,9 @@ steganogan package
 ==================
 
 .. automodule:: steganogan
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -18,4 +18,3 @@ Submodules
    steganogan.loader
    steganogan.models
    steganogan.utils
-

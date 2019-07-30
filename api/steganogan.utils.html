@@ -219,49 +219,48 @@
 <span id="steganogan-utils-module"></span><h1>steganogan.utils module<a class="headerlink" href="#module-steganogan.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="steganogan.utils.bits_to_bytearray">
-<code class="descclassname">steganogan.utils.</code><code class="descname">bits_to_bytearray</code><span class="sig-paren">(</span><em>bits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bits_to_bytearray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bits_to_bytearray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">bits_to_bytearray</code><span class="sig-paren">(</span><em class="sig-param">bits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bits_to_bytearray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bits_to_bytearray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a list of bits to a bytearray</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.bits_to_text">
-<code class="descclassname">steganogan.utils.</code><code class="descname">bits_to_text</code><span class="sig-paren">(</span><em>bits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bits_to_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bits_to_text" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">bits_to_text</code><span class="sig-paren">(</span><em class="sig-param">bits</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bits_to_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bits_to_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a list of ints in {0, 1} to text</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.bytearray_to_bits">
-<code class="descclassname">steganogan.utils.</code><code class="descname">bytearray_to_bits</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bytearray_to_bits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bytearray_to_bits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">bytearray_to_bits</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bytearray_to_bits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bytearray_to_bits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert bytearray to a list of bits</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.bytearray_to_text">
-<code class="descclassname">steganogan.utils.</code><code class="descname">bytearray_to_text</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bytearray_to_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bytearray_to_text" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">bytearray_to_text</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#bytearray_to_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.bytearray_to_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply error correction and decompress</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.conv2d">
-<code class="descclassname">steganogan.utils.</code><code class="descname">conv2d</code><span class="sig-paren">(</span><em>input</em>, <em>weight</em>, <em>bias=None</em>, <em>stride=1</em>, <em>padding=0</em>, <em>dilation=1</em>, <em>groups=1</em>, <em>padding_mode='zeros'</em><span class="sig-paren">)</span> &#x2192; Tensor<a class="headerlink" href="#steganogan.utils.conv2d" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">conv2d</code><span class="sig-paren">(</span><em class="sig-param">input</em>, <em class="sig-param">weight</em>, <em class="sig-param">bias=None</em>, <em class="sig-param">stride=1</em>, <em class="sig-param">padding=0</em>, <em class="sig-param">dilation=1</em>, <em class="sig-param">groups=1</em><span class="sig-paren">)</span> &#x2192; Tensor<a class="headerlink" href="#steganogan.utils.conv2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies a 2D convolution over an input image composed of several input
 planes.</p>
 <p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">Conv2d</span></code> for details and output shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input</strong> – input tensor of shape <span class="math notranslate nohighlight">\((\text{minibatch} , \text{in\_channels} , iH , iW)\)</span></p></li>
-<li><p><strong>weight</strong> – filters of shape <span class="math notranslate nohighlight">\((\text{out\_channels} , \frac{\text{in\_channels}}{\text{groups}} , kH , kW)\)</span></p></li>
+<li><p><strong>input</strong> – input tensor of shape <span class="math notranslate nohighlight">\((\text{minibatch} \times \text{in\_channels} \times iH \times iW)\)</span></p></li>
+<li><p><strong>weight</strong> – filters of shape <span class="math notranslate nohighlight">\((\text{out\_channels} \times \frac{\text{in\_channels}}{\text{groups}} \times kH \times kW)\)</span></p></li>
 <li><p><strong>bias</strong> – optional bias tensor of shape <span class="math notranslate nohighlight">\((\text{out\_channels})\)</span>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>stride</strong> – the stride of the convolving kernel. Can be a single number or a
 tuple <cite>(sH, sW)</cite>. Default: 1</p></li>
-<li><p><strong>padding</strong> – implicit paddings on both sides of the input. Can be a
+<li><p><strong>padding</strong> – implicit zero paddings on both sides of the input. Can be a
 single number or a tuple <cite>(padH, padW)</cite>. Default: 0</p></li>
 <li><p><strong>dilation</strong> – the spacing between kernel elements. Can be a single number or
 a tuple <cite>(dH, dW)</cite>. Default: 1</p></li>
 <li><p><strong>groups</strong> – split input into groups, <span class="math notranslate nohighlight">\(\text{in\_channels}\)</span> should be divisible by the
 number of groups. Default: 1</p></li>
-<li><p><strong>padding_mode</strong> – the type of paddings applied to both sided can be: <cite>zeros</cite> or <cite>circular</cite>. Default: <cite>zeros</cite></p></li>
 </ul>
 </dd>
 </dl>
@@ -276,36 +275,36 @@ number of groups. Default: 1</p></li>
 
 <dl class="function">
 <dt id="steganogan.utils.create_window">
-<code class="descclassname">steganogan.utils.</code><code class="descname">create_window</code><span class="sig-paren">(</span><em>window_size</em>, <em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#create_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.create_window" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">create_window</code><span class="sig-paren">(</span><em class="sig-param">window_size</em>, <em class="sig-param">channel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#create_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.create_window" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.first_element">
-<code class="descclassname">steganogan.utils.</code><code class="descname">first_element</code><span class="sig-paren">(</span><em>storage</em>, <em>loc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#first_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.first_element" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">first_element</code><span class="sig-paren">(</span><em class="sig-param">storage</em>, <em class="sig-param">loc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#first_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.first_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the first element of two</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.gaussian">
-<code class="descclassname">steganogan.utils.</code><code class="descname">gaussian</code><span class="sig-paren">(</span><em>window_size</em>, <em>sigma</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.gaussian" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">gaussian</code><span class="sig-paren">(</span><em class="sig-param">window_size</em>, <em class="sig-param">sigma</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.gaussian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gaussian window.</p>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Window_function#Gaussian_window">https://en.wikipedia.org/wiki/Window_function#Gaussian_window</a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.ssim">
-<code class="descclassname">steganogan.utils.</code><code class="descname">ssim</code><span class="sig-paren">(</span><em>img1</em>, <em>img2</em>, <em>window_size=11</em>, <em>size_average=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#ssim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.ssim" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">ssim</code><span class="sig-paren">(</span><em class="sig-param">img1</em>, <em class="sig-param">img2</em>, <em class="sig-param">window_size=11</em>, <em class="sig-param">size_average=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#ssim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.ssim" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.text_to_bits">
-<code class="descclassname">steganogan.utils.</code><code class="descname">text_to_bits</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#text_to_bits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.text_to_bits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">text_to_bits</code><span class="sig-paren">(</span><em class="sig-param">text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#text_to_bits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.text_to_bits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert text to a list of ints in {0, 1}</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="steganogan.utils.text_to_bytearray">
-<code class="descclassname">steganogan.utils.</code><code class="descname">text_to_bytearray</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#text_to_bytearray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.text_to_bytearray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">steganogan.utils.</code><code class="sig-name descname">text_to_bytearray</code><span class="sig-paren">(</span><em class="sig-param">text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/utils.html#text_to_bytearray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.utils.text_to_bytearray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compress and add error correction</p>
 </dd></dl>
 

@@ -219,7 +219,7 @@
 <span id="steganogan-encoders-module"></span><h1>steganogan.encoders module<a class="headerlink" href="#module-steganogan.encoders" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="steganogan.encoders.BasicEncoder">
-<em class="property">class </em><code class="descclassname">steganogan.encoders.</code><code class="descname">BasicEncoder</code><span class="sig-paren">(</span><em>data_depth</em>, <em>hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#BasicEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.BasicEncoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">steganogan.encoders.</code><code class="sig-name descname">BasicEncoder</code><span class="sig-paren">(</span><em class="sig-param">data_depth</em>, <em class="sig-param">hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#BasicEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.BasicEncoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <p>The BasicEncoder module takes an cover image and a data tensor and combines
 them into a steganographic image.</p>
@@ -227,12 +227,12 @@ them into a steganographic image.</p>
 Output: (N, 3, H, W)</p>
 <dl class="attribute">
 <dt id="steganogan.encoders.BasicEncoder.add_image">
-<code class="descname">add_image</code><em class="property"> = False</em><a class="headerlink" href="#steganogan.encoders.BasicEncoder.add_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_image</code><em class="property"> = False</em><a class="headerlink" href="#steganogan.encoders.BasicEncoder.add_image" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="steganogan.encoders.BasicEncoder.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>image</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#BasicEncoder.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.BasicEncoder.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#BasicEncoder.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.BasicEncoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -246,7 +246,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="method">
 <dt id="steganogan.encoders.BasicEncoder.upgrade_legacy">
-<code class="descname">upgrade_legacy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#BasicEncoder.upgrade_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.BasicEncoder.upgrade_legacy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">upgrade_legacy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#BasicEncoder.upgrade_legacy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.BasicEncoder.upgrade_legacy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform legacy pretrained models to make them usable with new code versions.</p>
 </dd></dl>
 
@@ -254,7 +254,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="class">
 <dt id="steganogan.encoders.DenseEncoder">
-<em class="property">class </em><code class="descclassname">steganogan.encoders.</code><code class="descname">DenseEncoder</code><span class="sig-paren">(</span><em>data_depth</em>, <em>hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#DenseEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.DenseEncoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">steganogan.encoders.</code><code class="sig-name descname">DenseEncoder</code><span class="sig-paren">(</span><em class="sig-param">data_depth</em>, <em class="sig-param">hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#DenseEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.DenseEncoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#steganogan.encoders.BasicEncoder" title="steganogan.encoders.BasicEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">steganogan.encoders.BasicEncoder</span></code></a></p>
 <p>The DenseEncoder module takes an cover image and a data tensor and combines
 them into a steganographic image.</p>
@@ -262,14 +262,14 @@ them into a steganographic image.</p>
 Output: (N, 3, H, W)</p>
 <dl class="attribute">
 <dt id="steganogan.encoders.DenseEncoder.add_image">
-<code class="descname">add_image</code><em class="property"> = True</em><a class="headerlink" href="#steganogan.encoders.DenseEncoder.add_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_image</code><em class="property"> = True</em><a class="headerlink" href="#steganogan.encoders.DenseEncoder.add_image" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="steganogan.encoders.ResidualEncoder">
-<em class="property">class </em><code class="descclassname">steganogan.encoders.</code><code class="descname">ResidualEncoder</code><span class="sig-paren">(</span><em>data_depth</em>, <em>hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#ResidualEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.ResidualEncoder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">steganogan.encoders.</code><code class="sig-name descname">ResidualEncoder</code><span class="sig-paren">(</span><em class="sig-param">data_depth</em>, <em class="sig-param">hidden_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/encoders.html#ResidualEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.encoders.ResidualEncoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#steganogan.encoders.BasicEncoder" title="steganogan.encoders.BasicEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">steganogan.encoders.BasicEncoder</span></code></a></p>
 <p>The ResidualEncoder module takes an cover image and a data tensor and combines
 them into a steganographic image.</p>
@@ -277,7 +277,7 @@ them into a steganographic image.</p>
 Output: (N, 3, H, W)</p>
 <dl class="attribute">
 <dt id="steganogan.encoders.ResidualEncoder.add_image">
-<code class="descname">add_image</code><em class="property"> = True</em><a class="headerlink" href="#steganogan.encoders.ResidualEncoder.add_image" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_image</code><em class="property"> = True</em><a class="headerlink" href="#steganogan.encoders.ResidualEncoder.add_image" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

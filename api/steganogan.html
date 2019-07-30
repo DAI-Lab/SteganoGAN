@@ -218,16 +218,16 @@
 <p>Top-level package for SteganoGAN.</p>
 <dl class="class">
 <dt id="steganogan.SteganoGAN">
-<em class="property">class </em><code class="descclassname">steganogan.</code><code class="descname">SteganoGAN</code><span class="sig-paren">(</span><em>data_depth</em>, <em>encoder</em>, <em>decoder</em>, <em>critic</em>, <em>cuda=False</em>, <em>verbose=False</em>, <em>log_dir=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">steganogan.</code><code class="sig-name descname">SteganoGAN</code><span class="sig-paren">(</span><em class="sig-param">data_depth</em>, <em class="sig-param">encoder</em>, <em class="sig-param">decoder</em>, <em class="sig-param">critic</em>, <em class="sig-param">cuda=False</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">log_dir=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="steganogan.SteganoGAN.decode">
-<code class="descname">decode</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.decode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.decode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">decode</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.decode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.decode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="steganogan.SteganoGAN.encode">
-<code class="descname">encode</code><span class="sig-paren">(</span><em>cover</em>, <em>output</em>, <em>text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.encode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.encode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">encode</code><span class="sig-paren">(</span><em class="sig-param">cover</em>, <em class="sig-param">output</em>, <em class="sig-param">text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.encode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.encode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode an image.
 :param cover: Path to the image to be used as cover.
 :type cover: str
@@ -239,13 +239,13 @@
 
 <dl class="method">
 <dt id="steganogan.SteganoGAN.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>train</em>, <em>validate</em>, <em>epochs=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.fit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">train</em>, <em class="sig-param">validate</em>, <em class="sig-param">epochs=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Train a new model with the given ImageLoader class.</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="steganogan.SteganoGAN.load">
-<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>architecture=None</em>, <em>path=None</em>, <em>cuda=True</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.load" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">architecture=None</em>, <em class="sig-param">path=None</em>, <em class="sig-param">cuda=True</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads an instance of SteganoGAN for the given architecture (default pretrained models)
 or loads a pretrained model from a given path.</p>
 <dl class="field-list simple">
@@ -262,13 +262,13 @@ or loads a pretrained model from a given path.</p>
 
 <dl class="method">
 <dt id="steganogan.SteganoGAN.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the fitted model in the given path. Raises an exception if there is no model.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="steganogan.SteganoGAN.set_device">
-<code class="descname">set_device</code><span class="sig-paren">(</span><em>cuda=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.set_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.set_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_device</code><span class="sig-paren">(</span><em class="sig-param">cuda=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/steganogan/models.html#SteganoGAN.set_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#steganogan.SteganoGAN.set_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the torch device depending on whether cuda is avaiable or not.</p>
 </dd></dl>
 
