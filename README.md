@@ -3,13 +3,10 @@
 <i>An open source project from Data to AI Lab at MIT.</i>
 </p>
 
-
-[![CircleCI](https://circleci.com/gh/DAI-Lab/SteganoGAN.svg?style=shield)](https://circleci.com/gh/DAI-Lab/SteganoGAN)
-[![Travis CI Shield](https://travis-ci.org/DAI-Lab/SteganoGAN.svg?branch=master)](https://travis-ci.org/DAI-Lab/SteganoGAN)
 [![PyPI Shield](https://img.shields.io/pypi/v/steganogan.svg)](https://pypi.python.org/pypi/steganogan)
+[![Travis CI Shield](https://travis-ci.org/DAI-Lab/SteganoGAN.svg?branch=master)](https://travis-ci.org/DAI-Lab/SteganoGAN)
 [![Coverage Status](https://codecov.io/gh/DAI-Lab/SteganoGAN/branch/master/graph/badge.svg)](https://codecov.io/gh/DAI-Lab/SteganoGAN)
 [![Downloads](https://pepy.tech/badge/steganogan)](https://pepy.tech/project/steganogan)
-
 
 # SteganoGAN
 
@@ -112,7 +109,12 @@ We provide example scripts in the `research` folder which demonstrate how you ca
 `SteganoGAN` models from scratch on arbitrary datasets. In addition, we provide a convenience 
 script in `research/data` for downloading two popular image datasets.
 
-## References
+## What's next?
+
+For more details about **SteganoGAN** and all its possibilities and features, please check the
+[project documentation site](https://DAI-Lab.github.io/SteganoGAN/)!
+
+## Citing SteganoGAN
 
 If you use SteganoGAN for your research, please consider citing the following work:
 
