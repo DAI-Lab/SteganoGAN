@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import warnings
 
 from steganogan.models import SteganoGAN
+
+warnings.filterwarnings('ignore')
 
 
 def _get_steganogan(args):

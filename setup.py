@@ -12,13 +12,14 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 install_requires = [
-    'imageio>=2.4.1',
-    'reedsolo>=0.3',
-    'scipy>=1.1.0',
+    'imageio==2.4.1',
+    'reedsolo==0.3',
+    'scipy==1.1.0',
     'torch==1.0.0',
     'torchvision==0.2.1',
-    'tqdm>=4.28.1',
-    'numpy>=1.15.4',
+    'Pillow==6.1.0',
+    'tqdm==4.28.1',
+    'numpy==1.15.4',
 ]
 
 setup_requires = [
