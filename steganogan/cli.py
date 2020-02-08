@@ -7,7 +7,6 @@ from torch.serialization import SourceChangeWarning
 
 from steganogan.models import SteganoGAN
 
-
 warnings.filterwarnings('ignore', category=SourceChangeWarning)
 
 
