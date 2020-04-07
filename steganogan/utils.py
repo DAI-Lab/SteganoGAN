@@ -53,7 +53,7 @@ def text_to_bytearray(text):
 def bytearray_to_text(x):
     """Apply error correction and decompress"""
     try:
-        text, _, _ = rs.decode(x)
+        text = rs.decode(x)
         text = zlib.decompress(text)
         return text.decode("utf-8")
     except BaseException:
