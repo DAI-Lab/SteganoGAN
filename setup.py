@@ -38,7 +38,7 @@ development_requires = [
 
     # docs
     'm2r>=0.2.0',
-    'Sphinx==3.0.0',
+    'Sphinx==2.4.4',
     'sphinx_rtd_theme>=0.2.4',
 
     # style check
