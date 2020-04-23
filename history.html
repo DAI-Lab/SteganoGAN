@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>History &mdash; SteganoGAN 0.1.3-dev documentation</title>
+  <title>History &mdash; SteganoGAN 0.1.4-dev documentation</title>
   
 
   
@@ -142,8 +142,12 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">0.1.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">0.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">0.1.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#resolved-issues">Resolved Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">0.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#first-release-to-pypi">0.1.0 - First release to PyPi</a></li>
 </ul>
 </li>
@@ -216,7 +220,20 @@
   <div class="section" id="history">
 <h1>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>0.1.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>0.1.3<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Cap dependencies in order to avoid outside changes that caused <code class="docutils literal notranslate"><span class="pre">staganogan</span></code> to malfunctioned.</p></li>
+</ul>
+<div class="section" id="resolved-issues">
+<h3>Resolved Issues<a class="headerlink" href="#resolved-issues" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Issue #50: Cap pillow and other dependencies.</p></li>
+<li><p>Issue #55: Update reedsolo.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>0.1.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Add option to work with a custom pretrained model from CLI and Python</p></li>
 <li><p>Refactorize Critics and Decoders to match Encoders code style</p></li>
@@ -225,8 +242,8 @@
 <li><p>Extensive unit testing</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>0.1.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>0.1.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Add better pretrained models.</p></li>
 <li><p>Improve support for non CUDA devices.</p></li>
