@@ -13,7 +13,7 @@ with open('HISTORY.md') as history_file:
 
 install_requires = [
     'imageio>=2.4.1,<2.5.0',
-    'reedsolo>=0.3,<0.4',
+    'reedsolo==0.3',
     'scipy>=1.1.0,<1.2.0',
     'tqdm>=4.28.1',
     'numpy>=1.15.4<1.16.0',
@@ -39,7 +39,7 @@ development_requires = [
 
     # docs
     'm2r>=0.2.0',
-    'Sphinx>=1.7.1',
+    'Sphinx==2.4.4',
     'sphinx_rtd_theme>=0.2.4',
 
     # style check
