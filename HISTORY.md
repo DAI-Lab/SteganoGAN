@@ -1,5 +1,14 @@
 # History
 
+## 0.1.3
+
+* Cap dependencies in order to avoid outside changes that caused `staganogan` to malfunctioned.
+
+### Resolved Issues
+
+* Issue #50: Cap pillow and other dependencies.
+* Issue #55: Update reedsolo.
+
 ## 0.1.2
 
 * Add option to work with a custom pretrained model from CLI and Python
