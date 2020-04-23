@@ -99,6 +99,6 @@ setup(
     test_suite='tests',
     tests_require=tests_require,
     url='https://github.com/DAI-Lab/SteganoGAN',
-    version='0.1.3',
+    version='0.1.4-dev',
     zip_safe=False,
 )
