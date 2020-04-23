@@ -3,7 +3,7 @@
 
 __author__ = """MIT Data To AI Lab"""
 __email__ = 'dailabmit@gmail.com'
-__version__ = '0.1.3-dev'
+__version__ = '0.1.3'
 
 from steganogan.models import SteganoGAN
 
