@@ -12,13 +12,14 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 install_requires = [
-    'imageio>=2.4.1',
-    'reedsolo>=0.3',
-    'scipy>=1.1.0',
-    'torch>=1.0.0',
-    'torchvision>=0.2.1',
+    'imageio>=2.4.1,<2.5.0',
+    'reedsolo==0.3',
+    'scipy>=1.1.0,<1.2.0',
     'tqdm>=4.28.1',
-    'numpy>=1.15.4',
+    'numpy>=1.15.4<1.16.0',
+    'Pillow>=5.0.0,<7.0.0',
+    'torch==1.0.0',
+    'torchvision==0.2.1',
 ]
 
 setup_requires = [
@@ -26,36 +27,39 @@ setup_requires = [
 ]
 
 tests_require = [
-    'coverage>=4.5.1',
     'pytest>=3.4.2',
-    'tox>=2.9.1',
+    'pytest-cov>=2.6.0',
 ]
 
 development_requires = [
     # general
-    'bumpversion>=0.5.3',
     'pip>=9.0.1',
-    'watchdog>=0.8.3',
+    'bumpversion>=0.5.3,<0.6',
+    'watchdog>=0.8.3,<0.11',
 
     # docs
-    'm2r>=0.2.0',
-    'Sphinx>=1.7.1',
-    'sphinx_rtd_theme>=0.2.4',
+    'm2r>=0.2.0,<0.3',
+    'Sphinx>=1.7.1,<3',
+    'sphinx_rtd_theme>=0.2.4,<0.5',
 
     # style check
-    'flake8>=3.5.0',
-    'isort>=4.3.4',
+    'flake8>=3.7.7,<4',
+    'isort>=4.3.4,<5',
 
     # fix style issues
-    'autoflake>=1.1',
-    'autopep8>=1.3.5',
+    'autoflake>=1.1,<2',
+    'autopep8>=1.4.3,<2',
 
     # distribute on PyPI
-    'twine>=1.10.0',
+    'twine>=1.10.0,<4',
     'wheel>=0.30.0',
 
+    # Advanced testing
+    'coverage>=4.5.1,<6',
+    'tox>=2.9.1,<4',
+
     # Notebooks
-    'jupyter==1.0.0',
+    'jupyter>=1.0.0,<2',
 ]
 
 setup(
@@ -95,6 +99,6 @@ setup(
     test_suite='tests',
     tests_require=tests_require,
     url='https://github.com/DAI-Lab/SteganoGAN',
-    version='0.1.2',
+    version='0.1.3-dev',
     zip_safe=False,
 )

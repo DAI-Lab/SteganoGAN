@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import warnings
+
+from torch.serialization import SourceChangeWarning
 
 from steganogan.models import SteganoGAN
+
+warnings.filterwarnings('ignore', category=SourceChangeWarning)
 
 
 def _get_steganogan(args):

@@ -1,10 +1,12 @@
 <p align="left">
-<img width=15% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/Logo_DAI_highres.png" alt=“SteganoGAN” />
+<img width=15% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/Logo_DAI_highres.png" alt="SteganoGAN" />
 <i>An open source project from Data to AI Lab at MIT.</i>
 </p>
 
 [![PyPI Shield](https://img.shields.io/pypi/v/steganogan.svg)](https://pypi.python.org/pypi/steganogan)
 [![Travis CI Shield](https://travis-ci.org/DAI-Lab/SteganoGAN.svg?branch=master)](https://travis-ci.org/DAI-Lab/SteganoGAN)
+[![Coverage Status](https://codecov.io/gh/DAI-Lab/SteganoGAN/branch/master/graph/badge.svg)](https://codecov.io/gh/DAI-Lab/SteganoGAN)
+[![Downloads](https://pepy.tech/badge/steganogan)](https://pepy.tech/project/steganogan)
 
 # SteganoGAN
 
@@ -34,6 +36,8 @@ make install
 
 For development, you can use the `make install-develop` command instead in order to install all
 the required dependencies for testing and linting.
+
+**NOTE** SteganoGAN currently requires `torch` version to be `1.0.0` in order to work properly.
 
 ## Usage
 ### Command Line
@@ -105,7 +109,12 @@ We provide example scripts in the `research` folder which demonstrate how you ca
 `SteganoGAN` models from scratch on arbitrary datasets. In addition, we provide a convenience 
 script in `research/data` for downloading two popular image datasets.
 
-## References
+## What's next?
+
+For more details about **SteganoGAN** and all its possibilities and features, please check the
+[project documentation site](https://DAI-Lab.github.io/SteganoGAN/)!
+
+## Citing SteganoGAN
 
 If you use SteganoGAN for your research, please consider citing the following work:
 
