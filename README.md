@@ -7,6 +7,7 @@
 [![Travis CI Shield](https://travis-ci.org/DAI-Lab/SteganoGAN.svg?branch=master)](https://travis-ci.org/DAI-Lab/SteganoGAN)
 [![Coverage Status](https://codecov.io/gh/DAI-Lab/SteganoGAN/branch/master/graph/badge.svg)](https://codecov.io/gh/DAI-Lab/SteganoGAN)
 [![Downloads](https://pepy.tech/badge/steganogan)](https://pepy.tech/project/steganogan)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DAI-Lab/SteganoGAN/notebook-tutorials?filepath=tutorials)
 
 # SteganoGAN
 
