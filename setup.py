@@ -17,8 +17,8 @@ install_requires = [
     'scipy>=1.1.0,<1.2.0',
     'tqdm>=4.28.1',
     'numpy>=1.15.4<1.16.0',
-    'Pillow>=5.0.0,<7.0.0',
-    'torch==1.0.0',
+    'Pillow>=5.0.0,<8.0.0',
+    'torch>=1.0.0,<2.0.0',
     'torchvision==0.2.1',
 ]
 

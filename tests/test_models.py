@@ -271,7 +271,7 @@ class TestSteganoGAN(TestCase):
         # assert
         steganogan.critic.assert_called_once_with(image_fixture)
 
-        assert (result == torch.Tensor(np.array(-0.3195187))).all()
+        assert ((result - torch.Tensor(np.array(-0.3195187))).abs() < 1e-5).all()
 
     @patch('steganogan.models.Adam')
     def test__get_optimizers(self, mock_Adam):
