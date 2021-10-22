@@ -43,6 +43,8 @@ def _decode(args):
 
     except Exception as e:
         print('ERROR: {}'.format(e))
+        import traceback
+        traceback.print_exc()
 
 
 def _get_parser():

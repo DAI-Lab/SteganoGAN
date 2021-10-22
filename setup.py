@@ -19,7 +19,7 @@ install_requires = [
     'numpy>=1.15.4<1.16.0',
     'Pillow>=5.0.0,<8.0.0',
     'torch>=1.0.0,<2.0.0',
-    'torchvision==0.2.1',
+    'torchvision',
 ]
 
 setup_requires = [
