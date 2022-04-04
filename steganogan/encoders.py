@@ -14,7 +14,7 @@ class BasicEncoder(nn.Module):
     """
 
     add_image = False
-
+    ss=8
     def _conv2d(self, in_channels, out_channels):
         return nn.Conv2d(
             in_channels=in_channels,
