@@ -2,6 +2,14 @@
 
 import torch
 from torch import nn
+import torch.onnx
+from torchvision.ops.deform_conv import DeformConv2d
+
+input1 = torch.rand(4, 3, 10, 10)
+kh, kw = 3, 3
+weight1 = torch.rand(5, 3, kh, kw)
+offset1 = torch.rand(4, 2 * kh * kw, 8, 8)
+mask1 = torch.rand(4, kh * kw, 8, 8)
 
 
 class BasicEncoder(nn.Module):
@@ -15,12 +23,12 @@ class BasicEncoder(nn.Module):
 
     add_image = False
 
-    def _conv2d(self, in_channels, out_channels):
-        return nn.Conv2d(
-            in_channels=in_channels,
-            out_channels=out_channels,
-            kernel_size=3,
-            padding=1
+    def _conv2d(self, input1, offset1, weight1, mask1):
+        return DeformConv2d(
+            input1=input1,
+            offset1=offset1,
+            weight1=weight1,
+            mask1=mask1
         )
 
     def _build_models(self):
