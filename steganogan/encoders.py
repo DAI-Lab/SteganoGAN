@@ -7,9 +7,9 @@ from torchvision.ops.deform_conv import DeformConv2d
 
 input1 = torch.rand(4, 3, 10, 10)
 kh, kw = 3, 3
-weight = torch.rand(5, 3, kh, kw)
-offset = torch.rand(4, 2 * kh * kw, 8, 8)
-mask = torch.rand(4, kh * kw, 8, 8)
+weight1 = torch.rand(5, 3, kh, kw)
+offset1 = torch.rand(4, 2 * kh * kw, 8, 8)
+mask1 = torch.rand(4, kh * kw, 8, 8)
 
 
 class BasicEncoder(nn.Module):
@@ -23,12 +23,12 @@ class BasicEncoder(nn.Module):
 
     add_image = False
 
-    def _conv2d(self, input1, offset, weight, mask):
+    def _conv2d(self, input1, offset1, weight1, mask1):
         return DeformConv2d(
             input1=input1,
-            offset=offset,
-            weight=weight,
-            mask=mask
+            offset1=offset1,
+            weight1=weight1,
+            mask1=mask1
         )
 
     def _build_models(self):
