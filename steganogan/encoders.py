@@ -29,7 +29,7 @@ class BasicEncoder(nn.Module):
 
     def _build_models(self):
         self.features = nn.Sequential(
-            self._conv2d(3, self.hidden_size),
+            self._conv2d(2, self.hidden_size),
             nn.LeakyReLU(inplace=True),
             nn.BatchNorm2d(self.hidden_size),
         )
