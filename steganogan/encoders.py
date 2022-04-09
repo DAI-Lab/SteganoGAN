@@ -30,7 +30,7 @@ class BasicEncoder(nn.Module):
     add_image = False
 
     def _conv2d(self, in_channels, out_channels):
-        return deform_conv2d(
+        return DeformConv2d(
             in_channels=in_channels,
             out_channels=out_channels,
             kernel_size=3,
