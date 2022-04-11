@@ -275,7 +275,7 @@ class SteganoGAN(object):
         This takes a piece of text and encodes it into a bit vector. It then
         fills a matrix of size (width, height) with copies of the bit vector.
         """
-        message = text_to_bits(text) + [0] * 32
+        message = text_to_bits(text) + [0] * 64
 
         payload = message
         while len(payload) < width * height * depth:
