@@ -19,7 +19,7 @@ class BasicEncoder(nn.Module):
         return nn.Conv2d(
             in_channels=in_channels,
             out_channels=out_channels,
-            kernel_size=3,
+            kernel_size=5,
             padding=1
         )
 
