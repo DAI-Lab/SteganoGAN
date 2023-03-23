@@ -981,7 +981,9 @@ class TestSteganoGAN(TestCase):
 
         steganogan.decoder.return_value.view.return_value.__gt__.return_value = _image
 
-        bits_image = _image.data.cpu.return_value.numpy.return_value.tolist.return_value
+        bits_image = (
+            _image.data.int.return_value.cpu.return_value.numpy.return_value.tolist.return_value
+        )
 
         mock_bytearray_to_text.return_value = None
         mock_os.return_value = True
@@ -1029,7 +1031,9 @@ class TestSteganoGAN(TestCase):
 
         steganogan.decoder.return_value.view.return_value.__gt__.return_value = _image
 
-        bits_image = _image.data.cpu.return_value.numpy.return_value.tolist.return_value
+        bits_image = (
+            _image.data.int.return_value.cpu.return_value.numpy.return_value.tolist.return_value
+        )
         mock_bits.return_value.split.return_value = [candidate]
 
         mock_bytearray_to_text.return_value = _candidate
